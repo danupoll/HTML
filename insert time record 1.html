@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Mac - Time Record</title>
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<style>
+:root{
+--bg:#f4f7fb;--card:#fff;--primary:#2563eb;--success:#16a34a;--border:#e5e7eb;--text:#0f172a;--muted:#64748b}
+*{box-sizing:border-box}
+body{margin:0;padding:32px;background:var(--bg);color:var(--text);font-family:system-ui,monospace}
+.wrapper{max-width:1000px;margin:auto}
+.header{margin-bottom:24px}
+.header h1{margin:0;font-size:24px}
+.header p{margin:6px 0 0;color:var(--muted)}
+.card{background:var(--card);border-radius:14px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,.08)}
+.section{margin-bottom:28px}
+.section-title{font-weight:700;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.field input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);font-family:monospace}
+.actions{display:flex;gap:12px}
+button{padding:12px 20px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+button.primary{background:var(--primary);color:#fff}
+button.secondary{background:var(--success);color:#fff}
+textarea{width:100%;height:420px;margin-top:16px;resize:vertical;padding:16px;font-family:monospace;font-size:13px;border-radius:12px;border:1px solid var(--border);background:#0b1220;color:#e5e7eb}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<div class="header">
+<h1>Mac - Time Record</h1>
+<p>ลากเลือกช่วงวันได้เลย ไม่ต้องใส่จำนวนวัน</p>
+</div>
+<div class="card">
+
+<div class="section">
+<div class="section-title">📅 วันที่ & เวลา</div>
+<div class="grid">
+<div class="field">
+<label>เลือกช่วงวันที่ (ลากได้)</label>
+<input id="dateRange" placeholder="ลากเลือกวันเริ่ม - วันสุดท้าย">
+</div>
+<div class="field">
+<label>เวลาเข้า (IN)</label>
+<input type="time" id="timeIn" value="09:00">
+</div>
+<div class="field">
+<label>เวลาออก (OUT)</label>
+<input type="time" id="timeOut" value="18:00">
+</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">👤 พนักงาน</div>
+<div class="grid">
+<div class="field">
+<label>Badge ID</label>
+<input id="x2" placeholder="1066898000002">
+</div>
+<div class="field">
+<label>Employee ID</label>
+<input id="x3" placeholder="10668980">
+</div>
+</div>
+</div>
+
+<div class="actions">
+<button class="primary" onclick="generateSQL()">Generate SQL</button>
+<button class="secondary" onclick="copySQL()">Copy</button>
+</div>
+
+<textarea id="output" readonly></textarea>
+</div>
+</div>
+
+<script>
+flatpickr('#dateRange',{
+mode:'range',
+dateFormat:'Y-m-d'
+});
+
+const template=`INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
+status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
+VALUES (
+'x1 x4_in:11.000000+00','x1 x4_in:11.000000+00','x2','0.00','15.00','5001.00','x2','N','10.4.127.34','Korat-SLH1-3-In-01','CPF-แปรรูปไก่โคราช-5001','THAGR','x3','NULL','NULL','NULL','x1 x4_in:11+07','x1 x4_in:11+07','x1 x4_in:11+07','x1 x4_in:11+07','time-device','in');
+
+INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
+status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
+VALUES (
+'x1 x4_out:00.000000+00','x1 x4_out:00.000000+00','x2','1.00','15.00','5001.00','x2','N','10.4.127.34','Korat-SLH1-3-Out-01','CPF-แปรรูปไก่โคราช-5001','THAGR','x3','NULL','NULL','NULL','x1 x4_out:00+07','x1 x4_out:00+07','x1 x4_out:00+07','x1 x4_out:00+07','time-device','out');`;
+
+function generateSQL(){
+const val=dateRange.value;
+if(!val||!x2.value||!x3.value) return alert('เลือกช่วงวัน + กรอกพนักงาน');
+const [start,end]=val.split(' to ');
+let d=new Date(start);
+const endDate=new Date(end||start);
+let out='';
+while(d<=endDate){
+const day=d.toISOString().slice(0,10);
+out+=template
+.replaceAll('x1',day)
+.replaceAll('x2',x2.value.trim())
+.replaceAll('x3',x3.value.trim())
+.replaceAll('x4_in',timeIn.value)
+.replaceAll('x4_out',timeOut.value)
++'\n\n';
+d.setDate(d.getDate()+1);
+}
+output.value=out.trim();
+}
+function copySQL(){output.select();document.execCommand('copy');alert('คัดลอกแล้ว');}
+</script>
+</body>
+</html>
