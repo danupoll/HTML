@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Index</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Prompt',sans-serif}
+
+body{
+  background:#f8fafc;
+  color:#0f172a;
+  padding:40px 20px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+}
+
+h1{
+  font-size:28px;
+  margin-bottom:20px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+}
+
+.block{
+  background:#ffffff;
+  border-radius:16px;
+  padding:24px;
+  text-decoration:none;
+  color:#0f172a;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  transition:.2s ease;
+  border:1px solid #eef2f7;
+}
+
+.block:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 24px rgba(0,0,0,0.08);
+}
+
+.block h3{
+  font-size:18px;
+  margin-bottom:6px;
+}
+
+.block p{
+  font-size:14px;
+  color:#64748b;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>หน้าเมนู</h1>
+
+  <div class="grid">
+
+    <a class="block" href="#">
+      <h3>🔗 Link 1</h3>
+      <p>ใส่ลิงก์ของคุณตรงนี้</p>
+    </a>
+
+    <a class="block" href="#">
+      <h3>🔗 Link 2</h3>
+      <p>ใส่ลิงก์ของคุณตรงนี้</p>
+    </a>
+
+    <a class="block" href="#">
+      <h3>🔗 Link 3</h3>
+      <p>ใส่ลิงก์ของคุณตรงนี้</p>
+    </a>
+
+    <a class="block" href="#">
+      <h3>🔗 Link 4</h3>
+      <p>ใส่ลิงก์ของคุณตรงนี้</p>
+    </a>
+
+  </div>
+</div>
+
+</body>
+</html>
