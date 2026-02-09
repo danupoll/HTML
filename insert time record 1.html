@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Mac - Time Record</title>
 
-<!-- Flatpickr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
@@ -12,7 +11,46 @@
 :root{
 --bg:#f4f7fb;--card:#fff;--primary:#2563eb;--success:#16a34a;--border:#e5e7eb;--text:#0f172a;--muted:#64748b}
 *{box-sizing:border-box}
-body{margin:0;padding:32px;background:var(--bg);color:var(--text);font-family:system-ui,monospace}
+
+/* ⭐ topbar เพิ่มใหม่ */
+.topbar{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:56px;
+background:#111827;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 18px;
+z-index:9999;
+}
+.logo a{
+color:#fff;
+text-decoration:none;
+font-weight:700;
+}
+.menu{display:flex;gap:14px}
+.menu a{
+color:#e5e7eb;
+text-decoration:none;
+font-size:14px;
+padding:6px 8px;
+border-radius:8px;
+}
+.menu a:hover{background:#374151}
+
+/* ⭐ ดัน layout ลง */
+body{
+margin:0;
+padding:88px 32px 32px;
+background:var(--bg);
+color:var(--text);
+font-family:system-ui,monospace
+}
+
 .wrapper{max-width:1000px;margin:auto}
 .header{margin-bottom:24px}
 .header h1{margin:0;font-size:24px}
@@ -30,12 +68,26 @@ button.secondary{background:var(--success);color:#fff}
 textarea{width:100%;height:420px;margin-top:16px;resize:vertical;padding:16px;font-family:monospace;font-size:13px;border-radius:12px;border:1px solid var(--border);background:#0b1220;color:#e5e7eb}
 </style>
 </head>
+
 <body>
+
+<!-- ⭐ เมนูด้านบน -->
+<div class="topbar">
+  <div class="logo"><a href="index.html">MyApp</a></div>
+  <div class="menu">
+    <a href="#">Home</a>
+    <a href="#">Dashboard</a>
+    <a href="#">Tools</a>
+    <a href="#">Setting</a>
+  </div>
+</div>
+
 <div class="wrapper">
 <div class="header">
 <h1>Mac - Time Record</h1>
 <p>ลากเลือกช่วงวันได้เลย ไม่ต้องใส่จำนวนวัน</p>
 </div>
+
 <div class="card">
 
 <div class="section">
@@ -76,6 +128,7 @@ textarea{width:100%;height:420px;margin-top:16px;resize:vertical;padding:16px;fo
 </div>
 
 <textarea id="output" readonly></textarea>
+
 </div>
 </div>
 
@@ -117,5 +170,6 @@ output.value=out.trim();
 }
 function copySQL(){output.select();document.execCommand('copy');alert('คัดลอกแล้ว');}
 </script>
+
 </body>
 </html>
