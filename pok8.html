@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pok Tracker PRO</title>
+
+<style>
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:#f4f6f8}
+
+/* TOPBAR */
+.topbar{
+position:fixed;top:0;left:0;width:100%;height:60px;
+background:#111827;color:#fff;
+display:flex;align-items:center;
+justify-content:space-between;
+padding:0 20px;
+}
+.logo a{color:#fff;text-decoration:none;font-weight:700}
+.menu a{color:#fff;margin-left:16px;text-decoration:none}
+
+.container{padding-top:90px;max-width:1000px;margin:auto}
+
+.cardBox{
+background:#fff;border-radius:18px;padding:24px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);margin-bottom:20px
+}
+
+.bigTitle{font-size:36px;font-weight:900;margin-bottom:10px}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+
+.player{
+background:#fff;border-radius:14px;padding:14px;
+box-shadow:0 6px 14px rgba(0,0,0,.08);
+position:relative;
+}
+
+.badge{
+position:absolute;top:8px;right:8px;
+padding:4px 8px;border-radius:8px;
+font-size:12px;font-weight:700;color:#fff;
+}
+.winBadge{background:#16a34a}
+.loseBadge{background:#dc2626}
+.drawBadge{background:#6b7280}
+
+.lb-row{
+display:flex;justify-content:space-between;
+padding:6px 0;border-bottom:1px solid #eee
+}
+.plus{color:#16a34a;font-weight:700}
+.minus{color:#dc2626;font-weight:700}
+
+.bigNext{
+width:100%;
+padding:18px;
+font-size:20px;
+font-weight:700;
+border-radius:14px;
+margin-top:20px;
+background:#9ca3af;
+cursor:not-allowed;
+border:none;
+}
+.bigNext.active{background:#f97316;cursor:pointer}
+
+button{
+padding:8px 12px;margin:4px;border:none;
+border-radius:10px;background:#111827;color:#fff;cursor:pointer
+}
+
+input{
+padding:12px;margin:6px 0;width:100%;
+border-radius:10px;border:1px solid #ddd
+}
+
+.mulBtn{
+padding:4px 8px;margin:2px;border-radius:6px;
+border:1px solid #ccc;background:#eee;cursor:pointer
+}
+.mulActive{background:#111827;color:#fff}
+
+/* POPUP */
+.popupBg{
+position:fixed;inset:0;background:rgba(0,0,0,.5);
+display:none;align-items:center;justify-content:center;
+}
+.popup{
+background:#fff;border-radius:18px;padding:24px;
+max-width:400px;width:90%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+<div class="logo"><a href="#">MyApp</a></div>
+<div class="menu">
+<a>Home</a><a>Dashboard</a><a>Tools</a><a>Setting</a>
+</div>
+</div>
+
+<div class="container">
+
+<div class="cardBox" id="setup">
+<h2>🎴 ตั้งค่าเกม</h2>
+<input id="bet" placeholder="เดิมพัน">
+<input id="bankerName" placeholder="ชื่อเจ้า">
+<input id="count" placeholder="จำนวนผู้เล่น">
+<button onclick="createPlayers()">กำหนดผู้เล่น</button>
+<div id="playerInputs"></div>
+</div>
+
+<div class="cardBox">
+<div class="bigTitle" id="roundText">🃏 ตาที่ 1</div>
+<h3>📊 Leaderboard</h3>
+<div id="leaderboard"></div>
+
+<button onclick="bankerAll()">👑 เจ้า กินรอบวง</button>
+<button onclick="cancelBankerAll()">↩️ ยกเลิกกินรอบวง</button>
+<button onclick="showHistory()">📜 ประวัติ</button>
+<button onclick="endGame()">🏁 จบเกมส์</button>
+</div>
+
+<div id="players" class="grid"></div>
+
+<button id="nextBtn" class="bigNext">➡️ ตาถัดไป</button>
+
+</div>
+
+<!-- POPUP -->
+<div class="popupBg" id="popup">
+<div class="popup">
+<h3>🏁 สรุปผล</h3>
+<div id="popupResult"></div>
+<button onclick="closePopup()">ยกเลิก</button>
+<button onclick="confirmEnd()">ยืนยันจบเกมส์</button>
+</div>
+</div>
+
+<script>
+
+let baseBet=0,banker="",playersList=[],round=1;
+let results={},totals={},historyLog=[];
+let roundLocked=false,ended=false;
+
+/* ===== SAVE SYSTEM ===== */
+
+function saveState(){
+localStorage.setItem("pok_state",JSON.stringify({
+baseBet,banker,playersList,round,results,totals,historyLog,roundLocked,ended
+}));
+}
+
+function loadState(){
+const s=localStorage.getItem("pok_state");
+if(!s) return;
+const d=JSON.parse(s);
+
+baseBet=d.baseBet;
+banker=d.banker;
+playersList=d.playersList;
+round=d.round;
+results=d.results||{};
+totals=d.totals||{};
+historyLog=d.historyLog||[];
+roundLocked=d.roundLocked;
+ended=d.ended;
+
+setup.style.display="none";
+renderPlayers();
+updateBoard();
+roundText.innerText="🃏 ตาที่ "+round;
+}
+loadState();
+
+/* ===== GAME ===== */
+
+function createPlayers(){
+const n=parseInt(count.value||0);
+playerInputs.innerHTML="";
+for(let i=0;i<n;i++){
+playerInputs.innerHTML+=`<input class="pname" placeholder="ชื่อผู้เล่น ${i+1}">`;
+}
+playerInputs.innerHTML+=`<button onclick="startGame()">เริ่มเกมส์</button>`;
+}
+
+function startGame(){
+baseBet=parseInt(bet.value||0);
+banker=bankerName.value;
+
+playersList=[];
+document.querySelectorAll(".pname").forEach(i=>{
+if(i.value) playersList.push(i.value);
+});
+
+totals={};
+totals[banker]=0;
+playersList.forEach(p=>totals[p]=0);
+
+setup.style.display="none";
+renderPlayers();
+updateBoard();
+checkReady();
+saveState();
+}
+
+function renderPlayers(){
+players.innerHTML="";
+results={};
+roundLocked=false;
+
+playersList.forEach(name=>{
+results[name]={type:null,mul:1};
+
+const div=document.createElement("div");
+div.className="player";
+div.id="p_"+name;
+
+div.innerHTML=`
+<b>${name}</b><br>
+<button onclick="setResult('${name}','win')">🟢 ชนะ</button>
+<button onclick="setResult('${name}','lose')">🔴 แพ้</button>
+<button onclick="setResult('${name}','draw')">⚪ เสมอ</button>
+<br>
+<button class="mulBtn" onclick="setMul('${name}',1,this)">x1</button>
+<button class="mulBtn" onclick="setMul('${name}',2,this)">x2</button>
+<button class="mulBtn" onclick="setMul('${name}',3,this)">x3</button>
+`;
+
+players.appendChild(div);
+});
+}
+
+function setMul(name,val,el){
+results[name].mul=val;
+el.parentElement.querySelectorAll(".mulBtn").forEach(b=>b.classList.remove("mulActive"));
+el.classList.add("mulActive");
+updateBadge(name,results[name].type);
+calc();
+saveState();
+}
+
+function setResult(name,type){
+if(roundLocked||ended) return;
+results[name].type=type;
+updateBadge(name,type);
+calc();
+checkReady();
+saveState();
+}
+
+function updateBadge(name,type){
+if(!type) return;
+const card=document.getElementById("p_"+name);
+const old=card.querySelector(".badge");
+if(old) old.remove();
+
+let cls="",text="";
+const mul=results[name].mul||1;
+
+if(type==="win"){cls="winBadge";text="🟢 ชนะ x"+mul}
+if(type==="lose"){cls="loseBadge";text="🔴 แพ้ x"+mul}
+if(type==="draw"){cls="drawBadge";text="⚪ เสมอ"}
+
+const tag=document.createElement("div");
+tag.className="badge "+cls;
+tag.innerText=text;
+card.appendChild(tag);
+}
+
+function bankerAll(){
+const anySelected=Object.values(results).some(r=>r.type!==null);
+if(anySelected) return alert("มีคนถูกใส่ผลแล้ว");
+roundLocked=true;
+playersList.forEach(p=>{
+results[p]={type:"lose",mul:1};
+updateBadge(p,"lose");
+});
+calc();checkReady();saveState();
+}
+
+function cancelBankerAll(){
+if(!roundLocked) return;
+renderPlayers();calc();checkReady();saveState();
+}
+
+function calc(){
+let temp={};
+temp[banker]=totals[banker];
+playersList.forEach(p=>temp[p]=totals[p]);
+
+Object.keys(results).forEach(name=>{
+const r=results[name];
+if(!r.type) return;
+const val=baseBet*r.mul;
+if(r.type==="win"){temp[name]+=val;temp[banker]-=val;}
+if(r.type==="lose"){temp[name]-=val;temp[banker]+=val;}
+});
+updateBoard(temp);
+}
+
+function checkReady(){
+const allDone=Object.values(results).every(r=>r.type!==null);
+if(allDone){nextBtn.classList.add("active");nextBtn.onclick=nextRound;}
+else{nextBtn.classList.remove("active");nextBtn.onclick=null;}
+}
+
+function nextRound(){
+
+let roundRecord="ตาที่ "+round+" : ";
+
+Object.keys(results).forEach(name=>{
+const r=results[name];
+const val=baseBet*r.mul;
+roundRecord+=name+"-"+r.type+"x"+r.mul+" ";
+
+if(r.type==="win"){totals[name]+=val;totals[banker]-=val;}
+if(r.type==="lose"){totals[name]-=val;totals[banker]+=val;}
+});
+
+historyLog.push(roundRecord);
+
+round++;
+roundText.innerText="🃏 ตาที่ "+round;
+
+renderPlayers();
+updateBoard();
+checkReady();
+saveState();
+}
+
+function updateBoard(temp=totals){
+leaderboard.innerHTML="";
+const arr=Object.keys(temp).map(n=>({n,m:temp[n]}))
+.sort((a,b)=>b.m-a.m);
+
+arr.forEach(r=>{
+const div=document.createElement("div");
+div.className="lb-row";
+div.innerHTML=`<span>${r.n===banker?"👑 "+r.n:r.n}</span>
+<span class="${r.m>=0?'plus':'minus'}">${r.m}</span>`;
+leaderboard.appendChild(div);
+});
+}
+
+function showHistory(){
+alert(historyLog.join("\n")||"ยังไม่มีประวัติ");
+}
+
+/* ===== END GAME POPUP ===== */
+
+function endGame(){
+let result="";
+const arr=Object.keys(totals)
+.map(n=>({n,m:totals[n]}))
+.sort((a,b)=>b.m-a.m);
+
+arr.forEach((r,i)=>{
+result+=(i+1)+". "+r.n+" : "+r.m+"<br>";
+});
+
+popupResult.innerHTML=result;
+popup.style.display="flex";
+}
+
+function closePopup(){popup.style.display="none"}
+
+function confirmEnd(){
+localStorage.removeItem("pok_state");
+location.reload();
+}
+</script>
+</body>
+</html>
