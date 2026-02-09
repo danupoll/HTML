@@ -13,6 +13,45 @@ body{
     background:#f2f2f7;
     color:#1d1d1f;
     display:flex;
+    padding-top:56px; /* กัน topbar ทับ */
+}
+
+/* ===== TOP BAR (เพิ่มใหม่ แต่ไม่ยุ่ง logic เดิม) ===== */
+.topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:56px;
+    background:#111827;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    z-index:9999;
+}
+
+.logo a{
+    color:#fff;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.menu{
+    display:flex;
+    gap:14px;
+}
+
+.menu a{
+    color:#e5e7eb;
+    text-decoration:none;
+    font-size:14px;
+    padding:6px 8px;
+    border-radius:8px;
+}
+.menu a:hover{
+    background:#374151;
 }
 
 /* ===== Right History Panel ===== */
@@ -101,14 +140,12 @@ button{
     margin-left:12px;
 }
 
-/* ⭐ ปุ่มล้าง history */
 #clearHistoryBtn{
     background:#ff3b30;
     padding:6px 10px;
     font-size:12px;
 }
 
-/* ===== Summary ===== */
 .summary-box{
     margin-top:12px;
     padding:18px;
@@ -149,6 +186,17 @@ button{
 
 <body>
 
+<!-- ⭐ Top Menu เพิ่มใหม่ -->
+<div class="topbar">
+  <div class="logo"><a href="index.html">MyApp</a></div>
+  <div class="menu">
+    <a href="#">Home</a>
+    <a href="#">Dashboard</a>
+    <a href="#">Tools</a>
+    <a href="#">Setting</a>
+  </div>
+</div>
+
 <div class="main">
 <div class="container">
 
@@ -184,7 +232,6 @@ placeholder="วางแบบ 1111,2222,3333 หรือ
 </div>
 </div>
 
-<!-- ===== History Right ===== -->
 <div class="history-panel">
 <div class="history-title">
 <span>History</span>
@@ -255,8 +302,6 @@ function copyOutput() {
     let cleaned = text.split(/\s+/).filter(x => x).join(",");
     navigator.clipboard.writeText(cleaned).then(()=>alert("Copy สำเร็จ 😎"));
 }
-
-/* ===== HISTORY ===== */
 
 function clearHistory(){
     localStorage.removeItem("qft_history");

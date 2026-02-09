@@ -7,7 +7,42 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
 <style>
-body{font-family:system-ui;padding:20px;background:#f5f5f5}
+/* ===== TOPBAR ===== */
+.topbar{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:56px;
+background:#111827;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 18px;
+z-index:9999;
+}
+.logo a{
+color:#fff;
+text-decoration:none;
+font-weight:700;
+}
+.menu{display:flex;gap:14px}
+.menu a{
+color:#e5e7eb;
+text-decoration:none;
+font-size:14px;
+padding:6px 8px;
+border-radius:8px;
+}
+.menu a:hover{background:#374151}
+
+/* ===== เดิมของคุณ ===== */
+body{
+font-family:system-ui;
+padding:76px 20px 20px; /* ⭐ ดันลง */
+background:#f5f5f5
+}
 button{padding:8px 14px;border:0;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer}
 table{border-collapse:collapse;margin-top:15px;width:100%}
 th,td{border:1px solid #ddd;padding:6px;font-size:13px;white-space:nowrap}
@@ -15,6 +50,16 @@ th,td{border:1px solid #ddd;padding:6px;font-size:13px;white-space:nowrap}
 </head>
 
 <body>
+
+<div class="topbar">
+<div class="logo"><a href="index.html">MyApp</a></div>
+<div class="menu">
+<a href="#">Home</a>
+<a href="#">Dashboard</a>
+<a href="#">Tools</a>
+<a href="#">Setting</a>
+</div>
+</div>
 
 <h3>Payroll CSV Mapper</h3>
 
@@ -30,173 +75,168 @@ let originalFileName = "";
 
 /* ---------- Date normalize ---------- */
 function normalizeDate(val){
-  if(!val) return "";
-  if(val instanceof Date){
-    return val.toISOString().slice(0,10);
-  }
-  let s = String(val).trim();
-  s = s.split(" ")[0];
+if(!val) return "";
+if(val instanceof Date){
+return val.toISOString().slice(0,10);
+}
+let s = String(val).trim();
+s = s.split(" ")[0];
 
-  const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-  if(dmy){
-    return `${dmy[3]}-${dmy[2].padStart(2,"0")}-${dmy[1].padStart(2,"0")}`;
-  }
-
-  const ymd = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
-  if(ymd){
-    return `${ymd[1]}-${ymd[2].padStart(2,"0")}-${ymd[3].padStart(2,"0")}`;
-  }
-
-  return s;
+const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+if(dmy){
+return `${dmy[3]}-${dmy[2].padStart(2,"0")}-${dmy[1].padStart(2,"0")}`;
 }
 
-/* ---------- 🔥 คำนวณ EMPLOYEETYPE จากจำนวนวัน ---------- */
+const ymd = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+if(ymd){
+return `${ymd[1]}-${ymd[2].padStart(2,"0")}-${ymd[3].padStart(2,"0")}`;
+}
+
+return s;
+}
+
 function getEmployeeType(start,end){
-  if(!start || !end) return "";
+if(!start || !end) return "";
 
-  const s = new Date(start);
-  const e = new Date(end);
+const s = new Date(start);
+const e = new Date(end);
 
-  const diffDays = Math.floor((e - s)/(1000*60*60*24)) + 1;
+const diffDays = Math.floor((e - s)/(1000*60*60*24)) + 1;
 
-  if(diffDays <= 16) return "DAILY";
-  if(diffDays >= 28) return "MONTHLY";
+if(diffDays <= 16) return "DAILY";
+if(diffDays >= 28) return "MONTHLY";
 
-  return "";
+return "";
 }
 
-/* ---------- LOAD CSV / XLSX ---------- */
 function loadCSV(){
-  const file = document.getElementById("file").files[0];
-  if(!file) return alert("เลือกไฟล์ก่อน");
+const file = document.getElementById("file").files[0];
+if(!file) return alert("เลือกไฟล์ก่อน");
 
-  originalFileName = file.name.replace(/\.[^/.]+$/, "");
+originalFileName = file.name.replace(/\.[^/.]+$/, "");
 
-  const reader = new FileReader();
+const reader = new FileReader();
 
-  if(file.name.toLowerCase().endsWith(".xlsx")){
-    reader.onload = e=>{
-      const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data,{type:"array"});
-      const sheet = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(sheet,{header:1,raw:false});
-      mapData(rows);
-    };
-    reader.readAsArrayBuffer(file);
-  }else{
-    reader.onload = e=>{
-      const text = e.target.result.trim();
-      const rows = text.split(/\r?\n/).map(r => r.split(","));
-      mapData(rows);
-    };
-    reader.readAsText(file);
-  }
+if(file.name.toLowerCase().endsWith(".xlsx")){
+reader.onload = e=>{
+const data = new Uint8Array(e.target.result);
+const wb = XLSX.read(data,{type:"array"});
+const sheet = wb.Sheets[wb.SheetNames[0]];
+const rows = XLSX.utils.sheet_to_json(sheet,{header:1,raw:false});
+mapData(rows);
+};
+reader.readAsArrayBuffer(file);
+}else{
+reader.onload = e=>{
+const text = e.target.result.trim();
+const rows = text.split(/\r?\n/).map(r => r.split(","));
+mapData(rows);
+};
+reader.readAsText(file);
+}
 }
 
-/* ---------- MAP DATA ---------- */
 function mapData(rows){
-  const HEADER_ROW = 6;
-  const COL_EMP = 0;
-  const COL_PIN = 2;
-  const COL_GP  = 4;
-  const COL_PI  = 5;
-  const COL_WG  = 6;
-  const COL_DOC = 8;
+const HEADER_ROW = 6;
+const COL_EMP = 0;
+const COL_PIN = 2;
+const COL_GP  = 4;
+const COL_PI  = 5;
+const COL_WG  = 6;
+const COL_DOC = 8;
 
-  const PERIOD   = rows[3]?.[1] || "";
-  const [rawStart="", rawEnd=""] = PERIOD.split("-").map(v=>v.trim());
+const PERIOD   = rows[3]?.[1] || "";
+const [rawStart="", rawEnd=""] = PERIOD.split("-").map(v=>v.trim());
 
-  const start = normalizeDate(rawStart);
-  const end   = normalizeDate(rawEnd);
+const start = normalizeDate(rawStart);
+const end   = normalizeDate(rawEnd);
 
-  const EMP_TYPE = getEmployeeType(start,end);
+const EMP_TYPE = getEmployeeType(start,end);
 
-  const result = [];
+const result = [];
 
-  for(let r = HEADER_ROW+1; r < rows.length; r++){
-    const row = rows[r] || [];
+for(let r = HEADER_ROW+1; r < rows.length; r++){
+const row = rows[r] || [];
 
-    const emp = row[COL_EMP];
-    const pin = row[COL_PIN];
-    const gp  = row[COL_GP];
-    const pi  = row[COL_PI];
-    const wg  = row[COL_WG];
-    const doc = row[COL_DOC];
+const emp = row[COL_EMP];
+const pin = row[COL_PIN];
+const gp  = row[COL_GP];
+const pi  = row[COL_PI];
+const wg  = row[COL_WG];
+const doc = row[COL_DOC];
 
-    if([emp,pin,gp,pi,wg,doc].every(v=>!v)) continue;
+if([emp,pin,gp,pi,wg,doc].every(v=>!v)) continue;
 
-    result.push({
-      EMPLID: emp || "",
-      PIN_NM: pin || "",
-      PI_TYPE: pi || "",
-      GP_VAL: gp || "",
-      WORKGROUPCODE: wg || "",
-      EMPLOYEETYPE: EMP_TYPE,
-      PRD_BGN_DT: start,
-      PRD_END_DT: end,
-      DOC_REFNO: doc || "",
-      LASTUPDOPRID: "Worklife"
-    });
-  }
-
-  resultData = result;
-  render(resultData);
+result.push({
+EMPLID: emp || "",
+PIN_NM: pin || "",
+PI_TYPE: pi || "",
+GP_VAL: gp || "",
+WORKGROUPCODE: wg || "",
+EMPLOYEETYPE: EMP_TYPE,
+PRD_BGN_DT: start,
+PRD_END_DT: end,
+DOC_REFNO: doc || "",
+LASTUPDOPRID: "Worklife"
+});
 }
 
-/* ---------- RENDER ---------- */
+resultData = result;
+render(resultData);
+}
+
 function render(data){
-  const table = document.getElementById("table");
-  table.innerHTML = "";
-  if(!data.length) return;
+const table = document.getElementById("table");
+table.innerHTML = "";
+if(!data.length) return;
 
-  const headers = Object.keys(data[0]);
-  const trh = document.createElement("tr");
-  headers.forEach(h=>{
-    const th=document.createElement("th");
-    th.textContent=h;
-    trh.appendChild(th);
-  });
-  table.appendChild(trh);
+const headers = Object.keys(data[0]);
+const trh = document.createElement("tr");
+headers.forEach(h=>{
+const th=document.createElement("th");
+th.textContent=h;
+trh.appendChild(th);
+});
+table.appendChild(trh);
 
-  data.forEach(row=>{
-    const tr=document.createElement("tr");
-    headers.forEach(h=>{
-      const td=document.createElement("td");
-      td.textContent=row[h];
-      tr.appendChild(td);
-    });
-    table.appendChild(tr);
-  });
+data.forEach(row=>{
+const tr=document.createElement("tr");
+headers.forEach(h=>{
+const td=document.createElement("td");
+td.textContent=row[h];
+tr.appendChild(td);
+});
+table.appendChild(tr);
+});
 }
 
-/* ---------- EXPORT XLSX (แก้เฉพาะชื่อไฟล์ตอนดาวโหลด) ---------- */
 function downloadXLSX(){
-  if(!resultData.length) return alert("ยังไม่มีข้อมูล");
+if(!resultData.length) return alert("ยังไม่มีข้อมูล");
 
-  const ws = XLSX.utils.json_to_sheet(resultData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Result");
+const ws = XLSX.utils.json_to_sheet(resultData);
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, "Result");
 
-  const first = resultData[0] || {};
-  const start = String(first.PRD_BGN_DT || "");
-  const end   = String(first.PRD_END_DT || "");
+const first = resultData[0] || {};
+const start = String(first.PRD_BGN_DT || "");
+const end   = String(first.PRD_END_DT || "");
 
-  let suffix = "";
+let suffix = "";
 
-  if(start.length >= 10 && end.length >= 10){
-    const s = start.split("-");
-    const e = end.split("-");
+if(start.length >= 10 && end.length >= 10){
+const s = start.split("-");
+const e = end.split("-");
 
-    const startFmt = s[2] + s[1] + s[0];
-    const endFmt   = e[2] + e[1] + e[0];
+const startFmt = s[2] + s[1] + s[0];
+const endFmt   = e[2] + e[1] + e[0];
 
-    suffix = "_" + startFmt + "-" + endFmt;
-  }
+suffix = "_" + startFmt + "-" + endFmt;
+}
 
-  const baseName = originalFileName || "output";
-  const fileName = baseName + suffix + ".xlsx";
+const baseName = originalFileName || "output";
+const fileName = baseName + suffix + ".xlsx";
 
-  XLSX.writeFile(wb, fileName);
+XLSX.writeFile(wb, fileName);
 }
 </script>
 

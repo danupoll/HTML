@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สร้าง QR Code</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://davidshimjs.github.io/qrcodejs/qrcode.min.js"></script>
+
+<style>
+
+/* ===== TOP BAR ===== */
+.topbar{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:60px;
+background:#111827;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 20px;
+box-shadow:0 2px 8px rgba(0,0,0,.2);
+z-index:999;
+}
+
+.logo{
+font-weight:700;
+font-size:18px;
+}
+.logo a{
+color:#fff;
+text-decoration:none;
+}
+
+.menu{
+display:flex;
+gap:18px;
+}
+.menu a{
+color:#e5e7eb;
+text-decoration:none;
+font-size:14px;
+padding:6px 10px;
+border-radius:8px;
+}
+.menu a:hover{
+background:#374151;
+}
+
+/* ===== เดิมของคุณ ===== */
+
+body{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+height:100vh;
+margin:0;
+padding-top:60px; /* ⭐ กัน topbar ทับ */
+font-family:Arial,sans-serif;
+}
+
+#qrcode{margin-top:20px}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+<div class="logo"><a href="index.html">MyApp</a></div>
+<div class="menu">
+<a href="#">Home</a>
+<a href="#">Dashboard</a>
+<a href="#">Tools</a>
+<a href="#">Setting</a>
+</div>
+</div>
+
+<h1>สร้าง QR Code จากลิงก์</h1>
+<input type="text" id="link" placeholder="ใส่ลิงก์ที่นี่" style="padding:10px;width:300px;">
+<button id="generate" style="margin-top:10px;padding:10px 20px;">สร้าง QR Code</button>
+<div id="qrcode"></div>
+<button id="download" style="margin-top:10px;padding:10px 20px;display:none;">ดาวน์โหลด QR Code</button>
+
+<script>
+$(document).ready(function(){
+
+$('#generate').click(function(){
+var link=$('#link').val();
+$('#qrcode').empty();
+
+var qrcode=new QRCode(document.getElementById("qrcode"),{
+text:link,
+width:192,
+height:192,
+colorDark:"#000000",
+colorLight:"#ffffff",
+correctLevel:QRCode.CorrectLevel.H
+});
+
+$('#download').show();
+});
+
+$('#download').click(function(){
+var canvas=document.querySelector('#qrcode canvas');
+var link=document.createElement('a');
+link.href=canvas.toDataURL('image/png');
+link.download='qrcode.png';
+link.click();
+});
+
+});
+</script>
+
+</body>
+</html>

@@ -3,92 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Index</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+<title>My Website</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Prompt',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
 
 body{
-  background:#f8fafc;
-  color:#0f172a;
-  padding:40px 20px;
+  background:#f4f6f8;
 }
 
+/* ===== TOP BAR ===== */
+.topbar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:60px;
+  background:#111827;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+  z-index:999;
+}
+
+.logo{
+  font-weight:700;
+  font-size:18px;
+}
+.logo a{
+  color:#fff;
+  text-decoration:none;
+}
+
+.menu{
+  display:flex;
+  gap:18px;
+}
+
+.menu a{
+  color:#e5e7eb;
+  text-decoration:none;
+  font-size:14px;
+  padding:6px 10px;
+  border-radius:8px;
+  transition:.2s;
+}
+
+.menu a:hover{
+  background:#374151;
+}
+
+/* ===== CONTENT ===== */
 .container{
+  padding:90px 20px 40px;
   max-width:1100px;
   margin:auto;
 }
 
-h1{
-  font-size:28px;
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
   margin-bottom:20px;
 }
 
-.grid{
+.blocks{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:18px;
 }
 
 .block{
-  background:#ffffff;
-  border-radius:16px;
-  padding:24px;
+  background:#fff;
+  border-radius:14px;
+  padding:22px;
   text-decoration:none;
-  color:#0f172a;
-  box-shadow:0 6px 18px rgba(0,0,0,0.06);
-  transition:.2s ease;
-  border:1px solid #eef2f7;
+  color:#111827;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  transition:.2s;
+  display:block;
 }
 
 .block:hover{
-  transform:translateY(-4px);
-  box-shadow:0 12px 24px rgba(0,0,0,0.08);
+  transform:translateY(-3px);
 }
 
 .block h3{
-  font-size:18px;
   margin-bottom:6px;
+  font-size:18px;
 }
 
 .block p{
   font-size:14px;
-  color:#64748b;
+  color:#6b7280;
 }
 
+/* ===== MOBILE ===== */
+@media(max-width:640px){
+  .menu{
+    gap:10px;
+  }
+  .menu a{
+    font-size:13px;
+    padding:6px 8px;
+  }
+}
 </style>
 </head>
 
 <body>
 
+<div class="topbar">
+  <div class="logo"><a href="index.html">MyApp</a></div>
+  <div class="menu">
+
+  </div>
+</div>
+
 <div class="container">
-  <h1>หน้าเมนู</h1>
 
-  <div class="grid">
+  <div class="card">
+    <h2>Welcome</h2>
+    <p>รวมเครื่องทั้งหมด และการอัปเดทใหม่ๆ</p>
+  </div>
 
-    <a class="block" href="EC Payroll.html">
-      <h3>🔗 EC Payroll</h3>
-      <p>EC Payroll.html</p>
-    </a>
+  <div class="blocks">
 
     <a class="block" href="Query Format 2.html">
       <h3>Query Format</h3>
-      <p>การต่อข้อความด้วย ' '," "</p>
+      <p>เชื่อมคอมม่าหรือ single quotes</p>
     </a>
 
     <a class="block" href="insert time record 1.html">
-      <h3>Add Time Record</h3>
-      <p>insert time record 1.html</p>
+      <h3>Insert Time Record</h3>
+      <p>เลือกวันที่ และข้อมูลพนักงาน</p>
     </a>
 
-    <a class="block" href="#">
-      <h3>🔗 Link 4</h3>
-      <p>ใส่ลิงก์ของคุณตรงนี้</p>
+    <a class="block" href="EC Payroll2.html">
+      <h3>EC Payroll</h3>
+      <p>เปลี่ยนรูปแบบรายงาน Payroll</p>
+    </a>
+
+    <a class="block" href="QR Code.html">
+      <h3>สร้าง QR Code</h3>
+      <p>สร้าง QR Code ฟรีไม่มีหมดอายุ</p>
+    </a>
+    
+    <a class="block" href="game.html">
+      <h3>ระบบสุ่มการ์ด</h3>
+      <p>สร้าง QR Code ฟรีไม่มีหมดอายุ</p>
     </a>
 
   </div>
+
 </div>
 
 </body>
