@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายรับรายจ่าย</title>
+
+<style>
+:root{
+  --bg:#f9fafb;
+  --card:#ffffff;
+  --accent:#22c55e;
+  --danger:#ef4444;
+  --border:#e5e7eb;
+  --text:#111827;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+  padding:16px;
+}
+
+.container{max-width:1100px;margin:auto}
+h1{font-size:22px;margin-bottom:12px}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:28px;
+}
+
+.form{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+@media(min-width:640px){
+  .form{grid-template-columns:repeat(5,1fr)}
+}
+
+input,select,button{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  font-size:15px;
+  width:100%;
+}
+
+button{
+  background:var(--accent);
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+/* ปุ่มเล็ก */
+.smallBtn{
+  padding:6px 12px;
+  font-size:12px;
+  border-radius:999px;
+  width:auto;
+  background:#111827;
+}
+.smallBtn.active{background:#22c55e}
+
+/* SWITCH */
+.switch{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+}
+.switch input{display:none}
+
+.slider{
+  width:42px;
+  height:24px;
+  background:#d1d5db;
+  border-radius:999px;
+  position:relative;
+  cursor:pointer;
+}
+.slider::before{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  background:white;
+  border-radius:50%;
+  top:3px;
+  left:3px;
+  transition:.2s;
+}
+.switch input:checked + .slider{background:#22c55e}
+.switch input:checked + .slider::before{transform:translateX(18px)}
+
+.toolbar{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+  align-items:center;
+}
+
+/* SUMMARY */
+.summary{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-bottom:22px;
+}
+@media(min-width:640px){
+  .summary{grid-template-columns:repeat(3,1fr)}
+}
+
+.box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+.box span{
+  font-size:12px;
+  color:#6b7280;
+}
+
+.box h2{
+  margin:4px 0 0;
+  font-size:18px;
+}
+
+.balance-positive{color:var(--accent)}
+.balance-negative{color:var(--danger)}
+
+.progress{
+  height:6px;
+  background:#e5e7eb;
+  border-radius:10px;
+  margin-top:8px;
+  overflow:hidden;
+}
+.bar{
+  height:100%;
+  background:#22c55e;
+  width:0%;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:15px;
+}
+
+th,td{
+  padding:14px 12px;
+  border-bottom:1px solid var(--border);
+}
+
+th{
+  background:#f1f5f9;
+  text-align:left;
+}
+
+tr.incomeRow{background:#ecfdf5}
+tr.expenseRow{background:#fef2f2}
+
+.delete{
+  border:none;
+  background:none;
+  color:var(--danger);
+  cursor:pointer;
+}
+
+td input,td select{
+  padding:10px;
+  font-size:14px;
+}
+
+.rowIndex{
+  font-size:11px;
+  color:#6b7280;
+}
+
+/* MOBILE CARD */
+@media(max-width:640px){
+table thead{display:none}
+table,tbody,tr,td{display:block;width:100%}
+table tr{
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:12px;
+  padding:12px;
+}
+table td{
+  border:none;
+  padding:6px 0;
+}
+table td::before{
+  content:attr(data-label);
+  font-size:12px;
+  color:#6b7280;
+  display:block;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>💰 ระบบรายรับรายจ่าย</h1>
+
+<div class="card">
+<div class="form">
+<select id="type">
+<option value="income">รายรับ</option>
+<option value="expense">รายจ่าย</option>
+</select>
+
+<select id="category">
+<option value="">ไม่ระบุหมวด</option>
+<option>💼 เงินเดือน</option>
+<option>🍔 ค่ากิน</option>
+<option>🚗 ค่าเดินทาง</option>
+<option>🛒 ช้อปปิ้ง</option>
+<option>🎮 ความบันเทิง</option>
+<option>📦 อื่นๆ</option>
+</select>
+
+<input id="desc" placeholder="รายละเอียด">
+<input id="amount" placeholder="จำนวนเงิน">
+<button onclick="add()">เพิ่ม</button>
+</div>
+</div>
+
+<div class="summary">
+<div class="box">
+<span>💵 รายรับรวม</span>
+<h2 id="income">0</h2>
+</div>
+<div class="box">
+<span>💸 รายจ่ายรวม</span>
+<h2 id="expense">0</h2>
+</div>
+<div class="box">
+<span>🧮 เงินคงเหลือ</span>
+<h2 id="balance">0</h2>
+<div class="progress"><div class="bar" id="bar"></div></div>
+</div>
+</div>
+
+<div class="card">
+
+<div class="toolbar">
+<label class="switch">
+<input type="checkbox" checked onchange="toggleCol(2,this.checked)">
+<span class="slider"></span><span>หมวด</span>
+</label>
+
+<label class="switch">
+<input type="checkbox" checked onchange="toggleCol(3,this.checked)">
+<span class="slider"></span><span>รายการ</span>
+</label>
+
+<button id="demoBtn" class="smallBtn" onclick="toggleDemo()">✨ ตัวอย่าง</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>ประเภท</th>
+<th>หมวด</th>
+<th>รายการ</th>
+<th>จำนวนเงิน</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+
+</div>
+</div>
+
+<script>
+let data=[]
+let hiddenCols={}
+let demoMode=false
+
+const format=n=>n.toLocaleString()
+const parse=v=>Number(v.replace(/,/g,""))||0
+
+function add(){
+const t=type.value
+const c=category.value
+const d=desc.value
+const a=parse(amount.value)
+if(!a)return
+data.push({t,c,d,a})
+desc.value=amount.value=""
+render()
+}
+
+function render(){
+data.sort((a,b)=>a.t===b.t?0:(a.t==="income"?-1:1))
+
+let inc=0,exp=0
+list.innerHTML=""
+
+data.forEach((x,i)=>{
+x.t==="income"?inc+=x.a:exp+=x.a
+
+list.innerHTML+=`
+<tr class="${x.t==='income'?'incomeRow':'expenseRow'}">
+<td><span class="rowIndex">${i+1}</span></td>
+
+<td>
+<select onchange="update(${i},'t',this.value)">
+<option value="income" ${x.t==="income"?"selected":""}>รายรับ</option>
+<option value="expense" ${x.t==="expense"?"selected":""}>รายจ่าย</option>
+</select>
+</td>
+
+<td><input value="${x.c||""}" oninput="update(${i},'c',this.value)"></td>
+<td><input value="${x.d||""}" oninput="update(${i},'d',this.value)"></td>
+
+<td>
+<input value="${format(x.a)}"
+oninput="this.value=format(parse(this.value));update(${i},'a',parse(this.value))">
+</td>
+
+<td><button class="delete" onclick="del(${i})">ลบ</button></td>
+</tr>`
+})
+
+income.textContent="+ "+format(inc)
+expense.textContent="- "+format(exp)
+
+const bal=inc-exp
+balance.textContent=(bal>=0?"+ ":"- ")+format(Math.abs(bal))
+balance.className=bal>=0?"balance-positive":"balance-negative"
+bar.style.width=inc?Math.min(100,(exp/inc)*100)+"%":"0%"
+
+applyHidden()
+}
+
+function update(i,key,val){
+data[i][key]=val
+render()
+}
+
+function del(i){
+data.splice(i,1)
+render()
+}
+
+function toggleCol(index,show){
+hiddenCols[index]=!show
+applyHidden()
+}
+
+function applyHidden(){
+document.querySelectorAll("table tr").forEach(row=>{
+Object.keys(hiddenCols).forEach(i=>{
+if(row.children[i]){
+row.children[i].style.display=hiddenCols[i]?"none":""
+}
+})
+})
+}
+
+function toggleDemo(){
+const btn=document.getElementById("demoBtn")
+
+if(!demoMode){
+data=[
+{t:"income",c:"💼 เงินเดือน",d:"เงินเดือนบริษัท",a:35000},
+{t:"income",c:"💼 เงินเดือน",d:"โบนัส",a:8000},
+{t:"expense",c:"🍔 ค่ากิน",d:"ข้าวกลางวัน",a:120},
+{t:"expense",c:"🚗 ค่าเดินทาง",d:"BTS",a:45},
+{t:"expense",c:"🛒 ช้อปปิ้ง",d:"Shopee",a:690},
+{t:"expense",c:"🎮 ความบันเทิง",d:"Netflix",a:279}
+]
+btn.textContent="🧹 ล้างตัวอย่าง"
+btn.classList.add("active")
+demoMode=true
+}else{
+data=[]
+btn.textContent="✨ ตัวอย่าง"
+btn.classList.remove("active")
+demoMode=false
+}
+render()
+}
+
+render()
+</script>
+
+</body>
+</html>
