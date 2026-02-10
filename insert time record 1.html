@@ -2,90 +2,140 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Mac - Time Record</title>
+<title>Time Record</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <style>
 :root{
---bg:#f4f7fb;--card:#fff;--primary:#2563eb;--success:#16a34a;--border:#e5e7eb;--text:#0f172a;--muted:#64748b}
+--bg:#f1f5f9;
+--card:#ffffff;
+--primary:#2563eb;
+--danger:#ef4444;
+--text:#0f172a;
+--muted:#64748b;
+--border:#e2e8f0;
+}
+
 *{box-sizing:border-box}
 
-/* ⭐ topbar เพิ่มใหม่ */
-.topbar{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:56px;
-background:#111827;
-color:#fff;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 18px;
-z-index:9999;
-}
-.logo a{
-color:#fff;
-text-decoration:none;
-font-weight:700;
-}
-.menu{display:flex;gap:14px}
-.menu a{
-color:#e5e7eb;
-text-decoration:none;
-font-size:14px;
-padding:6px 8px;
-border-radius:8px;
-}
-.menu a:hover{background:#374151}
-
-/* ⭐ ดัน layout ลง */
 body{
 margin:0;
-padding:88px 32px 32px;
+padding:60px 20px;
 background:var(--bg);
 color:var(--text);
-font-family:system-ui,monospace
+font-family:system-ui,monospace;
 }
 
-.wrapper{max-width:1000px;margin:auto}
-.header{margin-bottom:24px}
-.header h1{margin:0;font-size:24px}
+.wrapper{max-width:920px;margin:auto}
+
+.header{margin-bottom:26px}
+.header h1{margin:0;font-size:26px}
 .header p{margin:6px 0 0;color:var(--muted)}
-.card{background:var(--card);border-radius:14px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,.08)}
+
+.card{
+background:var(--card);
+border-radius:18px;
+padding:26px;
+box-shadow:0 10px 30px rgba(0,0,0,.06);
+border:1px solid var(--border);
+}
+
 .section{margin-bottom:28px}
-.section-title{font-weight:700;margin-bottom:12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-.field input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);font-family:monospace}
-.actions{display:flex;gap:12px}
-button{padding:12px 20px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+.section-title{
+font-weight:700;
+margin-bottom:12px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:16px;
+}
+
+.field label{
+display:block;
+font-size:13px;
+color:var(--muted);
+margin-bottom:6px;
+}
+
+.field input{
+width:100%;
+padding:11px 12px;
+border-radius:10px;
+border:1px solid var(--border);
+background:#fff;
+font-family:monospace;
+}
+
+.weekdays{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+}
+
+.day-btn{
+padding:8px 14px;
+border-radius:999px;
+border:1px solid var(--border);
+background:#fff;
+cursor:pointer;
+font-weight:600;
+transition:.15s;
+}
+
+.day-btn:hover{
+border-color:var(--primary);
+color:var(--primary);
+}
+
+.day-btn.active{
+background:#fee2e2;
+border-color:#fecaca;
+color:#b91c1c;
+}
+
+.actions{
+display:flex;
+gap:12px;
+margin-top:10px;
+}
+
+button{
+padding:12px 20px;
+border-radius:10px;
+border:none;
+font-weight:700;
+cursor:pointer;
+}
+
 button.primary{background:var(--primary);color:#fff}
-button.secondary{background:var(--success);color:#fff}
-textarea{width:100%;height:420px;margin-top:16px;resize:vertical;padding:16px;font-family:monospace;font-size:13px;border-radius:12px;border:1px solid var(--border);background:#0b1220;color:#e5e7eb}
+button.secondary{background:#16a34a;color:#fff}
+
+textarea{
+width:100%;
+height:420px;
+margin-top:16px;
+padding:16px;
+border-radius:12px;
+border:1px solid var(--border);
+background:#f8fafc;
+font-family:monospace;
+font-size:13px;
+resize:vertical;
+}
 </style>
 </head>
 
 <body>
 
-<!-- ⭐ เมนูด้านบน -->
-<div class="topbar">
-  <div class="logo"><a href="index.html">MyApp</a></div>
-  <div class="menu">
-    <a href="#">Home</a>
-    <a href="#">Dashboard</a>
-    <a href="#">Tools</a>
-    <a href="#">Setting</a>
-  </div>
-</div>
-
 <div class="wrapper">
+
 <div class="header">
-<h1>Mac - Time Record</h1>
-<p>ลากเลือกช่วงวันได้เลย ไม่ต้องใส่จำนวนวัน</p>
+<h1>Time Record - For Insert Query Database</h1>
+<p>เลือกช่วงวัน แล้วกดวันในสัปดาห์ที่ไม่ต้องการ</p>
 </div>
 
 <div class="card">
@@ -94,17 +144,32 @@ textarea{width:100%;height:420px;margin-top:16px;resize:vertical;padding:16px;fo
 <div class="section-title">📅 วันที่ & เวลา</div>
 <div class="grid">
 <div class="field">
-<label>เลือกช่วงวันที่ (ลากได้)</label>
-<input id="dateRange" placeholder="ลากเลือกวันเริ่ม - วันสุดท้าย">
+<label>ช่วงวันที่</label>
+<input id="dateRange">
 </div>
+
 <div class="field">
-<label>เวลาเข้า (IN)</label>
+<label>เวลาเข้า</label>
 <input type="time" id="timeIn" value="09:00">
 </div>
+
 <div class="field">
-<label>เวลาออก (OUT)</label>
+<label>เวลาออก</label>
 <input type="time" id="timeOut" value="18:00">
 </div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">🚫 ยกเว้นวัน</div>
+<div class="weekdays">
+<button class="day-btn" data-day="1">จันทร์</button>
+<button class="day-btn" data-day="2">อังคาร</button>
+<button class="day-btn" data-day="3">พุธ</button>
+<button class="day-btn" data-day="4">พฤหัส</button>
+<button class="day-btn" data-day="5">ศุกร์</button>
+<button class="day-btn active" data-day="6">เสาร์</button>
+<button class="day-btn active" data-day="0">อาทิตย์</button>
 </div>
 </div>
 
@@ -113,11 +178,11 @@ textarea{width:100%;height:420px;margin-top:16px;resize:vertical;padding:16px;fo
 <div class="grid">
 <div class="field">
 <label>Badge ID</label>
-<input id="x2" placeholder="1066898000002">
+<input id="x2">
 </div>
 <div class="field">
 <label>Employee ID</label>
-<input id="x3" placeholder="10668980">
+<input id="x3">
 </div>
 </div>
 </div>
@@ -133,42 +198,62 @@ textarea{width:100%;height:420px;margin-top:16px;resize:vertical;padding:16px;fo
 </div>
 
 <script>
-flatpickr('#dateRange',{
-mode:'range',
-dateFormat:'Y-m-d'
+flatpickr('#dateRange',{mode:'range',dateFormat:'Y-m-d'});
+
+const skipWeekdays=new Set([0,6]);
+
+document.querySelectorAll('.day-btn').forEach(btn=>{
+btn.onclick=()=>{
+btn.classList.toggle('active');
+const d=Number(btn.dataset.day);
+btn.classList.contains('active')
+? skipWeekdays.add(d)
+: skipWeekdays.delete(d);
+};
 });
 
-const template=`INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
-status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
-VALUES (
-'x1 x4_in:11.000000+00','x1 x4_in:11.000000+00','x2','0.00','15.00','5001.00','x2','N','10.4.127.34','Korat-SLH1-3-In-01','CPF-แปรรูปไก่โคราช-5001','THAGR','x3','NULL','NULL','NULL','x1 x4_in:11+07','x1 x4_in:11+07','x1 x4_in:11+07','x1 x4_in:11+07','time-device','in');
-
-INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
-status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
-VALUES (
-'x1 x4_out:00.000000+00','x1 x4_out:00.000000+00','x2','1.00','15.00','5001.00','x2','N','10.4.127.34','Korat-SLH1-3-Out-01','CPF-แปรรูปไก่โคราช-5001','THAGR','x3','NULL','NULL','NULL','x1 x4_out:00+07','x1 x4_out:00+07','x1 x4_out:00+07','x1 x4_out:00+07','time-device','out');`;
+const template=`INSERT INTO "time".time_record(created_at,updated_at,identification_no,inout_flag,source,location_id,reference_code,
+status,machine_ip,machine_name,location_name,set_id,empl_id,lat,lng,record_type,record_time,record_date,last_update,kafka_time,source_type,split_in_out)
+VALUES
+('x1 x4_in','x1 x4_in','x2','0','15','5001','x2','N','IP','IN','LOC','TH','x3',NULL,NULL,NULL,'x1 x4_in','x1','x1','x1','time-device','in'),
+('x1 x4_out','x1 x4_out','x2','1','15','5001','x2','N','IP','OUT','LOC','TH','x3',NULL,NULL,NULL,'x1 x4_out','x1','x1','x1','time-device','out');`;
 
 function generateSQL(){
-const val=dateRange.value;
-if(!val||!x2.value||!x3.value) return alert('เลือกช่วงวัน + กรอกพนักงาน');
-const [start,end]=val.split(' to ');
-let d=new Date(start);
-const endDate=new Date(end||start);
+if(!dateRange.value||!x2.value||!x3.value)
+return alert('ข้อมูลไม่ครบ');
+
+const [s,e]=dateRange.value.split(' to ');
+let d=new Date(s);
+const end=new Date(e||s);
 let out='';
-while(d<=endDate){
+
+while(d<=end){
+
+if(skipWeekdays.has(d.getDay())){
+d.setDate(d.getDate()+1);
+continue;
+}
+
 const day=d.toISOString().slice(0,10);
+
 out+=template
 .replaceAll('x1',day)
-.replaceAll('x2',x2.value.trim())
-.replaceAll('x3',x3.value.trim())
+.replaceAll('x2',x2.value)
+.replaceAll('x3',x3.value)
 .replaceAll('x4_in',timeIn.value)
 .replaceAll('x4_out',timeOut.value)
 +'\n\n';
+
 d.setDate(d.getDate()+1);
 }
+
 output.value=out.trim();
 }
-function copySQL(){output.select();document.execCommand('copy');alert('คัดลอกแล้ว');}
+
+function copySQL(){
+output.select();
+document.execCommand('copy');
+}
 </script>
 
 </body>
