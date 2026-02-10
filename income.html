@@ -60,7 +60,6 @@ button{
   cursor:pointer;
 }
 
-/* ปุ่มเล็ก */
 .smallBtn{
   padding:6px 12px;
   font-size:12px;
@@ -70,7 +69,6 @@ button{
 }
 .smallBtn.active{background:#22c55e}
 
-/* SWITCH */
 .switch{
   display:flex;
   align-items:center;
@@ -109,7 +107,6 @@ button{
   align-items:center;
 }
 
-/* SUMMARY */
 .summary{
   display:grid;
   grid-template-columns:1fr;
@@ -320,19 +317,19 @@ x.t==="income"?inc+=x.a:exp+=x.a
 
 list.innerHTML+=`
 <tr class="${x.t==='income'?'incomeRow':'expenseRow'}">
-<td><span class="rowIndex">${i+1}</span></td>
+<td data-label="#"><span class="rowIndex">${i+1}</span></td>
 
-<td>
+<td data-label="ประเภท">
 <select onchange="update(${i},'t',this.value)">
 <option value="income" ${x.t==="income"?"selected":""}>รายรับ</option>
 <option value="expense" ${x.t==="expense"?"selected":""}>รายจ่าย</option>
 </select>
 </td>
 
-<td><input value="${x.c||""}" oninput="update(${i},'c',this.value)"></td>
-<td><input value="${x.d||""}" oninput="update(${i},'d',this.value)"></td>
+<td data-label="หมวด"><input value="${x.c||""}" oninput="update(${i},'c',this.value)"></td>
+<td data-label="รายการ"><input value="${x.d||""}" oninput="update(${i},'d',this.value)"></td>
 
-<td>
+<td data-label="จำนวนเงิน">
 <input value="${format(x.a)}"
 oninput="this.value=format(parse(this.value));update(${i},'a',parse(this.value))">
 </td>
@@ -377,18 +374,33 @@ row.children[i].style.display=hiddenCols[i]?"none":""
 })
 }
 
+/* ⭐ DEMO สมจริง เงินเดือน 18,000 + รายรับ 12 + รายจ่ายจริง */
 function toggleDemo(){
 const btn=document.getElementById("demoBtn")
 
 if(!demoMode){
 data=[
+
+/* ===== รายรับ ===== */
 {t:"income",c:"💼 เงินเดือน",d:"เงินเดือนบริษัท",a:18000},
-{t:"income",c:"💼 เงินเดือน",d:"โบนัส",a:2000},
-{t:"expense",c:"🍔 ค่ากิน",d:"ข้าวกลางวัน",a:120},
+{t:"income",c:"📦 อื่นๆ",d:"ขายของออนไลน์",a:1200},
+
+/* ===== รายจ่าย ===== */
+{t:"expense",c:"🏠 ค่าเช่า",d:"ค่าเช่าห้อง",a:5500},
+{t:"expense",c:"💡 ค่าน้ำไฟ",d:"ค่าไฟฟ้า",a:820},
+{t:"expense",c:"💡 ค่าน้ำไฟ",d:"ค่าน้ำ",a:120},
+{t:"expense",c:"📱 อินเทอร์เน็ต",d:"AIS รายเดือน",a:599},
 {t:"expense",c:"🚗 ค่าเดินทาง",d:"BTS",a:45},
+{t:"expense",c:"🚗 ค่าเดินทาง",d:"Grab กลับบ้าน",a:1400},
+{t:"expense",c:"🍔 ค่ากิน",d:"ข้าวกลางวัน",a:6000},
+{t:"expense",c:"🍔 ค่ากิน",d:"ชาบูเย็นวันศุกร์",a:399},
+{t:"expense",c:"☕ คาเฟ่",d:"กาแฟ",a:65},
 {t:"expense",c:"🛒 ช้อปปิ้ง",d:"Shopee",a:690},
-{t:"expense",c:"🎮 ความบันเทิง",d:"Netflix",a:279}
+{t:"expense",c:"🎮 ความบันเทิง",d:"Netflix",a:1000},
+{t:"expense",c:"🎮 ความบันเทิง",d:"Steam Game",a:1500}
+
 ]
+
 btn.textContent="🧹 ล้างตัวอย่าง"
 btn.classList.add("active")
 demoMode=true
