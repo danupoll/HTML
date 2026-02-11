@@ -12,11 +12,11 @@ body{
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
     background:#f2f2f7;
     color:#1d1d1f;
-    display:flex;
-    padding-top:56px; /* กัน topbar ทับ */
+    padding-top:56px;
+    font-size:15px;
 }
 
-/* ===== TOP BAR (เพิ่มใหม่ แต่ไม่ยุ่ง logic เดิม) ===== */
+/* ===== TOP BAR ===== */
 .topbar{
     position:fixed;
     top:0;
@@ -56,8 +56,12 @@ body{
 
 /* ===== Right History Panel ===== */
 .history-panel{
-    width:280px;
-    padding:20px;
+    position:fixed;
+    top:56px;
+    right:0;
+    width:380px;
+    height:calc(100vh - 56px);
+    padding:22px;
     background:rgba(255,255,255,0.7);
     backdrop-filter:blur(20px);
     border-left:1px solid #e5e5ea;
@@ -72,72 +76,92 @@ body{
 }
 
 .history-item{
-    padding:10px;
+    padding:12px;
     border-radius:10px;
-    margin-bottom:8px;
+    margin-bottom:10px;
     background:#fff;
     cursor:pointer;
-    font-size:13px;
+    font-size:14px;
     border:1px solid #e5e5ea;
+    position:relative;
 }
 .history-item:hover{
     background:#f2f2f7;
 }
 
+.history-item.active{
+    background:#fff3e6;
+    border-color:#ffb36b;
+}
+
+.history-delete{
+    position:absolute;
+    right:8px;
+    top:8px;
+    cursor:pointer;
+    color:#ff3b30;
+    font-weight:700;
+}
+
 /* ===== Main ===== */
-.main{flex:1;padding:30px}
+.main{
+    padding:34px;
+    max-width:1200px;
+    margin:0 auto;
+}
 
 .container{
-    max-width:900px;
+    max-width:1100px;
     margin:auto;
-    padding:28px;
-    border-radius:18px;
+    padding:30px;
+    border-radius:20px;
     background:rgba(255,255,255,0.7);
     backdrop-filter:blur(20px);
     box-shadow:
-        0 10px 30px rgba(0,0,0,0.08),
+        0 12px 32px rgba(0,0,0,0.08),
         inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
-h1{margin-top:0;font-size:26px;font-weight:600}
-h2{font-size:18px;font-weight:600;margin-top:28px}
+h1{margin-top:0;font-size:28px;font-weight:600}
+h2{font-size:20px;font-weight:600;margin-top:30px}
 p{color:#6e6e73}
 
 textarea{
     width:100%;
-    height:180px;
-    margin-top:12px;
-    padding:14px;
-    border-radius:12px;
+    height:190px;
+    margin-top:14px;
+    padding:16px;
+    border-radius:14px;
     border:1px solid #e5e5ea;
-    font-size:14px;
+    font-size:15px;
     outline:none;
+    color:#9ca3af; /* ⭐ hint สีเทา */
 }
 
 .format-select{
-    margin:18px 0 24px;
+    margin:20px 0 26px;
 }
 .format-select label{
     display:block;
     padding:10px 0;
-    font-size:14px;
+    font-size:15px;
 }
 
 button{
     border:none;
-    padding:10px 18px;
-    border-radius:10px;
-    font-size:14px;
+    padding:11px 20px;
+    border-radius:12px;
+    font-size:15px;
     font-weight:500;
     cursor:pointer;
     background:#0071e3;
     color:#fff;
     margin-right:8px;
+    transition:0.2s;
 }
 
-#copyBtn{
-    background:#34c759;
-    margin-left:12px;
+#copyBtn.success{
+    background:#16a34a;
 }
 
 #clearHistoryBtn{
@@ -147,13 +171,13 @@ button{
 }
 
 .summary-box{
-    margin-top:12px;
-    padding:18px;
-    border-radius:14px;
+    margin-top:14px;
+    padding:20px;
+    border-radius:16px;
     background:#fff;
     border:1px solid #e5e5ea;
-    font-size:14px;
-    line-height:1.8;
+    font-size:15px;
+    line-height:1.9;
     white-space:pre-line;
 }
 .summary-box strong{
@@ -163,15 +187,16 @@ button{
 }
 
 .output-box{
-    margin-top:12px;
-    padding:16px;
-    border-radius:14px;
+    margin-top:14px;
+    padding:18px;
+    border-radius:16px;
     background:#ffffff;
     border:1px solid #e5e5ea;
     font-family:Menlo,Consolas,monospace;
-    font-size:13px;
+    font-size:15px;
+    line-height:2.1;
     white-space:pre;
-    max-height:500px;
+    max-height:520px;
     overflow:auto;
 }
 
@@ -179,21 +204,16 @@ button{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    margin-top:18px;
+    margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ⭐ Top Menu เพิ่มใหม่ -->
 <div class="topbar">
   <div class="logo"><a href="index.html">MyApp</a></div>
   <div class="menu">
-    <a href="#">Home</a>
-    <a href="#">Dashboard</a>
-    <a href="#">Tools</a>
-    <a href="#">Setting</a>
   </div>
 </div>
 
@@ -204,12 +224,14 @@ button{
 
 <p>วางรายการ แล้วเลือกฟอร์แมต ระบบจะลบค่าซ้ำ จัดคอลัมน์ และสรุปผลให้ทันที</p>
 
-<textarea id="inputArea"
-placeholder="วางแบบ 1111,2222,3333 หรือ
+<textarea id="inputArea">
+วางข้อมูลแบบ 100,200,300
 
-1111
-2222
-3333"></textarea>
+หรือ
+100
+200
+300
+</textarea>
 
 <div class="format-select">
 <label><input type="radio" name="format" value="comma" checked> 1000,1002,1003</label>
@@ -241,9 +263,34 @@ placeholder="วางแบบ 1111,2222,3333 หรือ
 </div>
 
 <script>
+let activeHistoryIndex=-1;
+
+const inputArea=document.getElementById("inputArea");
+
+const hintText=`วางข้อมูลแบบ 100,200,300
+
+หรือ
+100
+200
+300`;
+
+inputArea.addEventListener("focus",()=>{
+    if(inputArea.value.trim()===hintText.trim()){
+        inputArea.value="";
+        inputArea.style.color="#111";
+    }
+});
+
+inputArea.addEventListener("blur",()=>{
+    if(inputArea.value.trim()===""){
+        inputArea.value=hintText;
+        inputArea.style.color="#9ca3af";
+    }
+});
+
 function processText() {
-    let raw = document.getElementById("inputArea").value.trim();
-    if (!raw) {
+    let raw = inputArea.value.trim();
+    if (!raw || raw===hintText.trim()) {
         document.getElementById("summary").innerText = "กรุณาวางข้อมูลก่อนครับ";
         document.getElementById("output").innerText = "";
         return;
@@ -268,12 +315,12 @@ function processText() {
         return x;
     });
 
-    let maxLen = Math.max(...formatted.map(x => x.length)) + 4;
+    let maxLen = Math.max(...formatted.map(x => x.length)) + 6;
     let pad = (str) => str + " ".repeat(maxLen - str.length);
 
     let finalResult = "";
-    for (let i = 0; i < formatted.length; i += 7) {
-        finalResult += formatted.slice(i, i + 7).map(pad).join("") + "\n";
+    for (let i = 0; i < formatted.length; i += 5) {
+        finalResult += formatted.slice(i, i + 5).map(pad).join("") + "\n";
     }
 
     let summaryText =
@@ -297,14 +344,31 @@ function processText() {
 }
 
 function copyOutput() {
+    let btn = document.getElementById("copyBtn");
     let text = document.getElementById("output").innerText.trim();
     if (!text) return;
+
     let cleaned = text.split(/\s+/).filter(x => x).join(",");
-    navigator.clipboard.writeText(cleaned).then(()=>alert("Copy สำเร็จ 😎"));
+    navigator.clipboard.writeText(cleaned);
+
+    btn.classList.add("success");
+    btn.innerText="Copied ✓";
+
+    setTimeout(()=>{
+        btn.classList.remove("success");
+        btn.innerText="Copy";
+    },1200);
 }
 
 function clearHistory(){
     localStorage.removeItem("qft_history");
+    renderHistory();
+}
+
+function deleteHistory(index){
+    let history = JSON.parse(localStorage.getItem("qft_history")||"[]");
+    history.splice(index,1);
+    localStorage.setItem("qft_history",JSON.stringify(history));
     renderHistory();
 }
 
@@ -315,8 +379,11 @@ function saveHistory(input, output){
         return;
     }
 
+    let now=new Date();
+
     history.unshift({
-        time:new Date().toLocaleTimeString(),
+        time:now.toLocaleTimeString(),
+        date:now.toLocaleDateString(),
         input,
         output
     });
@@ -331,14 +398,30 @@ function renderHistory(){
     box.innerHTML="";
     let history = JSON.parse(localStorage.getItem("qft_history")||"[]");
 
-    history.forEach((h)=>{
+    history.forEach((h,i)=>{
         let div=document.createElement("div");
         div.className="history-item";
-        div.innerText=`${h.time} • ${h.input.split(/[\n,\s]+/).length} items`;
-        div.onclick=()=>{
-            document.getElementById("inputArea").value=h.input;
-            document.getElementById("output").innerText=h.output;
+        if(i===activeHistoryIndex) div.classList.add("active");
+
+        div.innerText=`${h.date} ${h.time} • ${h.input.split(/[\n,\s]+/).length} items`;
+
+        let del=document.createElement("span");
+        del.className="history-delete";
+        del.innerText="✕";
+        del.onclick=(e)=>{
+            e.stopPropagation();
+            deleteHistory(i);
         };
+
+        div.onclick=()=>{
+            activeHistoryIndex=i;
+            inputArea.value=h.input;
+            inputArea.style.color="#111";
+            document.getElementById("output").innerText=h.output;
+            renderHistory();
+        };
+
+        div.appendChild(del);
         box.appendChild(div);
     });
 }
