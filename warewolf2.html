@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Werewolf UI FIX</title>
+
+<style>
+
+body{
+ margin:0;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+ background:#f2f3f7;
+ min-height:100vh;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+}
+
+/* กรอบหลัก */
+.container{
+ width:100%;
+ max-width:480px;
+ padding:20px;
+}
+
+/* การ์ดหลัก */
+.screen{
+ background:#ffffff;
+ padding:32px 28px;   /* เพิ่มด้านซ้ายขวา */
+ border-radius:24px;
+ box-shadow:0 20px 60px rgba(0,0,0,.08);
+ position:relative;
+}
+
+.hidden{display:none}
+
+h1{
+ text-align:center;
+ margin-bottom:28px;
+ font-size:22px;
+}
+
+/* ปุ่มออก */
+.exitBtn{
+ position:absolute;
+ top:18px;
+ right:18px;
+ background:#ff3b3b;
+ color:#fff;
+ border:none;
+ padding:6px 12px;
+ border-radius:10px;
+ cursor:pointer;
+ font-size:12px;
+}
+
+/* ปุ่มจำนวนคน */
+.pillWrap{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:center;
+ gap:12px;
+ margin:20px 0 28px;
+}
+
+.pill{
+ padding:12px 20px;
+ border-radius:999px;
+ background:#f1f2f6;
+ cursor:pointer;
+ font-weight:600;
+ border:1px solid #e4e6ee;
+ transition:.15s;
+}
+
+.pill.active{
+ background:#111;
+ color:#fff;
+ transform:scale(1.05);
+}
+
+/* input */
+input{
+ width:100%;
+ padding:14px;
+ margin-bottom:14px;
+ border-radius:14px;
+ border:1px solid #e4e6ee;
+ background:#f8f9fb;
+ font-size:15px;
+ box-sizing:border-box;   /* ตัวแก้จริง */
+}
+
+/* ปุ่มหลัก */
+button{
+ background:#111;
+ color:#fff;
+ border:none;
+ padding:14px;
+ border-radius:16px;
+ cursor:pointer;
+ font-size:15px;
+ font-weight:600;
+ transition:.1s;
+}
+
+button:disabled{
+ opacity:.4;
+}
+
+button:active{
+ transform:scale(.97);
+}
+
+/* การ์ดสุ่ม */
+.cardWrap{
+ width:240px;
+ height:320px;
+ margin:24px auto;
+ perspective:1000px;
+}
+
+.card{
+ width:100%;
+ height:100%;
+ position:relative;
+ transform-style:preserve-3d;
+}
+
+.card.spinning{
+ animation:spin3d 3s forwards;
+}
+
+@keyframes spin3d{
+ 0%{transform:rotateY(0)}
+ 85%{transform:rotateY(1260deg)}
+ 100%{transform:rotateY(180deg)}
+}
+
+.face{
+ position:absolute;
+ width:100%;
+ height:100%;
+ border-radius:24px;
+ backface-visibility:hidden;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ flex-direction:column;
+ background:#ffffff;
+ box-shadow:0 15px 40px rgba(0,0,0,.12);
+}
+
+.back{transform:rotateY(180deg)}
+
+.roleEmoji{font-size:60px}
+.team{font-size:14px;color:#777}
+
+/* summary */
+.row{
+ display:grid;
+ grid-template-columns:180px 1fr 100px 40px 40px auto;
+ align-items:center;
+ gap:12px;
+ padding:14px;
+ margin-bottom:12px;
+ background:#fafbfc;
+ border-radius:16px;
+ border:1px solid #eceef3;
+}
+
+.left{
+ display:flex;
+ align-items:center;
+ gap:12px;
+}
+
+.emoji{font-size:26px}
+.roleName{font-weight:600}
+
+.row.dead{
+ background:#d0d0d0;
+ opacity:1;          /* ไม่ทำให้ซีด */
+}
+
+.status span{
+ background:#e9ebf1;
+ padding:4px 8px;
+ margin-right:6px;
+ border-radius:8px;
+ cursor:pointer;
+ font-size:12px;
+}
+
+.icon{
+ cursor:pointer;
+ font-size:20px;
+ opacity:.4;
+}
+
+.icon.active{
+ opacity:1;
+}
+
+.reason{
+ font-size:12px;
+ color:#666;
+}
+
+.topBtns{
+ display:flex;
+ gap:10px;
+ margin-bottom:16px;
+}
+
+/* popup */
+.popup{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.4);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+
+.popupBox{
+ background:#fff;
+ padding:28px;
+ border-radius:20px;
+ text-align:center;
+ box-shadow:0 20px 60px rgba(0,0,0,.15);
+}
+@media (max-width: 520px){
+
+.row{
+ display:flex;
+ flex-direction:column;
+ gap:4px;              /* ลดช่องว่าง */
+ padding:10px 12px;    /* ลดความสูง */
+ margin-bottom:8px;    /* ชิดกันขึ้น */
+ border-radius:12px;
+}
+
+/* ชื่อ */
+.roleName{
+ font-size:14px;
+}
+
+/* ฝ่าย */
+.row > div:nth-child(3){
+ font-size:11px;
+ color:#777;
+}
+
+/* ปุ่มสถานะ */
+.status{
+ order:3;
+ display:flex;
+ flex-wrap:wrap;
+ gap:4px;
+ margin-top:2px;
+}
+
+.status span{
+ padding:3px 6px;
+ font-size:10px;
+ border-radius:6px;
+}
+
+}}</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- STEP1 -->
+<div class="screen" id="step1">
+<button class="exitBtn" onclick="exitGame()">ออกจากเกมส์</button>
+<h1>เลือกจำนวนผู้เล่น</h1>
+<div class="pillWrap" id="pillWrap"></div>
+<div style="text-align:center">
+<button onclick="goStep2()">เริ่มเกม</button>
+</div>
+</div>
+
+<!-- STEP2 -->
+<div class="screen hidden" id="step2">
+<button class="exitBtn" onclick="exitGame()">ออกจากเกมส์</button>
+<h1>ใส่ชื่อผู้เล่น (กดค้างแล้วลากเพื่อสลับ)</h1>
+<div id="nameInputs"></div>
+<button id="next2" disabled onclick="startGame()">ถัดไป</button>
+</div>
+
+<!-- STEP3 -->
+<div class="screen hidden" id="step3">
+<button class="exitBtn" onclick="exitGame()">ออกจากเกมส์</button>
+<h1 id="playerName"></h1>
+
+<div class="cardWrap">
+<div class="card" id="spinCard">
+<div class="face front">สุ่มบท</div>
+<div class="face back">
+<div class="roleEmoji" id="roleEmoji"></div>
+<div id="roleText"></div>
+<div id="roleTeam" class="team"></div>
+</div>
+</div>
+</div>
+
+<div style="text-align:center;margin-top:20px">
+<button id="rollBtn">สุ่ม</button>
+<button id="next3" disabled onclick="nextPlayer()">ถัดไป</button>
+</div>
+</div>
+
+<!-- STEP4 -->
+<div class="screen hidden" id="step4">
+<button class="exitBtn" onclick="exitGame()">ออกจากเกมส์</button>
+<h1>สรุปรายชื่อ</h1>
+
+<div class="topBtns">
+<button onclick="restartGame()">เริ่มเกมส์ใหม่</button>
+</div>
+
+<div id="summary"></div>
+</div>
+
+</div>
+
+<script>
+
+const ROLE_DATA={
+ "หมาป่า":{emoji:"🐺",team:"ฝ่ายหมาป่า"},
+ "ชาวบ้าน":{emoji:"🏠",team:"ฝ่ายหมู่บ้าน"},
+ "หมอดู":{emoji:"🔮",team:"ฝ่ายหมู่บ้าน"},
+ "บอดีการ์ด":{emoji:"🛡",team:"ฝ่ายหมู่บ้าน"},
+ "แม่มด":{emoji:"🧙‍♀️",team:"ฝ่ายหมู่บ้าน"},
+ "มือปืน":{emoji:"🔫",team:"ฝ่ายหมู่บ้าน"},
+ "คู่รัก":{emoji:"❤️",team:"ฝ่ายพิเศษ"},
+ "คนบ้า":{emoji:"🃏",team:"ฝ่ายพิเศษ"},
+ "โจร":{emoji:"🏴‍☠️",team:"ฝ่ายพิเศษ"}
+};
+
+const ROLE_ORDER=[
+"หมาป่า",
+"ชาวบ้าน",
+"หมอดู",
+"บอดีการ์ด",
+"แม่มด",
+"มือปืน",
+"คู่รัก",
+"หมาป่า",
+"คนบ้า",
+"โจร"
+];
+
+let playerCount=5;
+let names=[],players=[],pool=[],index=0,tempRole=null;
+let rolled=false;
+let witchUsed=false;
+let gunUsed=false;      // เพิ่ม
+let reviveUsed=false;   // เพิ่ม
+
+/* SAVE LOAD */
+function saveState(step){
+ localStorage.setItem("ww_state",JSON.stringify({
+   playerCount,names,players,pool,index,step
+ }));
+}
+function loadState(){
+ const s=localStorage.getItem("ww_state");
+ if(!s)return;
+ const d=JSON.parse(s);
+ playerCount=d.playerCount;
+ names=d.names||[];
+ players=d.players||[];
+ pool=d.pool||[];
+ index=d.index||0;
+ showOnly(d.step||"step1");
+ if(d.step==="step2") goStep2();
+ if(d.step==="step3") showPlayer();
+ if(d.step==="step4") openSummary();
+}
+
+function showOnly(id){
+ step1.classList.add("hidden");
+ step2.classList.add("hidden");
+ step3.classList.add("hidden");
+ step4.classList.add("hidden");
+ document.getElementById(id).classList.remove("hidden");
+}
+
+function showPopup(text){
+ const pop=document.createElement("div");
+ pop.className="popup";
+ pop.innerHTML=`<div class="popupBox"><h2>${text}</h2>
+ <button onclick="this.closest('.popup').remove()">ปิด</button></div>`;
+ document.body.appendChild(pop);
+}
+
+function checkWin(){
+ const wolves = players.filter(p=>p.role==="หมาป่า");
+ const aliveWolves = wolves.filter(p=>!p.status).length;
+
+ const villagers = players.filter(p=>p.role!=="หมาป่า");
+ const aliveVillagers = villagers.filter(p=>!p.status).length;
+
+ // ชาวบ้านชนะเมื่อหมาป่าตายหมด
+ if(aliveWolves === 0){
+   showPopup("ชาวบ้านชนะ");
+   return;
+ }
+
+ // หมาป่าชนะเมื่อจำนวนหมาป่า >= ฝั่งหมู่บ้าน
+ if(aliveWolves >= aliveVillagers){
+   showPopup("หมาป่าชนะ");
+   return;
+ }
+
+ // คนบ้า
+ const mad = players.find(p=>p.role==="คนบ้า");
+ if(mad && mad.status==="โหวต"){
+   showPopup("คนบ้าชนะ");
+ }
+}
+const wrap=document.getElementById("pillWrap");
+for(let i=5;i<=10;i++){
+ const p=document.createElement("div");
+ p.className="pill"+(i===5?" active":"");
+ p.innerText=i+" คน";
+ p.onclick=()=>{
+  document.querySelectorAll(".pill").forEach(e=>e.classList.remove("active"));
+  p.classList.add("active");
+  playerCount=i;
+  saveState("step1");
+ };
+ wrap.appendChild(p);
+}
+
+function goStep2(){
+ showOnly("step2");
+ nameInputs.innerHTML="";
+ for(let i=0;i<playerCount;i++){
+  const wrapItem=document.createElement("div");
+  wrapItem.className="nameItem";
+  wrapItem.draggable=true;
+  const inp=document.createElement("input");
+  inp.placeholder="ชื่อ "+(i+1);
+  inp.value=names[i]||"";
+  inp.oninput=()=>{checkNames();saveState("step2");};
+  wrapItem.appendChild(inp);
+  nameInputs.appendChild(wrapItem);
+ }
+ checkNames();
+ enableDragSort();
+ saveState("step2");
+}
+
+function enableDragSort(){
+ let dragEl=null;
+ [...nameInputs.children].forEach(el=>{
+   el.addEventListener("dragstart",()=>dragEl=el);
+   el.addEventListener("dragover",(e)=>{
+     e.preventDefault();
+     const rect=el.getBoundingClientRect();
+     const next=(e.clientY-rect.top)/(rect.bottom-rect.top)>.5;
+     nameInputs.insertBefore(dragEl,next?el.nextSibling:el);
+   });
+ });
+}
+
+function checkNames(){
+ next2.disabled=![...nameInputs.querySelectorAll("input")]
+   .every(i=>i.value.trim()!=="");
+}
+
+function startGame(){
+ names=[...nameInputs.querySelectorAll("input")].map(i=>i.value);
+ pool=[...ROLE_ORDER.slice(0,playerCount)];
+ shuffle(pool);
+ players=[];
+ index=0;
+ showOnly("step3");
+ showPlayer();
+ saveState("step3");
+}
+
+function showPlayer(){
+ playerName.innerText=names[index];
+ spinCard.classList.remove("spinning");
+ roleEmoji.innerText="";
+ roleText.innerText="";
+ roleTeam.innerText="";
+ next3.disabled=true;
+ rollBtn.disabled=false;
+ rolled=false;
+ saveState("step3");
+}
+
+rollBtn.onclick=()=>{
+ if(rolled)return;
+ rolled=true;
+ rollBtn.disabled=true;
+ tempRole=pool.shift();
+ spinCard.classList.add("spinning");
+ setTimeout(()=>{
+   const data=ROLE_DATA[tempRole];
+   roleEmoji.innerText=data.emoji;
+   roleText.innerText=tempRole;
+   roleTeam.innerText=data.team;
+ },3000);
+ setTimeout(()=>{
+   next3.disabled=false;
+   saveState("step3");
+ },3000);
+};
+
+function nextPlayer(){
+ players.push({
+   name:names[index],
+   role:tempRole,
+   status:null,
+   hasShield:false,
+   isHeart:false
+ });
+ index++;
+ saveState("step3");
+ if(index>=playerCount){
+  openSummary();
+ }else{
+  showPlayer();
+ }
+}
+
+/* ===== SUMMARY ===== */
+function openSummary(){
+ showOnly("step4");
+ summary.innerHTML="";
+
+ const sorted=[...players].sort(
+   (a,b)=>ROLE_ORDER.indexOf(a.role)-ROLE_ORDER.indexOf(b.role)
+ );
+
+ sorted.forEach(p=>{
+   const data=ROLE_DATA[p.role];
+   const row=document.createElement("div");
+   row.className="row";
+
+   if(p.hasShield && (p.status==="หมาป่า"||p.status==="แม่มด")){
+      row.classList.add("yellow");
+   }else if(p.status){
+      row.classList.add("dead");
+   }
+
+   const status=document.createElement("div");
+   status.className="status";
+
+   ["หมาป่า","แม่มด","โหวต","ยิง"].forEach(s=>{
+     if(s==="แม่มด" && witchUsed) return;
+     if(s==="ยิง" && gunUsed) return;
+
+     const btn=document.createElement("span");
+     btn.innerText=s;
+     btn.onclick=()=>{
+       if(s==="แม่มด"){ witchUsed=true; }
+       if(s==="ยิง"){ gunUsed=true; }
+
+       p.status=p.status===s?null:s;
+
+       const lover = players.find(pl =>
+         pl !== p &&
+         (pl.isHeart || pl.role==="คู่รัก") &&
+         (p.isHeart || p.role==="คู่รัก")
+       );
+       if(lover && p.status){
+         lover.status=p.status;
+       }
+
+       openSummary();
+       checkWin();
+     };
+     status.appendChild(btn);
+   });
+
+   const left=document.createElement("div");
+   left.className="left";
+   left.innerHTML=`<span class="emoji">${data.emoji}</span>`;
+
+   const roleDiv=document.createElement("div");
+   roleDiv.className="roleClick";
+   roleDiv.innerHTML=`
+       <div class="roleName">${p.name}</div>
+       <div>${p.role}</div>
+       <div class="reason">${p.status?"ตาย: "+p.status:""}</div>
+     `;
+   left.appendChild(roleDiv);
+
+   const team=document.createElement("div");
+   team.innerText=data.team;
+
+   const shield=document.createElement("div");
+   shield.className="icon"+(p.hasShield?" active":"");
+   shield.innerText="🛡";
+   shield.onclick=()=>{
+     if(!p.hasShield && players.some(pl=>pl.hasShield)) return;
+     p.hasShield=!p.hasShield;
+     openSummary();
+   };
+
+let heart=null;
+
+if(players.some(pl=>pl.role==="คู่รัก")){
+  heart=document.createElement("div");
+  heart.className="icon"+(p.isHeart?" active":"");
+  heart.innerText="❤️";
+  heart.onclick=()=>{
+    players.forEach(pl=>pl.isHeart=false);
+    p.isHeart=true;
+    openSummary();
+  };
+}
+
+   let reviveBtn=null;
+   if(p.status && !reviveUsed){
+     reviveBtn=document.createElement("button");
+     reviveBtn.innerText="คืนชีพ";
+     reviveBtn.style.padding="6px 10px";
+     reviveBtn.style.fontSize="12px";
+     reviveBtn.onclick=()=>{
+       p.status=null;
+       p.hasShield=false;
+       p.isHeart=false;
+       reviveUsed=true;
+       openSummary();
+       checkWin();
+     };
+   }
+
+   if(reviveBtn){
+  if(heart){
+    row.append(status,left,team,shield,heart,reviveBtn);
+  }else{
+    row.append(status,left,team,shield,reviveBtn);
+  }
+}else{
+  if(heart){
+    row.append(status,left,team,shield,heart);
+  }else{
+    row.append(status,left,team,shield);
+  }
+}
+   summary.appendChild(row);
+ });
+
+ saveState("step4");
+}
+
+function restartGame(){
+ players=[];
+ index=0;
+ witchUsed=false;
+ gunUsed=false;
+ reviveUsed=false;
+
+ showOnly("step2");
+ goStep2();
+}
+
+function exitGame(){
+ localStorage.removeItem("ww_state");
+ location.reload();
+}
+
+function shuffle(a){
+ for(let i=a.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [a[i],a[j]]=[a[j],a[i]];
+ }
+}
+
+loadState();
+</script>
+</body>
+</html>
