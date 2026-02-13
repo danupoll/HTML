@@ -348,43 +348,43 @@ const ROLE_DATA={
 
  "หมาป่า":{
   emoji:"🐺",
-  team:"ฝ่ายหมาป่า0000",
-  desc:"ทุกคืนเลือกฆ่า 1 คน เป้าหมายคือทำให้หมาป่ามีจำนวนเท่าหรือมากกว่าฝ่ายหมู่บ้าน"
+  team:"ฝ่ายหมาป่า",
+  desc:"ทุกคืนเลือกฆ่า 1 คน เป้าหมายคือทำให้หมาป่ามีจำนวนเท่าหรือมากกว่าฝ่ายชาวบ้าน"
  },
 
  "ชาวบ้าน":{
-  emoji:"🏠",
-  team:"ฝ่ายหมู่บ้าน",
+  emoji:"👤",
+  team:"ฝ่ายชาวบ้าน",
   desc:"ไม่มีพลังพิเศษ ใช้การวิเคราะห์และโหวตเพื่อกำจัดหมาป่า"
  },
 
  "หมอดู":{
   emoji:"🔮",
-  team:"ฝ่ายหมู่บ้าน",
+  team:"ฝ่ายชาวบ้าน",
   desc:"ทุกคืนสามารถดูบทของผู้เล่น 1 คนได้"
  },
 
  "บอดีการ์ด":{
   emoji:"🛡",
-  team:"ฝ่ายหมู่บ้าน",
+  team:"ฝ่ายชาวบ้าน",
   desc:"ทุกคืนเลือกปกป้อง 1 คนจากการถูกหมาป่าฆ่า"
  },
 
  "แม่มด":{
   emoji:"🧙‍♀️",
-  team:"ฝ่ายหมู่บ้าน",
+  team:"ฝ่ายชาวบ้าน",
   desc:"มีน้ำยาช่วยชีวิต 1 ครั้ง และน้ำยาฆ่า 1 ครั้ง ใช้ได้อย่างละหนึ่งครั้ง"
  },
 
  "มือปืน":{
   emoji:"🔫",
-  team:"ฝ่ายหมู่บ้าน",
+  team:"ฝ่ายชาวบ้าน",
   desc:"เมื่อถูกกำจัด สามารถยิงผู้เล่น 1 คนตายตามได้"
  },
 
  "คู่รัก":{
   emoji:"❤️",
-  team:"ฝ่ายพิเศษ",
+  team:"ฝ่ายชาวบ้าน",
   desc:"ถ้าคู่ของคุณตาย คุณจะตายตามทันที"
  },
 
@@ -394,10 +394,10 @@ const ROLE_DATA={
   desc:"ถ้าถูกโหวตออกจากเกม คุณชนะทันที"
  },
 
- "โจร":{
-  emoji:"🏴‍☠️",
-  team:"ฝ่ายพิเศษ",
-  desc:"สามารถสลับบทกับผู้เล่นคนอื่นได้ 1 ครั้ง"
+ "คนติดเชื้อ":{
+  emoji:"🧟‍♂️",
+  team:"ฝ่ายหมาป่า",
+  desc:"คุณไม่รู้ว่าหมาป่าคนอื่นคือใคร และหมอดูตรวจสอบคุณไม่ได้"
  }
 
 };
@@ -412,7 +412,7 @@ const ROLE_ORDER=[
 "คู่รัก",
 "หมาป่า",
 "คนบ้า",
-"โจร"
+"คนติดเชื้อ"
 ];
 
 let playerCount=5;
@@ -425,7 +425,15 @@ let reviveUsed=false;   // เพิ่ม
 /* SAVE LOAD */
 function saveState(step){
  localStorage.setItem("ww_state",JSON.stringify({
-   playerCount,names,players,pool,index,step
+   playerCount,
+   names,
+   players,
+   pool,
+   index,
+   witchUsed,
+   gunUsed,
+   reviveUsed,
+   step
  }));
 }
 function loadState(){
@@ -437,6 +445,9 @@ function loadState(){
  players=d.players||[];
  pool=d.pool||[];
  index=d.index||0;
+ witchUsed = d.witchUsed || false;
+gunUsed = d.gunUsed || false;
+reviveUsed = d.reviveUsed || false;
  showOnly(d.step||"step1");
  if(d.step==="step2") goStep2();
  if(d.step==="step3") showPlayer();
@@ -460,10 +471,14 @@ function showPopup(text){
 }
 
 function checkWin(){
- const wolves = players.filter(p=>p.role==="หมาป่า");
+ const wolves = players.filter(p =>
+  p.role === "หมาป่า" || p.role === "คนติดเชื้อ"
+);
  const aliveWolves = wolves.filter(p=>!p.status).length;
 
- const villagers = players.filter(p=>p.role!=="หมาป่า");
+const villagers = players.filter(p =>
+  p.role !== "หมาป่า" && p.role !== "คนติดเชื้อ"
+);
  const aliveVillagers = villagers.filter(p=>!p.status).length;
 
  // ชาวบ้านชนะเมื่อหมาป่าตายหมด
@@ -480,9 +495,9 @@ function checkWin(){
 
  // คนบ้า
  const mad = players.find(p=>p.role==="คนบ้า");
- if(mad && mad.status==="โหวต"){
+if(mad && mad.status==="โหวต"){
    showPopup("คนบ้าชนะ");
- }
+}
 }
 const wrap=document.getElementById("pillWrap");
 for(let i=5;i<=10;i++){
@@ -615,6 +630,9 @@ const sorted = [...players].sort((a,b)=>{
 });
 
  sorted.forEach(p=>{
+ 	const witchAlive = players.some(pl =>
+  pl.role === "แม่มด" && !pl.status
+);
    const data=ROLE_DATA[p.role];
    const row=document.createElement("div");
    row.className="row";
@@ -625,29 +643,42 @@ const sorted = [...players].sort((a,b)=>{
       row.classList.add("dead");
    }
 
-   const status=document.createElement("div");
-   status.className="status";
+ const status=document.createElement("div");
+status.className="status";
 
-   ["หมาป่า","แม่มด","โหวต","ยิง"].forEach(s=>{
-     if(s==="แม่มด" && witchUsed) return;
-     if(s==="ยิง" && gunUsed) return;
+const hasWitch = players.some(pl => pl.role === "แม่มด");
+const hasGun = players.some(pl => pl.role === "มือปืน");
 
-     const btn=document.createElement("span");
-     btn.innerText=s;
-     btn.onclick=()=>{
-       if(s==="แม่มด"){ witchUsed=true; }
-       if(s==="ยิง"){ gunUsed=true; }
+const actions = ["หมาป่า","โหวต"];
 
-       p.status=p.status===s?null:s;
+if(hasWitch){
+  actions.push("แม่มด");
+}
 
-       const lover = players.find(pl =>
-         pl !== p &&
-         (pl.isHeart || pl.role==="คู่รัก") &&
-         (p.isHeart || p.role==="คู่รัก")
-       );
-       if(lover && p.status){
-         lover.status=p.status;
-       }
+if(hasGun){
+  actions.push("ยิง");
+}
+
+actions.forEach(s=>{
+  if(s==="แม่มด" && witchUsed) return;
+  if(s==="ยิง" && gunUsed) return;
+
+  const btn=document.createElement("span");
+  btn.innerText=s;
+  btn.onclick=()=>{
+    if(s==="แม่มด"){ witchUsed=true; }
+    if(s==="ยิง"){ gunUsed=true; }
+
+    p.status=p.status===s?null:s;
+
+    const lover = players.find(pl =>
+      pl !== p &&
+      (pl.isHeart || pl.role==="คู่รัก") &&
+      (p.isHeart || p.role==="คู่รัก")
+    );
+    if(lover && p.status){
+      lover.status=p.status;
+    }
 
        openSummary();
        checkWin();
@@ -664,7 +695,7 @@ const sorted = [...players].sort((a,b)=>{
    roleDiv.innerHTML=`
        <div class="roleName">${p.name}</div>
        <div>${p.role}</div>
-       <div class="reason">${p.status?"ตาย: "+p.status:""}</div>
+       <div class="reason">${p.status?"ตายโดย: "+p.status:""}</div>
      `;
    left.appendChild(roleDiv);
 
@@ -694,7 +725,7 @@ if(players.some(pl=>pl.role==="คู่รัก")){
 }
 
    let reviveBtn=null;
-   if(p.status && !reviveUsed){
+if(p.status && !reviveUsed && witchAlive){
      reviveBtn=document.createElement("button");
      reviveBtn.innerText="คืนชีพ";
      reviveBtn.style.padding="6px 10px";
@@ -735,8 +766,9 @@ function restartGame(){
  gunUsed=false;
  reviveUsed=false;
 
- showOnly("step2");
- goStep2();
+ localStorage.removeItem("ww_state");
+
+ showOnly("step1");   // กลับหน้าเลือกจำนวนคน
 }
 
 function exitGame(){
