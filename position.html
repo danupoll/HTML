@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Employee Search</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  padding:40px;
+}
+
+input{
+  padding:10px;
+  width:300px;
+  font-size:16px;
+}
+
+.card{
+  border:1px solid #ccc;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+}
+</style>
+</head>
+<body>
+
+<h2>ค้นหา Employee (person_id)</h2>
+
+<input type="text" id="searchBox" placeholder="ใส่ person_id">
+
+<div id="result"></div>
+
+<script>
+
+let employees = [];
+
+fetch("profilecore18.2.26.csv")
+.then(res => {
+  if(!res.ok){
+    throw new Error("โหลดไฟล์ไม่ได้: " + res.status);
+  }
+  return res.text();
+})
+.then(text => {
+
+  const lines = text.trim().split(/\r?\n/);
+
+  // ตรวจว่าคั่นด้วยอะไร
+  const delimiter = lines[0].includes("\t") ? "\t" : ",";
+
+  const rows = lines.map(r =>
+    r.split(delimiter).map(c => c.trim())
+  );
+
+  employees = rows.slice(1);
+
+  console.log("Loaded:", employees.length, "rows");
+
+})
+.catch(err => {
+  console.error("ERROR:", err);
+  document.getElementById("result").innerHTML =
+    "<p style='color:red'>โหลดไฟล์ไม่ได้ ตรวจชื่อไฟล์หรือ path</p>";
+});
+
+document.getElementById("searchBox").addEventListener("input", function(){
+
+  const keyword = this.value.trim();
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  if(keyword === "") return;
+
+  if(employees.length === 0){
+    resultDiv.innerHTML = "<p>กำลังโหลดข้อมูล...</p>";
+    return;
+  }
+
+  const found = employees.find(emp => emp[0] === keyword);
+
+  if(!found){
+    resultDiv.innerHTML = "<p>ไม่พบข้อมูล</p>";
+    return;
+  }
+
+  resultDiv.innerHTML = `
+    <div class="card">
+      <strong>person_id:</strong> ${found[0]}<br>
+      <strong>code:</strong> ${found[1]}<br>
+      <strong>code2:</strong> ${found[2]}<br>
+      <strong>name:</strong> ${found[3]}
+    </div>
+  `;
+});
+
+</script>
+
+</body>
+</html>
