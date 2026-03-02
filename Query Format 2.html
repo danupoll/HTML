@@ -107,7 +107,8 @@ body{
 .main{
     padding:34px;
     max-width:1200px;
-    margin:0 auto;
+    margin:0;
+    margin-right:380px; /* เว้นที่ให้ history panel */
 }
 
 .container{
@@ -135,7 +136,7 @@ textarea{
     border:1px solid #e5e5ea;
     font-size:15px;
     outline:none;
-    color:#9ca3af; /* ⭐ hint สีเทา */
+    color:#9ca3af;
 }
 
 .format-select{
@@ -213,8 +214,7 @@ button{
 
 <div class="topbar">
   <div class="logo"><a href="index.html">MyApp</a></div>
-  <div class="menu">
-  </div>
+  <div class="menu"></div>
 </div>
 
 <div class="main">
@@ -237,6 +237,13 @@ button{
 <label><input type="radio" name="format" value="comma" checked> 1000,1002,1003</label>
 <label><input type="radio" name="format" value="single"> '1000','1002','1003'</label>
 <label><input type="radio" name="format" value="double"> "1000","1002","1003"</label>
+</div>
+
+<!-- ⭐ เพิ่มโหมดกรอง -->
+<div class="format-select">
+<label><input type="radio" name="filterMode" value="unique" checked> แสดงทั้งหมดโดยตัดซ้ำเหลือแค่อันเดียว</label>
+<label><input type="radio" name="filterMode" value="duplicate"> แสดงข้อมูลที่ซ้ำเท่านั้น</label>
+<label><input type="radio" name="filterMode" value="onlyonce"> ห้ามแสดงรายการที่ซ้ำเลย</label>
 </div>
 
 <button onclick="processText()">ประมวลผล</button>
@@ -302,20 +309,34 @@ function processText() {
         .filter(x => x !== "");
 
     let originalCount = list.length;
-    let unique = [...new Set(list)];
-    let uniqueCount = unique.length;
-    let duplicates = list.filter((item, index) => list.indexOf(item) !== index);
-    let removed = [...new Set(duplicates)];
+
+    // ===== นับจำนวน =====
+    let countMap = {};
+    list.forEach(x=>{
+        countMap[x]=(countMap[x]||0)+1;
+    });
+
+    let unique = Object.keys(countMap);
+    let duplicates = unique.filter(x=>countMap[x]>1);
+    let onlyOnce = unique.filter(x=>countMap[x]===1);
+
+    // ===== เลือกโหมด =====
+    let mode = document.querySelector('input[name="filterMode"]:checked').value;
+
+    let workingList;
+    if(mode==="unique") workingList = unique;
+    else if(mode==="duplicate") workingList = duplicates;
+    else workingList = onlyOnce;
 
     let format = document.querySelector('input[name="format"]:checked').value;
 
-    let formatted = unique.map(x => {
+    let formatted = workingList.map(x => {
         if (format === "single") return `'${x}'`;
         if (format === "double") return `"${x}"`;
         return x;
     });
 
-    let maxLen = Math.max(...formatted.map(x => x.length)) + 6;
+    let maxLen = Math.max(...formatted.map(x => x.length),1) + 6;
     let pad = (str) => str + " ".repeat(maxLen - str.length);
 
     let finalResult = "";
@@ -327,15 +348,9 @@ function processText() {
 `สรุปผลรายการ
 ──────────────────────────────
 • รายการทั้งหมด        : <strong>${originalCount}</strong>
-• รายการไม่ซ้ำ         : <strong>${uniqueCount}</strong>
-• รายการที่ถูกลบ (ซ้ำ) : <strong>${originalCount - uniqueCount}</strong>
+• จำนวนหลังกรอง        : <strong>${workingList.length}</strong>
+• รายการที่ซ้ำทั้งหมด : <strong>${duplicates.length}</strong>
 `;
-
-    if (removed.length) {
-        summaryText += `\nรายการที่ถูกลบ:\n${removed.join(", ")}`;
-    } else {
-        summaryText += `\nไม่มีค่าที่ถูกลบ`;
-    }
 
     document.getElementById("summary").innerHTML = summaryText;
     document.getElementById("output").innerText = finalResult.trimEnd();
