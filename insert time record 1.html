@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <style>
+
 :root{
 --bg:#f1f5f9;
 --card:#ffffff;
@@ -31,8 +32,13 @@ font-family:system-ui,monospace;
 .wrapper{max-width:920px;margin:auto}
 
 .header{margin-bottom:26px}
+
 .header h1{margin:0;font-size:26px}
-.header p{margin:6px 0 0;color:var(--muted)}
+
+.header p{
+margin:6px 0 0;
+color:var(--muted)
+}
 
 .card{
 background:var(--card);
@@ -43,6 +49,7 @@ border:1px solid var(--border);
 }
 
 .section{margin-bottom:28px}
+
 .section-title{
 font-weight:700;
 margin-bottom:12px;
@@ -111,8 +118,15 @@ font-weight:700;
 cursor:pointer;
 }
 
-button.primary{background:var(--primary);color:#fff}
-button.secondary{background:#16a34a;color:#fff}
+button.primary{
+background:var(--primary);
+color:#fff
+}
+
+button.secondary{
+background:#16a34a;
+color:#fff
+}
 
 textarea{
 width:100%;
@@ -126,6 +140,7 @@ font-family:monospace;
 font-size:13px;
 resize:vertical;
 }
+
 </style>
 </head>
 
@@ -142,7 +157,9 @@ resize:vertical;
 
 <div class="section">
 <div class="section-title">📅 วันที่ & เวลา</div>
+
 <div class="grid">
+
 <div class="field">
 <label>ช่วงวันที่</label>
 <input id="dateRange">
@@ -157,11 +174,13 @@ resize:vertical;
 <label>เวลาออก</label>
 <input type="time" id="timeOut" value="18:00">
 </div>
+
 </div>
 </div>
 
 <div class="section">
 <div class="section-title">🚫 ยกเว้นวัน</div>
+
 <div class="weekdays">
 <button class="day-btn" data-day="1">จันทร์</button>
 <button class="day-btn" data-day="2">อังคาร</button>
@@ -171,19 +190,25 @@ resize:vertical;
 <button class="day-btn active" data-day="6">เสาร์</button>
 <button class="day-btn active" data-day="0">อาทิตย์</button>
 </div>
+
 </div>
 
 <div class="section">
+
 <div class="section-title">👤 พนักงาน</div>
+
 <div class="grid">
+
 <div class="field">
 <label>Badge ID</label>
 <input id="x2">
 </div>
+
 <div class="field">
 <label>Employee ID</label>
 <input id="x3">
 </div>
+
 </div>
 </div>
 
@@ -198,43 +223,76 @@ resize:vertical;
 </div>
 
 <script>
-flatpickr('#dateRange',{mode:'range',dateFormat:'Y-m-d'});
 
-const skipWeekdays=new Set([0,6]);
+flatpickr('#dateRange',{
+mode:'range',
+dateFormat:'Y-m-d'
+})
+
+const skipWeekdays=new Set([0,6])
 
 document.querySelectorAll('.day-btn').forEach(btn=>{
 btn.onclick=()=>{
-btn.classList.toggle('active');
-const d=Number(btn.dataset.day);
+
+btn.classList.toggle('active')
+
+const d=Number(btn.dataset.day)
+
 btn.classList.contains('active')
 ? skipWeekdays.add(d)
-: skipWeekdays.delete(d);
-};
-});
+: skipWeekdays.delete(d)
 
-const template=`INSERT INTO "time".time_record(created_at,updated_at,identification_no,inout_flag,source,location_id,reference_code,
-status,machine_ip,machine_name,location_name,set_id,empl_id,lat,lng,record_type,record_time,record_date,last_update,kafka_time,source_type,split_in_out)
-VALUES
-('x1 x4_in','x1 x4_in','x2','0','15','5001','x2','N','IP','IN','LOC','TH','x3',NULL,NULL,NULL,'x1 x4_in','x1','x1','x1','time-device','in'),
-('x1 x4_out','x1 x4_out','x2','1','15','5001','x2','N','IP','OUT','LOC','TH','x3',NULL,NULL,NULL,'x1 x4_out','x1','x1','x1','time-device','out');`;
+}
+})
+
+function formatDate(date){
+
+return date.getFullYear() + '-' +
+String(date.getMonth()+1).padStart(2,'0') + '-' +
+String(date.getDate()).padStart(2,'0')
+
+}
+
+const template=`
+
+INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
+status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
+
+VALUES ('x1 x4_in:00.000000+00', 'x1 x4_in:00.000000+00','x2','0.00','15.00','5001.00',
+'x2','N','10.4.127.34','Korat-SLH1-3-In-01', 'CPF-แปรรูปไก่โคราช-5001', 'THAGR', 'x3',NULL,NULL,NULL,
+'x1 x4_in:00+07', 'x1 x4_in:00+07', 'x1 x4_in:00+07', 'x1 x4_in:00+07','time-device','in');
+
+
+INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
+status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
+
+VALUES ('x1 x4_out:00.000000+00', 'x1 x4_out:00.000000+00','x2','1.00','15.00','5001.00',
+'x2','N','10.4.127.34','Korat-SLH1-3-Out-01', 'CPF-แปรรูปไก่โคราช-5001', 'THAGR', 'x3',NULL,NULL,NULL,
+'x1 x4_out:00+07', 'x1 x4_out:00+07', 'x1 x4_out:00+07', 'x1 x4_out:00+07','time-device','out');
+
+`
 
 function generateSQL(){
-if(!dateRange.value||!x2.value||!x3.value)
-return alert('ข้อมูลไม่ครบ');
 
-const [s,e]=dateRange.value.split(' to ');
-let d=new Date(s);
-const end=new Date(e||s);
-let out='';
+if(!dateRange.value||!x2.value||!x3.value)
+return alert('ข้อมูลไม่ครบ')
+
+const [s,e]=dateRange.value.split(' to ')
+
+let d=new Date(s+"T00:00:00")
+
+const end=new Date((e||s)+"T00:00:00")
+
+let out=''
 
 while(d<=end){
 
 if(skipWeekdays.has(d.getDay())){
-d.setDate(d.getDate()+1);
-continue;
+d.setDate(d.getDate()+1)
+continue
 }
 
-const day=d.toISOString().slice(0,10);
+const day=formatDate(d)
 
 out+=template
 .replaceAll('x1',day)
@@ -242,18 +300,25 @@ out+=template
 .replaceAll('x3',x3.value)
 .replaceAll('x4_in',timeIn.value)
 .replaceAll('x4_out',timeOut.value)
-+'\n\n';
 
-d.setDate(d.getDate()+1);
++'\n'
+
+d.setDate(d.getDate()+1)
+
 }
 
-output.value=out.trim();
+output.value=out.trim()
+
 }
 
 function copySQL(){
-output.select();
-document.execCommand('copy');
+
+output.select()
+
+document.execCommand('copy')
+
 }
+
 </script>
 
 </body>
