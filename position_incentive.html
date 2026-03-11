@@ -89,15 +89,38 @@ document.getElementById("searchBox").addEventListener("input", function(){
     return;
   }
 
+  // รวม workgroup
+  const grouped = {};
+
   found.forEach(r => {
+
+    const key = r[0] + "|" + r[4];
+
+    if(!grouped[key]){
+      grouped[key] = {
+        position:r[0],
+        name:r[1],
+        rate:r[2],
+        code:r[4],
+        workgroups:[]
+      };
+    }
+
+    if(!grouped[key].workgroups.includes(r[3])){
+      grouped[key].workgroups.push(r[3]);
+    }
+
+  });
+
+  Object.values(grouped).forEach(item => {
 
     resultDiv.innerHTML += `
       <div class="card">
-        <div><strong>position Code:</strong> ${r[0]}</div>
-        <div><strong>incentive Name:</strong> ${r[1]}</div>
-        <div><strong>rate:</strong> ${r[2]}</div>
-        <div><strong>workgroup:</strong> ${r[3]}</div>
-        <div><strong>incentive Code:</strong> ${r[4]}</div>
+        <div><strong>Position Code:</strong> ${item.position}</div>
+        <div><strong>Incentive Name:</strong> ${item.name}</div>
+        <div><strong>Rate:</strong> ${item.rate}</div>
+        <div><strong>Workgroups:</strong> ${item.workgroups.join(", ")}</div>
+        <div><strong>Incentive Code:</strong> ${item.code}</div>
       </div>
     `;
 
