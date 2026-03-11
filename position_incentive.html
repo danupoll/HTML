@@ -11,10 +11,6 @@ body{
   background:#f5f5f5;
 }
 
-h2{
-  margin-bottom:20px;
-}
-
 input{
   padding:10px;
   width:320px;
@@ -51,30 +47,17 @@ strong{
 let dataRows = [];
 
 fetch("position_incentive.csv")
-.then(res => {
-  if(!res.ok){
-    throw new Error("โหลด CSV ไม่ได้");
-  }
-  return res.text();
-})
+.then(res => res.text())
 .then(text => {
 
   const lines = text.trim().split(/\r?\n/);
-  const delimiter = lines[0].includes("\t") ? "\t" : ",";
-
-  const rows = lines.map(r =>
-    r.split(delimiter).map(c => c.trim())
-  );
+  const rows = lines.map(r => r.split(","));
 
   dataRows = rows.slice(1);
 
-})
-.catch(err => {
-  document.getElementById("result").innerHTML =
-    "<p style='color:red'>โหลด CSV ไม่ได้ ตรวจ path ไฟล์</p>";
 });
 
-document.getElementById("searchBox").addEventListener("input", function(){
+document.getElementById("searchBox").addEventListener("keyup", function(){
 
   const keyword = this.value.trim();
   const resultDiv = document.getElementById("result");
@@ -89,40 +72,19 @@ document.getElementById("searchBox").addEventListener("input", function(){
     return;
   }
 
-  // รวม workgroup
-  const grouped = {};
-
   found.forEach(r => {
 
-    const key = r[0] + "|" + r[4];
+    const card = document.createElement("div");
+    card.className = "card";
 
-    if(!grouped[key]){
-      grouped[key] = {
-        position:r[0],
-        name:r[1],
-        rate:r[2],
-        code:r[4],
-        workgroups:[]
-      };
-    }
+    card.innerHTML =
+      "<div><strong>Position Code:</strong> "+r[0]+"</div>" +
+      "<div><strong>Incentive Name:</strong> "+r[1]+"</div>" +
+      "<div><strong>Rate:</strong> "+r[2]+"</div>" +
+      "<div><strong>Workgroup:</strong> "+r[3]+"</div>" +
+      "<div><strong>Incentive Code:</strong> "+r[4]+"</div>";
 
-    if(!grouped[key].workgroups.includes(r[3])){
-      grouped[key].workgroups.push(r[3]);
-    }
-
-  });
-
-  Object.values(grouped).forEach(item => {
-
-    resultDiv.innerHTML += `
-      <div class="card">
-        <div><strong>Position Code:</strong> ${item.position}</div>
-        <div><strong>Incentive Name:</strong> ${item.name}</div>
-        <div><strong>Rate:</strong> ${item.rate}</div>
-        <div><strong>Workgroups:</strong> ${item.workgroups.join(", ")}</div>
-        <div><strong>Incentive Code:</strong> ${item.code}</div>
-      </div>
-    `;
+    resultDiv.appendChild(card);
 
   });
 
