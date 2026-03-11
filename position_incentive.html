@@ -46,14 +46,25 @@ strong{
 
 let dataRows = [];
 
-fetch("position_incentive.csv")
+fetch("./position_incentive.csv")
 .then(res => res.text())
 .then(text => {
 
   const lines = text.trim().split(/\r?\n/);
-  const rows = lines.map(r => r.split(","));
 
-  dataRows = rows.slice(1);
+  dataRows = lines.slice(1).map(row => {
+
+    const cols = row.split(",").map(c => c.trim());
+
+    return {
+      position: cols[0],
+      name: cols[1],
+      rate: cols[2],
+      workgroup: cols[3],
+      code: cols[4]
+    };
+
+  });
 
 });
 
@@ -61,11 +72,14 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
 
   const keyword = this.value.trim();
   const resultDiv = document.getElementById("result");
+
   resultDiv.innerHTML = "";
 
   if(keyword === "") return;
 
-  const found = dataRows.filter(r => r[0].includes(keyword));
+  const found = dataRows.filter(r =>
+    r.position.includes(keyword)
+  );
 
   if(found.length === 0){
     resultDiv.innerHTML = "<p>ไม่พบข้อมูล</p>";
@@ -78,11 +92,11 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
     card.className = "card";
 
     card.innerHTML =
-      "<div><strong>Position Code:</strong> "+r[0]+"</div>" +
-      "<div><strong>Incentive Name:</strong> "+r[1]+"</div>" +
-      "<div><strong>Rate:</strong> "+r[2]+"</div>" +
-      "<div><strong>Workgroup:</strong> "+r[3]+"</div>" +
-      "<div><strong>Incentive Code:</strong> "+r[4]+"</div>";
+      "<div><strong>Position Code:</strong> "+r.position+"</div>" +
+      "<div><strong>Incentive Name:</strong> "+r.name+"</div>" +
+      "<div><strong>Rate:</strong> "+r.rate+"</div>" +
+      "<div><strong>Workgroup:</strong> "+r.workgroup+"</div>" +
+      "<div><strong>Incentive Code:</strong> "+r.code+"</div>";
 
     resultDiv.appendChild(card);
 
