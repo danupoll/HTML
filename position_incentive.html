@@ -90,7 +90,7 @@ button:hover{
 
 <div class="toolbar">
 <input type="text" id="searchBox" placeholder="พิมพ์ position หรือ workgroup">
-<button onclick="downloadCSV()">📥 Download CSV</button>
+<button onclick="downloadCSV()">📥 Download CSV (ทั้งหมดในระบบ)</button>
 </div>
 
 <div id="result"></div>
@@ -107,7 +107,7 @@ fetch("./position_incentive.csv")
 
   dataRows = lines.slice(1).map(row => {
 
-    const cols = row.split(",").map(c => c.trim());
+    const cols = row.split(",").map(c => c.replace(/"/g,"").trim());
 
     return {
       position: cols[0],
