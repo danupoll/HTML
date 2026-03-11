@@ -158,7 +158,7 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
       "<div class='row'><div class='label'>Position Code:</div><div class='value'>"+highlight(r.position,keyword)+"</div></div>" +
       "<div class='row'><div class='label'>Incentive Name:</div><div class='value'>"+r.name+"</div></div>" +
       "<div class='row'><div class='label'>Rate:</div><div class='value'>"+r.rate+"</div></div>" +
-      "<div class='row'><div class='label'>Workgroup:</div><div class='value'>"+highlight(r.workgroup,keyword)+"</div></div>" +
+      "<div class='row'><div class='label'>Workgroup:</div><div class='value'>"+highlight(r.workgroup.replace(/\n/g,", "),keyword)+"</div></div>" +
       "<div class='row'><div class='label'>Incentive Code:</div><div class='value'>"+r.code+"</div></div>";
 
     resultDiv.appendChild(card);
