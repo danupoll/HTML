@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Position Incentive Search</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  padding:40px;
+  background:#f5f5f5;
+}
+
+h2{
+  margin-bottom:20px;
+}
+
+input{
+  padding:10px;
+  width:320px;
+  font-size:16px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+.card{
+  background:white;
+  border:1px solid #ddd;
+  padding:12px;
+  margin-top:12px;
+  border-radius:6px;
+}
+
+strong{
+  display:inline-block;
+  width:160px;
+}
+</style>
+
+</head>
+<body>
+
+<h2>ค้นหา Position Code</h2>
+
+<input type="text" id="searchBox" placeholder="ใส่ position code">
+
+<div id="result"></div>
+
+<script>
+
+let dataRows = [];
+
+fetch("position_incentive.csv")
+.then(res => {
+  if(!res.ok){
+    throw new Error("โหลด CSV ไม่ได้");
+  }
+  return res.text();
+})
+.then(text => {
+
+  const lines = text.trim().split(/\r?\n/);
+  const delimiter = lines[0].includes("\t") ? "\t" : ",";
+
+  const rows = lines.map(r =>
+    r.split(delimiter).map(c => c.trim())
+  );
+
+  dataRows = rows.slice(1);
+
+})
+.catch(err => {
+  document.getElementById("result").innerHTML =
+    "<p style='color:red'>โหลด CSV ไม่ได้ ตรวจ path ไฟล์</p>";
+});
+
+document.getElementById("searchBox").addEventListener("input", function(){
+
+  const keyword = this.value.trim();
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  if(keyword === "") return;
+
+  const found = dataRows.filter(r => r[0].includes(keyword));
+
+  if(found.length === 0){
+    resultDiv.innerHTML = "<p>ไม่พบข้อมูล</p>";
+    return;
+  }
+
+  found.forEach(r => {
+
+    resultDiv.innerHTML += `
+      <div class="card">
+        <div><strong>Position Code:</strong> ${r[0]}</div>
+        <div><strong>Incentive Name:</strong> ${r[1]}</div>
+        <div><strong>Rate:</strong> ${r[2]}</div>
+        <div><strong>Workgroup:</strong> ${r[3]}</div>
+        <div><strong>Incentive Code:</strong> ${r[4]}</div>
+      </div>
+    `;
+
+  });
+
+});
+
+</script>
+
+</body>
+</html>
