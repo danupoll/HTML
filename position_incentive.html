@@ -76,6 +76,12 @@ button:hover{
   word-break:break-word;
 }
 
+/* ป้องกัน workgroup ขึ้นบรรทัด */
+.workgroup{
+  white-space:nowrap;
+  overflow-x:auto;
+}
+
 .highlight{
   background:yellow;
   padding:2px 4px;
@@ -113,7 +119,7 @@ fetch("./position_incentive.csv")
       position_code: cols[0],
       trc_incentive_name: cols[1],
       rate: cols[2],
-      workgroups: cols[3].replace(/\r?\n|\r/g," ").trim(),
+      workgroups: cols[3],
       trc_incentive_code: cols[4]
     };
 
@@ -125,9 +131,9 @@ function highlight(text, keyword){
 
   if(!keyword) return text;
 
-  const regex = new RegExp(keyword, "gi");
+  const regex = new RegExp(keyword,"gi");
 
-  return text.replace(regex, match =>
+  return text.replace(regex,match =>
     `<span class="highlight">${match}</span>`
   );
 
@@ -177,13 +183,11 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
 
       "<div class='row'><div class='label'>Incentive Code:</div><div class='value'>"
       +r.trc_incentive_code+
-      "</div></div>";
-
-      "<div class='row'><div class='label'>Workgroups:</div><div class='value'>"
-      +highlight(wg,keyword)+
       "</div></div>" +
 
-
+      "<div class='row'><div class='label'>Workgroups:</div><div class='value workgroup'>"
+      +highlight(wg,keyword)+
+      "</div></div>";
 
     resultDiv.appendChild(card);
 
