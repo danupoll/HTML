@@ -113,7 +113,7 @@ fetch("./position_incentive.csv")
       position_code: cols[0],
       trc_incentive_name: cols[1],
       rate: cols[2],
-      workgroups: cols[3],
+      workgroups: cols[3].replace(/\r?\n|\r/g," ").trim(),
       trc_incentive_code: cols[4]
     };
 
@@ -143,8 +143,8 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
   if(keyword === "") return;
 
   const found = dataRows.filter(r =>
-    r.position_code.toLowerCase().includes(keyword) ||
-    r.workgroups.toLowerCase().includes(keyword)
+    r.position_code.toLowerCase() === keyword ||
+    r.workgroups.toLowerCase() === keyword
   );
 
   if(found.length === 0){
@@ -156,6 +156,11 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
 
     const card = document.createElement("div");
     card.className = "card";
+
+    const wg = r.workgroups
+      .replace(/\r?\n|\r/g,",")
+      .replace(/\s+/g,"")
+      .replace(/,+/g,",");
 
     card.innerHTML =
       "<div class='row'><div class='label'>Position Code:</div><div class='value'>"
@@ -171,7 +176,7 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
       "</div></div>" +
 
       "<div class='row'><div class='label'>Workgroups:</div><div class='value'>"
-      +highlight(r.workgroups.replace(/\r?\n|\r/g,", "),keyword)+
+      +highlight(wg,keyword)+
       "</div></div>" +
 
       "<div class='row'><div class='label'>Incentive Code:</div><div class='value'>"
