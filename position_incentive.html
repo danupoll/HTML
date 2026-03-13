@@ -175,13 +175,15 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
       +r.rate+
       "</div></div>" +
 
+      "<div class='row'><div class='label'>Incentive Code:</div><div class='value'>"
+      +r.trc_incentive_code+
+      "</div></div>";
+
       "<div class='row'><div class='label'>Workgroups:</div><div class='value'>"
       +highlight(wg,keyword)+
       "</div></div>" +
 
-      "<div class='row'><div class='label'>Incentive Code:</div><div class='value'>"
-      +r.trc_incentive_code+
-      "</div></div>";
+
 
     resultDiv.appendChild(card);
 
