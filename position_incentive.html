@@ -110,11 +110,11 @@ fetch("./position_incentive.csv")
     const cols = row.split(",").map(c => c.replace(/"/g,"").trim());
 
     return {
-      position: cols[0],
-      name: cols[1],
+      position_code: cols[0],
+      trc_incentive_name: cols[1],
       rate: cols[2],
-      workgroup: cols[3],
-      code: cols[4]
+      workgroups: cols[3],
+      trc_incentive_code: cols[4]
     };
 
   });
@@ -123,7 +123,10 @@ fetch("./position_incentive.csv")
 
 function highlight(text, keyword){
 
+  if(!keyword) return text;
+
   const regex = new RegExp(keyword, "gi");
+
   return text.replace(regex, match =>
     `<span class="highlight">${match}</span>`
   );
@@ -140,8 +143,8 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
   if(keyword === "") return;
 
   const found = dataRows.filter(r =>
-    r.position.toLowerCase().includes(keyword) ||
-    r.workgroup.toLowerCase().includes(keyword)
+    r.position_code.toLowerCase().includes(keyword) ||
+    r.workgroups.toLowerCase().includes(keyword)
   );
 
   if(found.length === 0){
@@ -155,11 +158,25 @@ document.getElementById("searchBox").addEventListener("keyup", function(){
     card.className = "card";
 
     card.innerHTML =
-      "<div class='row'><div class='label'>Workgroup:</div><div class='value'>"+highlight(r.workgroup.replace(/\r?\n|\r/g,", "),keyword)+"</div></div>" +
-      "<div class='row'><div class='label'>Incentive Name:</div><div class='value'>"+r.name+"</div></div>" +
-      "<div class='row'><div class='label'>Rate:</div><div class='value'>"+r.rate+"</div></div>" +
-      "<div class='row'><div class='label'>Workgroup:</div><div class='value'>"+highlight(r.workgroup.replace(/\n/g,", "),keyword)+"</div></div>" +
-      "<div class='row'><div class='label'>Incentive Code:</div><div class='value'>"+r.code+"</div></div>";
+      "<div class='row'><div class='label'>Position Code:</div><div class='value'>"
+      +highlight(r.position_code,keyword)+
+      "</div></div>" +
+
+      "<div class='row'><div class='label'>Incentive Name:</div><div class='value'>"
+      +r.trc_incentive_name+
+      "</div></div>" +
+
+      "<div class='row'><div class='label'>Rate:</div><div class='value'>"
+      +r.rate+
+      "</div></div>" +
+
+      "<div class='row'><div class='label'>Workgroups:</div><div class='value'>"
+      +highlight(r.workgroups.replace(/\r?\n|\r/g,", "),keyword)+
+      "</div></div>" +
+
+      "<div class='row'><div class='label'>Incentive Code:</div><div class='value'>"
+      +r.trc_incentive_code+
+      "</div></div>";
 
     resultDiv.appendChild(card);
 
