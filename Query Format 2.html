@@ -2,446 +2,348 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Query Format Tool</title>
+<title>เครื่องมือจัดรูปแบบ Query</title>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
 
 body{
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
-    background:#f2f2f7;
-    color:#1d1d1f;
-    padding-top:56px;
-    font-size:15px;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+background:#f2f2f7;
+color:#1d1d1f;
+padding-top:60px;
 }
 
-/* ===== TOP BAR ===== */
+/* topbar */
+
 .topbar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:56px;
-    background:#111827;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 18px;
-    z-index:9999;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:60px;
+background:#111827;
+display:flex;
+align-items:center;
+padding:0 24px;
+color:#fff;
+z-index:10;
 }
 
-.logo a{
-    color:#fff;
-    text-decoration:none;
-    font-weight:600;
+.logo{
+font-weight:600;
 }
 
-.menu{
-    display:flex;
-    gap:14px;
+/* layout */
+
+.wrapper{
+max-width:1200px;
+margin:auto;
+display:flex;
+gap:32px;
+padding:30px;
 }
 
-.menu a{
-    color:#e5e7eb;
-    text-decoration:none;
-    font-size:14px;
-    padding:6px 8px;
-    border-radius:8px;
-}
-.menu a:hover{
-    background:#374151;
+/* sidebar */
+
+.sidebar{
+width:240px;
+background:rgba(255,255,255,0.7);
+backdrop-filter:blur(20px);
+border-radius:20px;
+padding:22px;
+border:1px solid #e5e5ea;
+box-shadow:0 10px 30px rgba(0,0,0,0.05);
+height:fit-content;
 }
 
-/* ===== Right History Panel ===== */
-.history-panel{
-    position:fixed;
-    top:56px;
-    right:0;
-    width:380px;
-    height:calc(100vh - 56px);
-    padding:22px;
-    background:rgba(255,255,255,0.7);
-    backdrop-filter:blur(20px);
-    border-left:1px solid #e5e5ea;
+.sidebar h3{
+font-size:15px;
+margin-bottom:10px;
+color:#6e6e73;
 }
 
-.history-title{
-    font-weight:600;
-    margin-bottom:12px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.option-card{
+border:1px solid #e5e5ea;
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
+cursor:pointer;
+background:#fff;
+transition:0.15s;
+font-size:14px;
 }
 
-.history-item{
-    padding:12px;
-    border-radius:10px;
-    margin-bottom:10px;
-    background:#fff;
-    cursor:pointer;
-    font-size:14px;
-    border:1px solid #e5e5ea;
-    position:relative;
-}
-.history-item:hover{
-    background:#f2f2f7;
+.option-card:hover{
+background:#f9fafb;
 }
 
-.history-item.active{
-    background:#fff3e6;
-    border-color:#ffb36b;
+.option-card.active{
+border-color:#0071e3;
+background:#eef6ff;
 }
 
-.history-delete{
-    position:absolute;
-    right:8px;
-    top:8px;
-    cursor:pointer;
-    color:#ff3b30;
-    font-weight:700;
-}
+/* main */
 
-/* ===== Main ===== */
 .main{
-    padding:34px;
-    max-width:1200px;
-    margin:0;
-    margin-right:380px; /* เว้นที่ให้ history panel */
+flex:1;
+background:rgba(255,255,255,0.7);
+backdrop-filter:blur(20px);
+border-radius:20px;
+padding:28px;
+border:1px solid #e5e5ea;
+box-shadow:0 10px 30px rgba(0,0,0,0.05);
 }
 
-.container{
-    max-width:1100px;
-    margin:auto;
-    padding:30px;
-    border-radius:20px;
-    background:rgba(255,255,255,0.7);
-    backdrop-filter:blur(20px);
-    box-shadow:
-        0 12px 32px rgba(0,0,0,0.08),
-        inset 0 1px 0 rgba(255,255,255,0.6);
+h1{
+font-size:26px;
+margin-bottom:10px;
 }
 
-h1{margin-top:0;font-size:28px;font-weight:600}
-h2{font-size:20px;font-weight:600;margin-top:30px}
-p{color:#6e6e73}
+.desc{
+color:#6e6e73;
+margin-bottom:20px;
+}
 
 textarea{
-    width:100%;
-    height:190px;
-    margin-top:14px;
-    padding:16px;
-    border-radius:14px;
-    border:1px solid #e5e5ea;
-    font-size:15px;
-    outline:none;
-    color:#9ca3af;
+width:100%;
+height:180px;
+border-radius:14px;
+border:1px solid #e5e5ea;
+padding:16px;
+font-size:14px;
+resize:none;
+outline:none;
 }
 
-.format-select{
-    margin:20px 0 26px;
-}
-.format-select label{
-    display:block;
-    padding:10px 0;
-    font-size:15px;
-}
+/* button */
 
 button{
-    border:none;
-    padding:11px 20px;
-    border-radius:12px;
-    font-size:15px;
-    font-weight:500;
-    cursor:pointer;
-    background:#0071e3;
-    color:#fff;
-    margin-right:8px;
-    transition:0.2s;
+margin-top:8px;
+padding:10px 18px;
+border:none;
+border-radius:10px;
+background:#0071e3;
+color:#fff;
+font-size:14px;
+cursor:pointer;
 }
 
-#copyBtn.success{
-    background:#16a34a;
+/* summary */
+
+.summary{
+margin-top:20px;
+background:#fff;
+border:1px solid #e5e5ea;
+border-radius:16px;
+padding:16px;
+line-height:1.8;
 }
 
-#clearHistoryBtn{
-    background:#ff3b30;
-    padding:6px 10px;
-    font-size:12px;
+.summary strong{
+color:#ff7a00;
 }
 
-.summary-box{
-    margin-top:14px;
-    padding:20px;
-    border-radius:16px;
-    background:#fff;
-    border:1px solid #e5e5ea;
-    font-size:15px;
-    line-height:1.9;
-    white-space:pre-line;
-}
-.summary-box strong{
-    font-size:20px;
-    color:#ff7a00;
-    font-weight:700;
+/* output */
+
+.output-head{
+margin-top:20px;
 }
 
-.output-box{
-    margin-top:14px;
-    padding:18px;
-    border-radius:16px;
-    background:#ffffff;
-    border:1px solid #e5e5ea;
-    font-family:Menlo,Consolas,monospace;
-    font-size:15px;
-    line-height:2.1;
-    white-space:pre;
-    max-height:520px;
-    overflow:auto;
+.output-title{
+font-weight:600;
+margin-bottom:6px;
 }
 
-.row-head{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:20px;
+.output{
+margin-top:10px;
+background:#fff;
+border:1px solid #e5e5ea;
+border-radius:16px;
+padding:16px;
+font-family:Menlo,Consolas,monospace;
+white-space:pre;
+line-height:2;
+max-height:420px;
+overflow:auto;
 }
+
+.copy-success{
+background:#16a34a!important;
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="topbar">
-  <div class="logo"><a href="index.html">MyApp</a></div>
-  <div class="menu"></div>
+<div class="logo">เครื่องมือจัดรูปแบบ Query</div>
 </div>
 
+<div class="wrapper">
+
+<!-- sidebar -->
+
+<div class="sidebar">
+
+<h3>รูปแบบ</h3>
+
+<div class="option-card active" data-format="comma">
+100,200,300
+</div>
+
+<div class="option-card" data-format="single">
+'100','200','300'
+</div>
+
+<div class="option-card" data-format="double">
+"100","200","300"
+</div>
+
+<h3 style="margin-top:20px;">เงื่อนไข</h3>
+
+<div class="option-card active" data-filter="unique">
+แสดงทั้งหมดโดยตัดซ้ำ
+</div>
+
+<div class="option-card" data-filter="duplicate">
+แสดงเฉพาะรายการที่ซ้ำ
+</div>
+
+<div class="option-card" data-filter="onlyonce">
+แสดงเฉพาะรายการที่ไม่ซ้ำ
+</div>
+
+</div>
+
+<!-- main -->
+
 <div class="main">
-<div class="container">
 
 <h1>Query Format Tool</h1>
 
-<p>วางรายการ แล้วเลือกฟอร์แมต ระบบจะลบค่าซ้ำ จัดคอลัมน์ และสรุปผลให้ทันที</p>
+<p class="desc">
+วางรายการ ระบบจะลบค่าซ้ำและจัดรูปแบบให้ทันที
+</p>
 
-<textarea id="inputArea">
-วางข้อมูลแบบ 100,200,300
+<textarea id="inputArea"></textarea>
 
-หรือ
-100
-200
-300
-</textarea>
+<button onclick="process()">ประมวลผล</button>
 
-<div class="format-select">
-<label><input type="radio" name="format" value="comma" checked> 1000,1002,1003</label>
-<label><input type="radio" name="format" value="single"> '1000','1002','1003'</label>
-<label><input type="radio" name="format" value="double"> "1000","1002","1003"</label>
+<div class="summary" id="summary"></div>
+
+<div class="output-head">
+<div class="output-title">ผลลัพธ์</div>
+<button id="copyBtn" onclick="copyResult()">Copy</button>
 </div>
 
-<!-- ⭐ เพิ่มโหมดกรอง -->
-<div class="format-select">
-<label><input type="radio" name="filterMode" value="unique" checked> แสดงทั้งหมดโดยตัดซ้ำเหลือแค่อันเดียว</label>
-<label><input type="radio" name="filterMode" value="duplicate"> แสดงข้อมูลที่ซ้ำเท่านั้น</label>
-<label><input type="radio" name="filterMode" value="onlyonce"> ห้ามแสดงรายการที่ซ้ำเลย</label>
-</div>
-
-<button onclick="processText()">ประมวลผล</button>
-
-<h2>สรุปผล</h2>
-<div id="summary" class="summary-box"></div>
-
-<div class="row-head">
-<h2 style="margin:0;">ผลลัพธ์</h2>
-<button id="copyBtn" onclick="copyOutput()">Copy</button>
-</div>
-
-<div id="output" class="output-box"></div>
+<div class="output" id="output"></div>
 
 </div>
-</div>
 
-<div class="history-panel">
-<div class="history-title">
-<span>History</span>
-<button id="clearHistoryBtn" onclick="clearHistory()">ล้าง</button>
-</div>
-<div id="historyList"></div>
 </div>
 
 <script>
-let activeHistoryIndex=-1;
 
-const inputArea=document.getElementById("inputArea");
+let format="comma"
+let filter="unique"
 
-const hintText=`วางข้อมูลแบบ 100,200,300
+document.querySelectorAll("[data-format]").forEach(el=>{
+el.onclick=()=>{
+document.querySelectorAll("[data-format]").forEach(e=>e.classList.remove("active"))
+el.classList.add("active")
+format=el.dataset.format
+}
+})
 
-หรือ
-100
-200
-300`;
+document.querySelectorAll("[data-filter]").forEach(el=>{
+el.onclick=()=>{
+document.querySelectorAll("[data-filter]").forEach(e=>e.classList.remove("active"))
+el.classList.add("active")
+filter=el.dataset.filter
+}
+})
 
-inputArea.addEventListener("focus",()=>{
-    if(inputArea.value.trim()===hintText.trim()){
-        inputArea.value="";
-        inputArea.style.color="#111";
-    }
-});
+function process(){
 
-inputArea.addEventListener("blur",()=>{
-    if(inputArea.value.trim()===""){
-        inputArea.value=hintText;
-        inputArea.style.color="#9ca3af";
-    }
-});
+let raw=document.getElementById("inputArea").value
 
-function processText() {
-    let raw = inputArea.value.trim();
-    if (!raw || raw===hintText.trim()) {
-        document.getElementById("summary").innerText = "กรุณาวางข้อมูลก่อนครับ";
-        document.getElementById("output").innerText = "";
-        return;
-    }
+let list=raw
+.split(/[\n,\s]+/)
+.map(x=>x.replace(/['"]/g,"").trim())
+.filter(x=>x)
 
-    let list = raw
-        .split(/[\n,\s]+/)
-        .map(x => x.replace(/['"]/g,"").trim())
-        .filter(x => x !== "");
+let total=list.length
 
-    let originalCount = list.length;
+let count={}
+list.forEach(v=>{
+count[v]=(count[v]||0)+1
+})
 
-    // ===== นับจำนวน =====
-    let countMap = {};
-    list.forEach(x=>{
-        countMap[x]=(countMap[x]||0)+1;
-    });
+let unique=Object.keys(count)
+let duplicates=unique.filter(v=>count[v]>1)
+let onlyonce=unique.filter(v=>count[v]==1)
 
-    let unique = Object.keys(countMap);
-    let duplicates = unique.filter(x=>countMap[x]>1);
-    let onlyOnce = unique.filter(x=>countMap[x]===1);
+let working=[]
 
-    // ===== เลือกโหมด =====
-    let mode = document.querySelector('input[name="filterMode"]:checked').value;
+if(filter==="unique") working=unique
+if(filter==="duplicate") working=duplicates
+if(filter==="onlyonce") working=onlyonce
 
-    let workingList;
-    if(mode==="unique") workingList = unique;
-    else if(mode==="duplicate") workingList = duplicates;
-    else workingList = onlyOnce;
+let formatted=working.map(v=>{
+if(format==="single") return `'${v}',`
+if(format==="double") return `"${v}",`
+return `${v},`
+})
 
-    let format = document.querySelector('input[name="format"]:checked').value;
+let maxLen=Math.max(...formatted.map(x=>x.length),1)+6
+let pad=str=>str+" ".repeat(maxLen-str.length)
 
-    let formatted = workingList.map(x => {
-        if (format === "single") return `'${x}'`;
-        if (format === "double") return `"${x}"`;
-        return x;
-    });
+let result=""
 
-    let maxLen = Math.max(...formatted.map(x => x.length),1) + 6;
-    let pad = (str) => str + " ".repeat(maxLen - str.length);
-
-    let finalResult = "";
-    for (let i = 0; i < formatted.length; i += 5) {
-        finalResult += formatted.slice(i, i + 5).map(pad).join("") + "\n";
-    }
-
-    let summaryText =
-`สรุปผลรายการ
-──────────────────────────────
-• รายการทั้งหมด        : <strong>${originalCount}</strong>
-• จำนวนหลังกรอง        : <strong>${workingList.length}</strong>
-• รายการที่ซ้ำทั้งหมด : <strong>${duplicates.length}</strong>
-`;
-
-    document.getElementById("summary").innerHTML = summaryText;
-    document.getElementById("output").innerText = finalResult.trimEnd();
-
-    saveHistory(raw, finalResult.trimEnd());
+for(let i=0;i<formatted.length;i+=5){
+result+=formatted.slice(i,i+5).map(pad).join("")+"\n"
 }
 
-function copyOutput() {
-    let btn = document.getElementById("copyBtn");
-    let text = document.getElementById("output").innerText.trim();
-    if (!text) return;
+document.getElementById("output").innerText=result.trimEnd()
 
-    let cleaned = text.split(/\s+/).filter(x => x).join(",");
-    navigator.clipboard.writeText(cleaned);
+document.getElementById("summary").innerHTML=`
+จำนวนข้อมูลทั้งหมด : <strong>${total}</strong><br>
+ค่าที่ไม่ซ้ำ : <strong>${unique.length}</strong><br>
+จำนวนรายการที่ซ้ำ : <strong>${duplicates.length}</strong><br>
+`
 
-    btn.classList.add("success");
-    btn.innerText="Copied ✓";
-
-    setTimeout(()=>{
-        btn.classList.remove("success");
-        btn.innerText="Copy";
-    },1200);
 }
 
-function clearHistory(){
-    localStorage.removeItem("qft_history");
-    renderHistory();
+function copyResult(){
+
+let btn=document.getElementById("copyBtn")
+
+let text=document.getElementById("output").innerText
+.split(/\s+/)
+.filter(x=>x)
+.join("")
+
+navigator.clipboard.writeText(text)
+
+let count=text.split(",").filter(x=>x).length
+
+btn.classList.add("copy-success")
+btn.innerText=`คัดลอกแล้ว ✓ (${count})`
+
+setTimeout(()=>{
+btn.classList.remove("copy-success")
+btn.innerText="Copy"
+},1500)
+
 }
 
-function deleteHistory(index){
-    let history = JSON.parse(localStorage.getItem("qft_history")||"[]");
-    history.splice(index,1);
-    localStorage.setItem("qft_history",JSON.stringify(history));
-    renderHistory();
-}
-
-function saveHistory(input, output){
-    let history = JSON.parse(localStorage.getItem("qft_history")||"[]");
-
-    if(history.length && history[0].input === input){
-        return;
-    }
-
-    let now=new Date();
-
-    history.unshift({
-        time:now.toLocaleTimeString(),
-        date:now.toLocaleDateString(),
-        input,
-        output
-    });
-
-    history = history.slice(0,20);
-    localStorage.setItem("qft_history",JSON.stringify(history));
-    renderHistory();
-}
-
-function renderHistory(){
-    let box = document.getElementById("historyList");
-    box.innerHTML="";
-    let history = JSON.parse(localStorage.getItem("qft_history")||"[]");
-
-    history.forEach((h,i)=>{
-        let div=document.createElement("div");
-        div.className="history-item";
-        if(i===activeHistoryIndex) div.classList.add("active");
-
-        div.innerText=`${h.date} ${h.time} • ${h.input.split(/[\n,\s]+/).length} items`;
-
-        let del=document.createElement("span");
-        del.className="history-delete";
-        del.innerText="✕";
-        del.onclick=(e)=>{
-            e.stopPropagation();
-            deleteHistory(i);
-        };
-
-        div.onclick=()=>{
-            activeHistoryIndex=i;
-            inputArea.value=h.input;
-            inputArea.style.color="#111";
-            document.getElementById("output").innerText=h.output;
-            renderHistory();
-        };
-
-        div.appendChild(del);
-        box.appendChild(div);
-    });
-}
-
-renderHistory();
 </script>
 
 </body>
