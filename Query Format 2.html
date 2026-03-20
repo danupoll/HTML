@@ -5,12 +5,7 @@
 <title>เครื่องมือจัดรูปแบบ Query</title>
 
 <style>
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
 
 body{
 font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
@@ -18,8 +13,6 @@ background:#f2f2f7;
 color:#1d1d1f;
 padding-top:60px;
 }
-
-/* topbar */
 
 .topbar{
 position:fixed;
@@ -35,11 +28,7 @@ color:#fff;
 z-index:10;
 }
 
-.logo{
-font-weight:600;
-}
-
-/* layout */
+.logo{font-weight:600;}
 
 .wrapper{
 max-width:1200px;
@@ -48,8 +37,6 @@ display:flex;
 gap:32px;
 padding:30px;
 }
-
-/* sidebar */
 
 .sidebar{
 width:240px;
@@ -79,16 +66,12 @@ transition:0.15s;
 font-size:14px;
 }
 
-.option-card:hover{
-background:#f9fafb;
-}
+.option-card:hover{background:#f9fafb;}
 
 .option-card.active{
 border-color:#0071e3;
 background:#eef6ff;
 }
-
-/* main */
 
 .main{
 flex:1;
@@ -100,15 +83,9 @@ border:1px solid #e5e5ea;
 box-shadow:0 10px 30px rgba(0,0,0,0.05);
 }
 
-h1{
-font-size:26px;
-margin-bottom:10px;
-}
+h1{font-size:26px;margin-bottom:10px;}
 
-.desc{
-color:#6e6e73;
-margin-bottom:20px;
-}
+.desc{color:#6e6e73;margin-bottom:20px;}
 
 textarea{
 width:100%;
@@ -121,8 +98,6 @@ resize:none;
 outline:none;
 }
 
-/* button */
-
 button{
 margin-top:8px;
 padding:10px 18px;
@@ -134,8 +109,6 @@ font-size:14px;
 cursor:pointer;
 }
 
-/* summary */
-
 .summary{
 margin-top:20px;
 background:#fff;
@@ -145,15 +118,9 @@ padding:16px;
 line-height:1.8;
 }
 
-.summary strong{
-color:#ff7a00;
-}
+.summary strong{color:#ff7a00;}
 
-/* output */
-
-.output-head{
-margin-top:20px;
-}
+.output-head{margin-top:20px;}
 
 .output-title{
 font-weight:600;
@@ -173,10 +140,7 @@ max-height:420px;
 overflow:auto;
 }
 
-.copy-success{
-background:#16a34a!important;
-}
-
+.copy-success{background:#16a34a!important;}
 </style>
 </head>
 
@@ -188,49 +152,27 @@ background:#16a34a!important;
 
 <div class="wrapper">
 
-<!-- sidebar -->
-
 <div class="sidebar">
 
 <h3>รูปแบบ</h3>
 
-<div class="option-card active" data-format="comma">
-100,200,300
-</div>
-
-<div class="option-card" data-format="single">
-'100','200','300'
-</div>
-
-<div class="option-card" data-format="double">
-"100","200","300"
-</div>
+<div class="option-card active" data-format="comma">100,200,300</div>
+<div class="option-card" data-format="single">'100','200','300'</div>
+<div class="option-card" data-format="double">"100","200","300"</div>
 
 <h3 style="margin-top:20px;">เงื่อนไข</h3>
 
-<div class="option-card active" data-filter="unique">
-แสดงทั้งหมดโดยตัดซ้ำ
-</div>
-
-<div class="option-card" data-filter="duplicate">
-แสดงเฉพาะรายการที่ซ้ำ
-</div>
-
-<div class="option-card" data-filter="onlyonce">
-แสดงเฉพาะรายการที่ไม่ซ้ำ
-</div>
+<div class="option-card active" data-filter="unique">แสดงทั้งหมดโดยตัดซ้ำ</div>
+<div class="option-card" data-filter="duplicate">แสดงเฉพาะรายการที่ซ้ำ</div>
+<div class="option-card" data-filter="onlyonce">แสดงเฉพาะรายการที่ไม่ซ้ำ</div>
 
 </div>
-
-<!-- main -->
 
 <div class="main">
 
 <h1>Query Format Tool</h1>
 
-<p class="desc">
-วางรายการ ระบบจะลบค่าซ้ำและจัดรูปแบบให้ทันที
-</p>
+<p class="desc">วางรายการ ระบบจะลบค่าซ้ำและจัดรูปแบบให้ทันที</p>
 
 <textarea id="inputArea"></textarea>
 
@@ -240,13 +182,12 @@ background:#16a34a!important;
 
 <div class="output-head">
 <div class="output-title">ผลลัพธ์</div>
-<button id="copyBtn" onclick="copyResult()">Copy</button>
+<button id="copyBtn" onclick="copyResult()">Copy (0)</button>
 </div>
 
 <div class="output" id="output"></div>
 
 </div>
-
 </div>
 
 <script>
@@ -319,27 +260,35 @@ document.getElementById("summary").innerHTML=`
 จำนวนรายการที่ซ้ำ : <strong>${duplicates.length}</strong><br>
 `
 
+// ✅ อัปเดตจำนวนที่ปุ่ม
+let btn=document.getElementById("copyBtn")
+btn.innerText=`Copy (${working.length})`
+
 }
 
 function copyResult(){
 
 let btn=document.getElementById("copyBtn")
 
-let text=document.getElementById("output").innerText
+let arr=document.getElementById("output").innerText
 .split(/\s+/)
 .filter(x=>x)
 .join("")
+.split(",")
+.filter(x=>x)
+
+let text=arr.join(",")
 
 navigator.clipboard.writeText(text)
 
-let count=text.split(",").filter(x=>x).length
+let count=arr.length
 
 btn.classList.add("copy-success")
 btn.innerText=`คัดลอกแล้ว ✓ (${count})`
 
 setTimeout(()=>{
 btn.classList.remove("copy-success")
-btn.innerText="Copy"
+btn.innerText=`Copy (${count})`
 },1500)
 
 }
