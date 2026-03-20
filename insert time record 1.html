@@ -2,18 +2,17 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Time Record</title>
+<title>Time Record + Holiday</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <style>
-
 :root{
 --bg:#f1f5f9;
 --card:#ffffff;
 --primary:#2563eb;
---danger:#ef4444;
+--green:#16a34a;
 --text:#0f172a;
 --muted:#64748b;
 --border:#e2e8f0;
@@ -35,10 +34,7 @@ font-family:system-ui,monospace;
 
 .header h1{margin:0;font-size:26px}
 
-.header p{
-margin:6px 0 0;
-color:var(--muted)
-}
+.header p{margin:6px 0 0;color:var(--muted)}
 
 .card{
 background:var(--card);
@@ -90,12 +86,6 @@ border:1px solid var(--border);
 background:#fff;
 cursor:pointer;
 font-weight:600;
-transition:.15s;
-}
-
-.day-btn:hover{
-border-color:var(--primary);
-color:var(--primary);
 }
 
 .day-btn.active{
@@ -118,14 +108,29 @@ font-weight:700;
 cursor:pointer;
 }
 
-button.primary{
-background:var(--primary);
-color:#fff
+.primary{background:var(--primary);color:#fff}
+.secondary{background:var(--green);color:#fff}
+
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:20px;
 }
 
-button.secondary{
-background:#16a34a;
-color:#fff
+.tab{
+flex:1;
+text-align:center;
+padding:12px;
+border-radius:10px;
+border:1px solid var(--border);
+cursor:pointer;
+font-weight:700;
+background:#fff;
+}
+
+.tab.active{
+background:var(--primary);
+color:#fff;
 }
 
 textarea{
@@ -140,7 +145,6 @@ font-family:monospace;
 font-size:13px;
 resize:vertical;
 }
-
 </style>
 </head>
 
@@ -149,11 +153,22 @@ resize:vertical;
 <div class="wrapper">
 
 <div class="header">
-<h1>Time Record - For Insert Query Database</h1>
-<p>เลือกช่วงวัน แล้วกดวันในสัปดาห์ที่ไม่ต้องการ</p>
+<h1>Time Record & Holiday Tool</h1>
+<p>รวม 2 ระบบในหน้าเดียว</p>
 </div>
 
 <div class="card">
+
+<!-- TAB -->
+<div class="tabs">
+<div id="tabTime" class="tab active" onclick="showPage('time')">Time Record</div>
+<div id="tabHoliday" class="tab" onclick="showPage('holiday')">Add Holiday</div>
+</div>
+
+<!-- ================= TIME RECORD (ของมึง 100%) ================= -->
+<div id="timePage">
+
+<!-- 🔥 ของเดิมมึงทุกอย่าง ไม่แก้ -->
 
 <div class="section">
 <div class="section-title">📅 วันที่ & เวลา</div>
@@ -220,40 +235,76 @@ resize:vertical;
 <textarea id="output" readonly></textarea>
 
 </div>
+
+<!-- ================= HOLIDAY ================= -->
+<div id="holidayPage" style="display:none">
+
+<div class="section">
+<div class="section-title">📅 วันที่</div>
+<div class="grid">
+<div class="field">
+<label>ช่วงวันที่</label>
+<input id="holidayRange">
+</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">👤 พนักงาน</div>
+<div class="grid">
+<div class="field">
+<label>Employee ID</label>
+<input id="holidayEmp">
+</div>
+</div>
+</div>
+
+<div class="actions">
+<button class="primary" onclick="genHoliday()">Generate SQL</button>
+<button class="secondary" onclick="copyHoliday()">Copy</button>
+</div>
+
+<textarea id="holidayOutput" readonly></textarea>
+
+</div>
+
+</div>
 </div>
 
 <script>
 
-flatpickr('#dateRange',{
-mode:'range',
-dateFormat:'Y-m-d'
-})
+// 🔁 TAB SWITCH (ใหม่อย่างเดียว)
+function showPage(p){
+timePage.style.display = p==='time'?'block':'none'
+holidayPage.style.display = p==='holiday'?'block':'none'
+tabTime.classList.toggle('active',p==='time')
+tabHoliday.classList.toggle('active',p==='holiday')
+}
+
+// ===== ของเดิมมึง 100% =====
+
+flatpickr('#dateRange',{mode:'range',dateFormat:'Y-m-d'})
+flatpickr('#holidayRange',{mode:'range',dateFormat:'Y-m-d'})
 
 const skipWeekdays=new Set([0,6])
 
 document.querySelectorAll('.day-btn').forEach(btn=>{
 btn.onclick=()=>{
-
 btn.classList.toggle('active')
-
 const d=Number(btn.dataset.day)
-
 btn.classList.contains('active')
 ? skipWeekdays.add(d)
 : skipWeekdays.delete(d)
-
 }
 })
 
 function formatDate(date){
-
 return date.getFullYear() + '-' +
 String(date.getMonth()+1).padStart(2,'0') + '-' +
 String(date.getDate()).padStart(2,'0')
-
 }
 
-const template=`
+const template = `
 
 INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
 status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
@@ -312,11 +363,40 @@ output.value=out.trim()
 }
 
 function copySQL(){
-
 output.select()
-
 document.execCommand('copy')
+}
 
+// ===== HOLIDAY =====
+
+function genHoliday(){
+
+const emp=holidayEmp.value
+const [s,e]=holidayRange.value.split(' to ')
+
+if(!emp||!s)return alert('ข้อมูลไม่ครบ')
+
+holidayOutput.value=`
+UPDATE "time".timesheet
+SET public_holiday_detail = jsonb_build_object(
+  'endDate', to_char(shift_date, 'YYYY-MM-DD'),
+  'beginDate', to_char(shift_date, 'YYYY-MM-DD'),
+  'holidayClass', 'FULL',
+  'holidayCalendarDetailCode', 'TH_BuddhistLent',
+  'holidayCalendarDetailName', jsonb_build_object(
+    'en', 'Buddhist Lent Day',
+    'local', 'วันเข้าพรรษา'
+  )
+)
+WHERE employee_id = '${emp}'
+AND shift_date BETWEEN DATE '${s}' AND DATE '${e||s}';
+`.trim()
+
+}
+
+function copyHoliday(){
+holidayOutput.select()
+document.execCommand('copy')
 }
 
 </script>
