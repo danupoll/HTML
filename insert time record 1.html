@@ -64,7 +64,7 @@ color:var(--muted);
 margin-bottom:6px;
 }
 
-.field input{
+.field input,.field select{
 width:100%;
 padding:11px 12px;
 border-radius:10px;
@@ -145,6 +145,13 @@ font-family:monospace;
 font-size:13px;
 resize:vertical;
 }
+
+summary{
+cursor:pointer;
+font-weight:700;
+margin-bottom:12px;
+}
+
 </style>
 </head>
 
@@ -159,16 +166,12 @@ resize:vertical;
 
 <div class="card">
 
-<!-- TAB -->
 <div class="tabs">
 <div id="tabTime" class="tab active" onclick="showPage('time')">Time Record</div>
 <div id="tabHoliday" class="tab" onclick="showPage('holiday')">Add Holiday</div>
 </div>
 
-<!-- ================= TIME RECORD (ของมึง 100%) ================= -->
 <div id="timePage">
-
-<!-- 🔥 ของเดิมมึงทุกอย่าง ไม่แก้ -->
 
 <div class="section">
 <div class="section-title">📅 วันที่ & เวลา</div>
@@ -224,7 +227,79 @@ resize:vertical;
 <input id="x3">
 </div>
 
+<div class="field">
+<label>Schema</label>
+<input id="schema" value="time">
 </div>
+
+<div class="field">
+<label>Split In/Out</label>
+<select id="splitFlag">
+<option value="yes" selected>Yes</option>
+<option value="no">No</option>
+</select>
+</div>
+
+</div>
+</div>
+
+<div class="section">
+
+<details>
+
+<summary>System Config</summary>
+
+<div class="grid">
+
+<div class="field">
+<label>source</label>
+<input id="source" value="15.00">
+</div>
+
+<div class="field">
+<label>location_id</label>
+<input id="location_id" value="5001.00">
+</div>
+
+<div class="field">
+<label>status</label>
+<input id="status" value="N">
+</div>
+
+<div class="field">
+<label>machine_ip</label>
+<input id="machine_ip" value="10.4.127.34">
+</div>
+
+<div class="field">
+<label>machine_name_in</label>
+<input id="machine_name_in" value="Korat-SLH1-3-In-01">
+</div>
+
+<div class="field">
+<label>machine_name_out</label>
+<input id="machine_name_out" value="Korat-SLH1-3-Out-01">
+</div>
+
+<div class="field">
+<label>location_name</label>
+<input id="location_name" value="CPF-แปรรูปไก่โคราช-5001">
+</div>
+
+<div class="field">
+<label>set_id</label>
+<input id="set_id" value="THAGR">
+</div>
+
+<div class="field">
+<label>source_type</label>
+<input id="source_type" value="time-device">
+</div>
+
+</div>
+
+</details>
+
 </div>
 
 <div class="actions">
@@ -236,7 +311,6 @@ resize:vertical;
 
 </div>
 
-<!-- ================= HOLIDAY ================= -->
 <div id="holidayPage" style="display:none">
 
 <div class="section">
@@ -273,15 +347,12 @@ resize:vertical;
 
 <script>
 
-// 🔁 TAB SWITCH (ใหม่อย่างเดียว)
 function showPage(p){
 timePage.style.display = p==='time'?'block':'none'
 holidayPage.style.display = p==='holiday'?'block':'none'
 tabTime.classList.toggle('active',p==='time')
 tabHoliday.classList.toggle('active',p==='holiday')
 }
-
-// ===== ของเดิมมึง 100% =====
 
 flatpickr('#dateRange',{mode:'range',dateFormat:'Y-m-d'})
 flatpickr('#holidayRange',{mode:'range',dateFormat:'Y-m-d'})
@@ -304,34 +375,20 @@ String(date.getMonth()+1).padStart(2,'0') + '-' +
 String(date.getDate()).padStart(2,'0')
 }
 
-const template = `
-
-INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
-status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
-
-VALUES ('x1 x4_in:00.000000+00', 'x1 x4_in:00.000000+00','x2','0.00','15.00','5001.00',
-'x2','N','10.4.127.34','Korat-SLH1-3-In-01', 'CPF-แปรรูปไก่โคราช-5001', 'THAGR', 'x3',NULL,NULL,NULL,
-'x1 x4_in:00+07', 'x1 x4_in:00+07', 'x1 x4_in:00+07', 'x1 x4_in:00+07','time-device','in');
-
-
-INSERT INTO "time".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
-status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
-
-VALUES ('x1 x4_out:00.000000+00', 'x1 x4_out:00.000000+00','x2','1.00','15.00','5001.00',
-'x2','N','10.4.127.34','Korat-SLH1-3-Out-01', 'CPF-แปรรูปไก่โคราช-5001', 'THAGR', 'x3',NULL,NULL,NULL,
-'x1 x4_out:00+07', 'x1 x4_out:00+07', 'x1 x4_out:00+07', 'x1 x4_out:00+07','time-device','out');
-
-`
-
 function generateSQL(){
 
 if(!dateRange.value||!x2.value||!x3.value)
 return alert('ข้อมูลไม่ครบ')
 
+const schemaVal = schema.value || 'time'
+const split = splitFlag.value
+
+let recordIn = split==='yes' ? 'in' : ''
+let recordOut = split==='yes' ? 'out' : ''
+
 const [s,e]=dateRange.value.split(' to ')
 
 let d=new Date(s+"T00:00:00")
-
 const end=new Date((e||s)+"T00:00:00")
 
 let out=''
@@ -345,14 +402,24 @@ continue
 
 const day=formatDate(d)
 
-out+=template
-.replaceAll('x1',day)
-.replaceAll('x2',x2.value)
-.replaceAll('x3',x3.value)
-.replaceAll('x4_in',timeIn.value)
-.replaceAll('x4_out',timeOut.value)
+out+=`
 
-+'\n'
+INSERT INTO "${schemaVal}".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
+status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
+
+VALUES ('${day} ${timeIn.value}:00.000000+00', '${day} ${timeIn.value}:00.000000+00','${x2.value}','0.00','${source.value}','${location_id.value}',
+'${x2.value}','${status.value}','${machine_ip.value}','${machine_name_in.value}', '${location_name.value}', '${set_id.value}', '${x3.value}',NULL,NULL,NULL,
+'${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07','${source_type.value}','${recordIn}');
+
+
+INSERT INTO "${schemaVal}".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
+status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type, record_time, record_date, last_update, kafka_time, source_type, split_in_out)
+
+VALUES ('${day} ${timeOut.value}:00.000000+00', '${day} ${timeOut.value}:00.000000+00','${x2.value}','1.00','${source.value}','${location_id.value}',
+'${x2.value}','${status.value}','${machine_ip.value}','${machine_name_out.value}', '${location_name.value}', '${set_id.value}', '${x3.value}',NULL,NULL,NULL,
+'${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07','${source_type.value}','${recordOut}');
+
+`
 
 d.setDate(d.getDate()+1)
 
@@ -366,8 +433,6 @@ function copySQL(){
 output.select()
 document.execCommand('copy')
 }
-
-// ===== HOLIDAY =====
 
 function genHoliday(){
 
