@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Holiday SQL Generator</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial;
+}
+
+body{
+background:#f1f5f9;
+padding:40px;
+color:#1e293b;
+}
+
+.container{
+max-width:950px;
+margin:auto;
+background:white;
+border-radius:12px;
+padding:30px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+h1{
+font-size:22px;
+margin-bottom:20px;
+}
+
+label{
+display:block;
+margin-top:18px;
+font-weight:600;
+}
+
+textarea{
+width:100%;
+height:150px;
+margin-top:8px;
+padding:12px;
+border-radius:8px;
+border:1px solid #cbd5e1;
+font-family:monospace;
+resize:vertical;
+}
+
+input,select{
+margin-top:8px;
+padding:10px;
+border-radius:8px;
+border:1px solid #cbd5e1;
+}
+
+button{
+margin-top:20px;
+padding:11px 16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+margin-right:10px;
+}
+
+.generate{
+background:#4f46e5;
+color:white;
+}
+
+.generate:hover{
+background:#4338ca;
+}
+
+.copyAll{
+background:#16a34a;
+color:white;
+}
+
+.copyAll:hover{
+background:#15803d;
+}
+
+.queryWrapper{
+margin-top:30px;
+}
+
+.queryBox{
+background:#f8fafc;
+border:1px solid #e2e8f0;
+border-radius:10px;
+padding:18px;
+margin-bottom:20px;
+
+font-family:monospace;
+font-size:13px;
+line-height:1.6;
+
+overflow-x:auto;
+white-space:pre;
+
+max-width:100%;
+}
+
+.copyBtn{
+background:#2563eb;
+color:white;
+margin-top:8px;
+}
+
+.copyBtn:hover{
+background:#1d4ed8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Holiday Shift SQL Generator</h1>
+
+<label>Employee ID (วางแนวยาว)</label>
+<textarea id="emp"></textarea>
+
+<label>Holiday Date</label>
+<input type="date" id="holiday">
+
+<label>Case</label>
+<select id="caseType">
+<option value="case1">เลื่อน Holiday ตรง Offday</option>
+<option value="case2">เลื่อน Holiday ไม่ตรง Offday</option>
+</select>
+
+<br>
+
+<button class="generate" onclick="generate()">Generate SQL</button>
+<button class="copyAll" onclick="copyAll()">Copy All</button>
+
+<div id="output" class="queryWrapper"></div>
+
+</div>
+
+<script>
+
+let allQueries=""
+
+function addDays(date,days){
+let d=new Date(date)
+d.setDate(d.getDate()+days)
+return d.toISOString().split('T')[0]
+}
+
+function formatEmp(){
+let raw=document.getElementById("emp").value.trim().split("\n")
+let clean=raw.filter(e=>e.trim()!=="").map(e=>`'${e.trim()}'`)
+return clean.join(",")
+}
+
+function createBox(query){
+
+let wrap=document.createElement("div")
+
+let code=document.createElement("div")
+code.className="queryBox"
+code.textContent=query
+
+let btn=document.createElement("button")
+btn.className="copyBtn"
+btn.innerText="Copy"
+btn.onclick=()=>navigator.clipboard.writeText(query)
+
+wrap.appendChild(code)
+wrap.appendChild(btn)
+
+return wrap
+}
+
+function generate(){
+
+let emp=formatEmp()
+let holiday=document.getElementById("holiday").value
+
+if(!holiday || !emp){
+alert("กรอก EMP และ Holiday Date ก่อน")
+return
+}
+
+let next=addDays(holiday,1)
+let next2=addDays(holiday,2)
+
+let type=document.getElementById("caseType").value
+
+let queries=[]
+
+if(type==="case1"){
+
+queries.push(`UPDATE "time".timesheet AS t
+SET is_offday = d.is_offday , shift = d.shift
+FROM "time".timesheet AS d
+WHERE t.employee_id = d.employee_id
+AND d.shift_date = '${next}'
+AND t.shift_date = '${holiday}'
+AND t.employee_id in (${emp})
+;`)
+
+queries.push(`UPDATE "time".timesheet AS t
+SET is_offday = false , shift = d.shift
+FROM "time".timesheet AS d
+WHERE t.employee_id = d.employee_id
+AND d.shift_date = '${next2}'
+AND t.shift_date = '${next}'
+AND t.employee_id in (${emp})
+;`)
+
+queries.push(`UPDATE "time".timesheet AS t
+SET public_holiday_detail = d.public_holiday_detail
+FROM "time".timesheet AS d
+WHERE t.employee_id = d.employee_id
+AND d.public_holiday_detail is not null
+AND d.shift_date = '${holiday}'
+AND t.shift_date = '${next}'
+AND t.employee_id in (${emp})
+;`)
+
+queries.push(`UPDATE "time".timesheet AS t
+SET public_holiday_detail = null
+WHERE t.shift_date = '${holiday}'
+AND t.employee_id in (${emp})
+;`)
+
+}
+
+if(type==="case2"){
+
+queries.push(`UPDATE "time".timesheet AS t
+SET public_holiday_detail = d.public_holiday_detail
+FROM "time".timesheet AS d
+WHERE t.employee_id = d.employee_id
+AND d.public_holiday_detail is not null
+AND d.shift_date = '${holiday}'
+AND t.shift_date = '${next}'
+AND t.employee_id in (${emp})
+;`)
+
+queries.push(`UPDATE "time".timesheet AS t
+SET public_holiday_detail = null
+WHERE t.shift_date = '${holiday}'
+AND t.employee_id in (${emp})
+;`)
+
+}
+
+allQueries = queries.join("\n\n")
+
+let out=document.getElementById("output")
+out.innerHTML=""
+
+queries.forEach(q=>{
+out.appendChild(createBox(q))
+})
+
+}
+
+function copyAll(){
+
+if(!allQueries){
+alert("Generate SQL ก่อน")
+return
+}
+
+navigator.clipboard.writeText(allQueries)
+alert("Copy SQL ทั้งหมดแล้ว")
+
+}
+
+</script>
+
+</body>
+</html>
