@@ -2,216 +2,158 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Website</title>
+<title>My Tools</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:system-ui,-apple-system,sans-serif
-}
 
 body{
-  background:#f4f6f8;
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial;
+background:#f1f5f9;
 }
 
-/* ===== TOP BAR ===== */
+/* ===== TOPBAR ===== */
+
 .topbar{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:60px;
-  background:#111827;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 20px;
-  box-shadow:0 2px 8px rgba(0,0,0,.2);
-  z-index:999;
+background:#1e293b;
+height:56px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 16px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-.logo{
-  font-weight:700;
-  font-size:18px;
-}
-.logo a{
-  color:#fff;
-  text-decoration:none;
+.leftMenu{
+display:flex;
+gap:8px;
 }
 
-.menu{
-  display:flex;
-  gap:18px;
+.rightMenu{
+display:flex;
+gap:8px;
 }
 
-.menu a{
-  color:#e5e7eb;
-  text-decoration:none;
-  font-size:14px;
-  padding:6px 10px;
-  border-radius:8px;
-  transition:.2s;
+/* ===== BUTTON ===== */
+
+.topbar button{
+background:#334155;
+border:none;
+color:white;
+padding:7px 14px;
+border-radius:8px;
+cursor:pointer;
+font-size:14px;
+transition:all .15s ease;
 }
 
-.menu a:hover{
-  background:#374151;
+.topbar button:hover{
+background:#475569;
 }
 
-/* ===== CONTENT ===== */
-.container{
-  padding:90px 20px 40px;
-  max-width:1100px;
-  margin:auto;
+.topbar button.active{
+background:#2563eb;
 }
 
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:20px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-  margin-bottom:20px;
+/* ===== VIEWER ===== */
+
+.viewer{
+width:100%;
+height:calc(100vh - 56px);
+border:none;
+display:none;
 }
 
-.blocks{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:18px;
+.viewer.active{
+display:block;
 }
 
-/* ===== BLOCK ===== */
-.block{
-  background:#fff;
-  border-radius:16px;
-  padding:22px;
-  text-decoration:none;
-  color:#111827;
-  box-shadow:0 8px 20px rgba(0,0,0,.06);
-  transition:.2s ease;
-  display:block;
-}
-
-.block:hover{
-  transform:translateY(-4px);
-  box-shadow:0 14px 28px rgba(0,0,0,.08);
-}
-
-.block .icon{
-  width:44px;
-  height:44px;
-  border-radius:12px;
-  background:#f3f4f6;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-  margin-bottom:12px;
-}
-
-.block h3{
-  margin-bottom:6px;
-  font-size:18px;
-  font-weight:600;
-}
-
-.block p{
-  font-size:14px;
-  color:#6b7280;
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:640px){
-  .menu{
-    gap:10px;
-  }
-  .menu a{
-    font-size:13px;
-    padding:6px 8px;
-  }
-}
 </style>
+
 </head>
 
 <body>
 
 <div class="topbar">
-  <div class="logo"><a href="index.html">MyApp</a></div>
-  <div class="menu">
-    <!-- เมนูเผื่อเพิ่ม -->
-  </div>
-</div>
 
-<div class="container">
+<div class="leftMenu">
 
-  <div class="card">
-    <h2>Welcome</h2>
-    <p>รวมเครื่องมือทั้งหมด และการอัปเดทใหม่ๆ</p>
-  </div>
-
-  <div class="blocks">
-
-    <a class="block" href="Query Format 2.html">
-      <div class="icon">🧩</div>
-      <h3>Query Format</h3>
-      <p>เชื่อมคอมม่าหรือ single quotes</p>
-    </a>
-
-    <a class="block" href="insert time record 1.html">
-      <div class="icon">⏱️</div>
-      <h3>Insert Time Record</h3>
-      <p>เลือกวันที่ และข้อมูลพนักงาน</p>
-    </a>
-
-    <a class="block" href="EC Payroll2.html">
-      <div class="icon">💼</div>
-      <h3>EC Payroll</h3>
-      <p>เปลี่ยนรูปแบบรายงาน Payroll</p>
-    </a>
-
-    <a class="block" href="QR Code.html">
-      <div class="icon">🔳</div>
-      <h3>สร้าง QR Code</h3>
-      <p>สร้าง QR Code ฟรีไม่มีหมดอายุ</p>
-    </a>
-    
-    <a class="block" href="next_holiday.html">
-      <div class="icon">🏖️</div>
-      <h3>Query เลื่อนวันพระ</h3>
-      <p>เลื่อนวันพระกรณีตรงกับ Holiday</p>
-    </a>
-    
-    <a class="block" href="TRC_Incentive_20032026.csv">
-      <div class="icon">💲</div>
-      <h3>Excel - Position</h3>
-      <p>Position ที่ผูกกับ TRC Incentive</p>
-    </a>
-    
-<!--
-<a class="block" href="game.html">
-  <div class="icon">🎴</div>
-  <h3>ระบบสุ่มการ์ด</h3>
-  <p>สำหรับการสุ่ม เช่น จับรางวัล</p>
-</a>
-
-<a class="block" href="pok8.html">
-  <div class="icon">🎮</div>
-  <h3>Pok8</h3>
-  <p>จดสถิติการเล่นเกมส์ Pok8</p>
-</a>
-
-<a class="block" href="income.html">
-  <div class="icon">💰</div>
-  <h3>รายรับ รายจ่าย</h3>
-  <p>คำนวนรายรับรายจ่าย</p>
-</a>
---> 
-
-  </div>
+<button onclick="showPage('page1',this)">Query Format</button>
+<button onclick="showPage('page2',this)">Insert Time Record</button>
+<button onclick="showPage('page3',this)">EC Payroll</button>
+<button onclick="showPage('page4',this)">QR Code</button>
+<button onclick="showPage('page5',this)">Holiday</button>
 
 </div>
+
+<div class="rightMenu">
+
+<button onclick="downloadTRC()">TRC Incentive</button>
+
+</div>
+
+</div>
+
+<iframe id="page1" class="viewer" src="Query Format 2.html"></iframe>
+<iframe id="page2" class="viewer" src="insert time record 1.html"></iframe>
+<iframe id="page3" class="viewer" src="EC Payroll2.html"></iframe>
+<iframe id="page4" class="viewer" src="QR Code.html"></iframe>
+<iframe id="page5" class="viewer" src="next_holiday.html"></iframe>
+
+<script>
+function downloadTRC(){
+const link = document.createElement("a")
+link.href = "TRC_Incentive.csv"
+link.download = "TRC_Incentive.csv"
+link.click()
+}
+
+function showPage(pageId,btn){
+
+localStorage.setItem("lastPage",pageId)
+
+document.querySelectorAll(".viewer").forEach(v=>{
+v.classList.remove("active")
+})
+
+document.getElementById(pageId).classList.add("active")
+
+document.querySelectorAll(".leftMenu button").forEach(b=>{
+b.classList.remove("active")
+})
+
+btn.classList.add("active")
+
+}
+
+/* ===== โหลด tab ล่าสุด ===== */
+
+window.onload=function(){
+
+const last=localStorage.getItem("lastPage")
+
+if(last){
+
+document.getElementById(last).classList.add("active")
+
+const buttons=document.querySelectorAll(".leftMenu button")
+
+buttons.forEach(b=>{
+if(b.getAttribute("onclick").includes(last)){
+b.classList.add("active")
+}
+})
+
+}else{
+
+document.getElementById("page1").classList.add("active")
+document.querySelector(".leftMenu button").classList.add("active")
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
