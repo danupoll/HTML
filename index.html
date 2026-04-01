@@ -131,30 +131,13 @@ display:block;
 
 <div class="leftMenu">
 
-<!-- DROPDOWN -->
-<div class="dropdown">
-
-<button onclick="toggleDropdown()">Tools ▾</button>
-
-<div class="dropdown-content">
-
 <button onclick="showPage('page1',this)">Query Format</button>
 <button onclick="showPage('page2',this)">Insert Time Record</button>
 <button onclick="showPage('page3',this)">EC Payroll</button>
 <button onclick="showPage('page4',this)">QR Code</button>
 <button onclick="showPage('page5',this)">Holiday</button>
 <button onclick="showPage('page6',this)">API-Template</button>
-
-</div>
-
-</div>
-
-<button onclick="showPage('page1',this)">Query Format</button>
-<button onclick="showPage('page2',this)">Insert Time Record</button>
-<button onclick="showPage('page3',this)">EC Payroll</button>
-<button onclick="showPage('page4',this)">QR Code</button>
-<button onclick="showPage('page5',this)">Holiday</button>
-<button onclick="showPage('page6',this)">API-Template</button>
+<button onclick="openAI()">⭐️ ถาม AI</button>
 
 </div>
 
@@ -180,6 +163,13 @@ const link = document.createElement("a")
 link.href = "TRC_Incentive.csv"
 link.download = "TRC_Incentive.csv"
 link.click()
+}
+
+function openAI(){
+window.open(
+"https://notebooklm.google.com/notebook/8f036a18-928c-4f9b-89b1-c24710e1e3d7?authuser=1",
+"_blank"
+);
 }
 
 function showPage(pageId,btn){
