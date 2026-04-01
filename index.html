@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>My Tools</title>
+
 <link rel="icon" href="data:image/svg+xml,
 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
 <text y='0.9em' font-size='100'>🧩</text>
@@ -40,6 +41,7 @@ box-shadow:0 2px 6px rgba(0,0,0,0.1);
 .leftMenu{
 display:flex;
 gap:8px;
+align-items:center;
 }
 
 .rightMenu{
@@ -81,6 +83,43 @@ display:none;
 display:block;
 }
 
+/* ===== DROPDOWN ===== */
+
+.dropdown{
+position:relative;
+}
+
+.dropdown-content{
+display:none;
+position:absolute;
+top:38px;
+left:0;
+background:white;
+min-width:180px;
+border-radius:8px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+overflow:hidden;
+z-index:999;
+}
+
+.dropdown-content button{
+width:100%;
+background:white;
+border:none;
+padding:10px 12px;
+text-align:left;
+cursor:pointer;
+font-size:14px;
+color:#0f172a;
+}
+
+.dropdown-content button:hover{
+background:#f1f5f9;
+}
+
+.dropdown.show .dropdown-content{
+display:block;
+}
 
 </style>
 
@@ -92,11 +131,30 @@ display:block;
 
 <div class="leftMenu">
 
+<!-- DROPDOWN -->
+<div class="dropdown">
+
+<button onclick="toggleDropdown()">Tools ▾</button>
+
+<div class="dropdown-content">
+
 <button onclick="showPage('page1',this)">Query Format</button>
 <button onclick="showPage('page2',this)">Insert Time Record</button>
 <button onclick="showPage('page3',this)">EC Payroll</button>
 <button onclick="showPage('page4',this)">QR Code</button>
 <button onclick="showPage('page5',this)">Holiday</button>
+<button onclick="showPage('page6',this)">API-Template</button>
+
+</div>
+
+</div>
+
+<button onclick="showPage('page1',this)">Query Format</button>
+<button onclick="showPage('page2',this)">Insert Time Record</button>
+<button onclick="showPage('page3',this)">EC Payroll</button>
+<button onclick="showPage('page4',this)">QR Code</button>
+<button onclick="showPage('page5',this)">Holiday</button>
+<button onclick="showPage('page6',this)">API-Template</button>
 
 </div>
 
@@ -113,8 +171,10 @@ display:block;
 <iframe id="page3" class="viewer" src="EC Payroll2.html"></iframe>
 <iframe id="page4" class="viewer" src="QR Code.html"></iframe>
 <iframe id="page5" class="viewer" src="next_holiday.html"></iframe>
+<iframe id="page6" class="viewer" src="API_Template.html"></iframe>
 
 <script>
+
 function downloadTRC(){
 const link = document.createElement("a")
 link.href = "TRC_Incentive.csv"
@@ -166,6 +226,22 @@ document.querySelector(".leftMenu button").classList.add("active")
 }
 
 }
+
+/* ===== DROPDOWN ===== */
+
+function toggleDropdown(){
+document.querySelector(".dropdown").classList.toggle("show")
+}
+
+window.addEventListener("click",function(e){
+
+if(!e.target.closest(".dropdown")){
+document.querySelectorAll(".dropdown").forEach(d=>{
+d.classList.remove("show")
+})
+}
+
+})
 
 </script>
 

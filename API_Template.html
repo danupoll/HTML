@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>API Tools</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:"Segoe UI",sans-serif;
+    background:linear-gradient(135deg,#eef2ff,#e0f2fe);
+}
+
+.header{
+    text-align:center;
+    padding:40px;
+    font-size:32px;
+    font-weight:700;
+    color:#1e293b;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:25px;
+    text-decoration:none;
+    color:#1e293b;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    transition:all .25s ease;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 12px 28px rgba(0,0,0,0.15);
+}
+
+.icon{
+    font-size:36px;
+    margin-bottom:12px;
+}
+
+.title{
+    font-size:18px;
+    font-weight:600;
+}
+
+@media(max-width:900px){
+.container{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
+@media(max-width:500px){
+.container{
+grid-template-columns:1fr;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+API Template
+</div>
+
+<div class="container">
+
+<a class="card" href="API-My Preset.xlsx">
+<div class="icon">📦</div>
+<div class="title">API-My Preset</div>
+</a>
+
+<a class="card" href="API-Timesheet.xlsx">
+<div class="icon">⏱️</div>
+<div class="title">API-Timesheet</div>
+</a>
+
+<a class="card" href="API-Workgroup.xlsx">
+<div class="icon">👥</div>
+<div class="title">API-Workgroup</div>
+</a>
+
+<a class="card" href="API-User Management.xlsx">
+<div class="icon">🧑‍💻</div>
+<div class="title">API-User Management</div>
+</a>
+
+<a class="card" href="API-TRC Incentive.xlsx">
+<div class="icon">💰</div>
+<div class="title">API-TRC Incentive</div>
+</a>
+
+<a class="card" href="API-Preset.xlsx">
+<div class="icon">⚙️</div>
+<div class="title">API-Preset</div>
+</a>
+
+<a class="card" href="API-Permission.xlsx">
+<div class="icon">🔐</div>
+<div class="title">API-Permission</div>
+</a>
+
+<a class="card" href="API-Badge.xlsx">
+<div class="icon">🔢</div>
+<div class="title">API-Badge</div>
+</a>
+
+<a class="card" href="API-Diligence Allowance Step.xlsx">
+<div class="icon">📊</div>
+<div class="title">API-Diligence Allowance Step</div>
+</a>
+
+<a class="card" href="API-Work Schedule.xlsx">
+<div class="icon">📅</div>
+<div class="title">API-Work Schedule</div>
+</a>
+
+</div>
+
+</body>
+</html>
