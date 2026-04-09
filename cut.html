@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ID Filter Tool</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:#eef2ff;
+margin:0;
+padding:50px;
+color:#1f2937;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+margin-bottom:40px;
+font-weight:700;
+letter-spacing:.5px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+}
+
+.card{
+background:white;
+border-radius:14px;
+padding:22px;
+box-shadow:0 8px 24px rgba(0,0,0,.08);
+border:1px solid #e5e7eb;
+}
+
+label{
+font-weight:600;
+margin-bottom:12px;
+display:block;
+}
+
+textarea{
+width:100%;
+height:230px;
+border-radius:10px;
+border:1px solid #d1d5db;
+padding:14px;
+font-size:14px;
+resize:none;
+transition:.2s;
+}
+
+textarea:focus{
+outline:none;
+border-color:#6366f1;
+box-shadow:0 0 0 3px rgba(99,102,241,.15);
+}
+
+.buttons{
+text-align:center;
+margin-top:35px;
+}
+
+button{
+border:none;
+padding:13px 26px;
+border-radius:10px;
+font-size:15px;
+cursor:pointer;
+margin:6px;
+transition:.2s;
+}
+
+.calculate{
+background:linear-gradient(135deg,#6366f1,#4f46e5);
+color:white;
+}
+
+.calculate:hover{
+transform:translateY(-1px);
+box-shadow:0 6px 16px rgba(99,102,241,.35);
+}
+
+.copy{
+background:linear-gradient(135deg,#10b981,#059669);
+color:white;
+}
+
+.copy:hover{
+transform:translateY(-1px);
+box-shadow:0 6px 16px rgba(16,185,129,.35);
+}
+
+.result-box{
+margin-top:35px;
+background:white;
+border-radius:14px;
+padding:22px;
+border:1px solid #e5e7eb;
+box-shadow:0 8px 24px rgba(0,0,0,.06);
+}
+
+.result{
+margin-top:12px;
+background:#f9fafb;
+border-radius:8px;
+padding:14px;
+border:1px solid #e5e7eb;
+word-break:break-all;
+min-height:40px;
+}
+
+.info{
+margin-top:10px;
+font-size:14px;
+color:#6b7280;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>ID Filter Tool</h1>
+
+<div class="grid">
+
+<div class="card">
+<label>Exclude List (เลขที่ไม่ต้องการ)</label>
+<textarea id="exclude"></textarea>
+</div>
+
+<div class="card">
+<label>Data List (ข้อมูลทั้งหมด)</label>
+<textarea id="data"></textarea>
+</div>
+
+</div>
+
+<div class="buttons">
+
+<button class="calculate" onclick="calculate()">
+Calculate
+</button>
+
+<button class="copy" onclick="copyResult()" id="copyBtn">
+Copy Result (0)
+</button>
+
+</div>
+
+<div class="result-box">
+
+<label>Result</label>
+
+<div class="result" id="result"></div>
+
+<div class="info" id="info"></div>
+
+</div>
+
+</div>
+
+<script>
+
+function parseInput(text){
+
+return text
+.replace(/\n/g,",")
+.split(",")
+.map(x=>x.trim())
+.filter(x=>x!="");
+
+}
+
+function calculate(){
+
+let exclude=new Set(parseInput(
+document.getElementById("exclude").value
+));
+
+let data=parseInput(
+document.getElementById("data").value
+);
+
+let result=data.filter(x=>!exclude.has(x));
+
+result=[...new Set(result)];
+
+let output=result.join(",");
+
+document.getElementById("result").textContent=output;
+
+document.getElementById("info").textContent=
+"Total : "+result.length+" items";
+
+document.getElementById("copyBtn").textContent=
+"Copy Result ("+result.length+")";
+
+}
+
+function copyResult(){
+
+let text=document.getElementById("result").textContent;
+
+navigator.clipboard.writeText(text);
+
+}
+
+</script>
+
+</body>
+</html>
