@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Row Extractor</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:30px;
+    font-family:Arial,sans-serif;
+    background:#f5f7fb;
+    color:#222;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:24px;
+    margin-bottom:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+}
+
+h1{
+    margin-top:0;
+    font-size:30px;
+}
+
+textarea{
+    width:100%;
+    height:320px;
+    border:none;
+    outline:none;
+    resize:vertical;
+    border-radius:14px;
+    padding:16px;
+    font-size:14px;
+    background:#f7f9fc;
+    line-height:1.6;
+}
+
+.button-group{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+button{
+    border:none;
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:bold;
+    transition:0.2s;
+}
+
+.primary{
+    background:#4f8cff;
+    color:white;
+}
+
+.primary:hover{
+    background:#3979f5;
+}
+
+.secondary{
+    background:#edf2ff;
+    color:#2f5fd7;
+}
+
+.secondary:hover{
+    background:#dfe8ff;
+}
+
+.danger{
+    background:#ffe9e9;
+    color:#d33;
+}
+
+.danger:hover{
+    background:#ffd8d8;
+}
+
+.stats{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+.stat-box{
+    flex:1;
+    min-width:180px;
+    background:#f7f9fc;
+    padding:18px;
+    border-radius:14px;
+}
+
+.stat-title{
+    font-size:13px;
+    color:#666;
+    margin-bottom:6px;
+}
+
+.stat-value{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.output{
+    margin-top:16px;
+    background:#f7f9fc;
+    border-radius:14px;
+    padding:16px;
+    min-height:120px;
+    white-space:pre-wrap;
+    overflow:auto;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.section-title{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.error-box{
+    background:#fff7f7;
+    border-left:4px solid #ff6b6b;
+    padding:14px;
+    border-radius:12px;
+    margin-top:12px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.error-box:hover{
+    transform:translateY(-2px);
+    background:#fff0f0;
+}
+
+.active-error{
+    border-left:4px solid #4f8cff;
+    background:#edf4ff;
+}
+
+.muted{
+    color:#777;
+}
+
+.filter-label{
+    margin-top:10px;
+    color:#4f8cff;
+    font-size:14px;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- INPUT -->
+
+    <div class="card">
+
+        <h1>✨ Row Extractor</h1>
+
+        <textarea id="input" placeholder="วาง JSON หรือข้อความตรงนี้..."></textarea>
+
+        <div class="button-group">
+
+            <button class="primary" onclick="extractData()">
+                ดึงข้อมูล
+            </button>
+
+            <button class="secondary" onclick="copyRows()">
+                Copy Rows
+            </button>
+
+            <button class="danger" onclick="clearAll()">
+                ล้างข้อมูล
+            </button>
+
+        </div>
+
+        <div class="stats">
+
+            <div class="stat-box">
+                <div class="stat-title">จำนวน Row</div>
+                <div class="stat-value" id="rowCount">0</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-title">จำนวน Error</div>
+                <div class="stat-value" id="errorCount">0</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ERROR SUMMARY -->
+
+    <div class="card">
+
+        <div class="section-title">
+            🚨 Error Summary
+        </div>
+
+        <div id="errorSummary" style="margin-top:16px;">
+            <div class="muted">
+                ยังไม่มีข้อมูล
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ROW RESULT -->
+
+    <div class="card">
+
+        <div class="section-title">
+            📋 Rows
+        </div>
+
+        <div class="filter-label" id="filterLabel"></div>
+
+        <div class="output" id="output">
+ยังไม่มีข้อมูล
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let currentRows = [];
+let groupedErrors = {};
+
+function extractData(){
+
+    const text = document.getElementById("input").value;
+
+    const blocks = text.match(/{[\s\S]*?"message"[\s\S]*?}/g) || [];
+
+    groupedErrors = {};
+
+    let allRows = [];
+
+    blocks.forEach(block => {
+
+        const rowMatch =
+            block.match(/"row"\s*:\s*(\d+)/);
+
+        const messageMatch =
+            block.match(/"message"\s*:\s*"([^"]+)"/);
+
+        if(rowMatch && messageMatch){
+
+            const row = rowMatch[1];
+            const message = messageMatch[1];
+
+            if(message !== "Success"){
+
+                allRows.push(row);
+
+                if(!groupedErrors[message]){
+                    groupedErrors[message] = [];
+                }
+
+                groupedErrors[message].push(row);
+            }
+        }
+
+    });
+
+    currentRows = allRows;
+
+    showRows(allRows);
+
+    document.getElementById("rowCount").innerText =
+        allRows.length;
+
+    document.getElementById("errorCount").innerText =
+        Object.keys(groupedErrors).length;
+
+    renderErrorSummary();
+
+    document.getElementById("filterLabel").innerText =
+        "";
+}
+
+function renderErrorSummary(){
+
+    const errorSummary =
+        document.getElementById("errorSummary");
+
+    const keys = Object.keys(groupedErrors);
+
+    if(keys.length === 0){
+
+        errorSummary.innerHTML =
+            '<div class="muted">ไม่พบ Error</div>';
+
+        return;
+    }
+
+    let html = "";
+
+    keys.forEach(message => {
+
+        html += `
+            <div class="error-box"
+                 onclick="filterRows('${message}', this)">
+                 
+                <strong>${message}</strong><br>
+                พบ ${groupedErrors[message].length} รายการ
+
+            </div>
+        `;
+    });
+
+    errorSummary.innerHTML = html;
+}
+
+function filterRows(message, element){
+
+    document.querySelectorAll(".error-box")
+        .forEach(el => el.classList.remove("active-error"));
+
+    element.classList.add("active-error");
+
+    const rows = groupedErrors[message];
+
+    showRows(rows);
+
+    document.getElementById("filterLabel").innerText =
+        "กำลังแสดง: " + message;
+}
+
+function showRows(rows){
+
+    document.getElementById("output").innerText =
+        rows.length > 0
+        ? rows.join("\n")
+        : "ไม่พบข้อมูล";
+}
+
+function copyRows(){
+
+    const text =
+        document.getElementById("output").innerText;
+
+    if(text === "ไม่พบข้อมูล"
+        || text === "ยังไม่มีข้อมูล"){
+
+        alert("ไม่มีข้อมูลให้ Copy");
+        return;
+    }
+
+    navigator.clipboard.writeText(text);
+
+    alert("Copy เรียบร้อย ✅");
+}
+
+function clearAll(){
+
+    document.getElementById("input").value = "";
+
+    document.getElementById("output").innerText =
+        "ยังไม่มีข้อมูล";
+
+    document.getElementById("errorSummary").innerHTML =
+        '<div class="muted">ยังไม่มีข้อมูล</div>';
+
+    document.getElementById("rowCount").innerText = "0";
+
+    document.getElementById("errorCount").innerText = "0";
+
+    document.getElementById("filterLabel").innerText = "";
+
+    currentRows = [];
+
+    groupedErrors = {};
+}
+
+</script>
+
+</body>
+</html>
