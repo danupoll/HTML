@@ -3,23 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CSV Smart Search</title>
+
+  <title>TRC Incentive Search</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
   <style>
     body{
-      background:
-        radial-gradient(circle at top left,#dbeafe 0%,transparent 25%),
-        radial-gradient(circle at bottom right,#e9d5ff 0%,transparent 25%),
-        #f8fafc;
+      background:#f8fafc;
     }
 
     .glass{
-      background: rgba(255,255,255,0.72);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(255,255,255,0.5);
+      background:white;
+      border:1px solid #e2e8f0;
     }
 
     ::-webkit-scrollbar{
@@ -32,109 +29,109 @@
       border-radius:999px;
     }
 
-    .table-row:hover{
-      background:#eef2ff;
-      transition:0.15s;
+    .row-hover:hover{
+      background:#f1f5f9;
     }
   </style>
 </head>
 
-<body class="min-h-screen text-slate-800">
+<body class="text-slate-800">
 
-<div class="max-w-7xl mx-auto px-4 py-8">
+<div class="max-w-[1700px] mx-auto px-4 py-6">
 
   <!-- HEADER -->
-  <div class="glass rounded-3xl shadow-2xl p-6 mb-6">
+  <div class="glass rounded-3xl shadow-sm p-6 mb-5">
 
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
       <div>
-        <h1 class="text-4xl font-black text-indigo-700">
-          🔎 CSV Smart Search
+        <h1 class="text-3xl font-black text-indigo-700">
+          🔎 TRC Incentive Search
         </h1>
 
         <p class="text-slate-500 mt-2">
-          ค้นหา • Filter • Sort • โหลด CSV จาก GitHub Repo อัตโนมัติ
+          โหลด CSV จาก GitHub • เร็ว • Filter จริงจากข้อมูล
         </p>
       </div>
 
-      <div class="flex gap-3 flex-wrap">
+      <div class="text-right">
+        <div class="text-slate-500 text-sm">
+          RESULT
+        </div>
 
-        <button
-          id="clearBtn"
-          class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-3 rounded-2xl font-bold shadow-lg"
-        >
-          ล้าง Filter
-        </button>
-
-        <button
-          id="exportBtn"
-          class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-2xl font-bold shadow-lg"
-        >
-          Export CSV
-        </button>
-
+        <div id="resultCount"
+          class="text-4xl font-black text-indigo-700">
+          0
+        </div>
       </div>
 
     </div>
+
   </div>
 
-  <!-- SEARCH -->
-  <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 mb-6">
+  <!-- FILTER -->
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-5">
 
-    <div class="glass rounded-3xl p-5 shadow-xl lg:col-span-2">
+    <!-- SEARCH -->
+    <div class="glass rounded-3xl p-5 lg:col-span-2">
 
-      <div class="font-bold text-slate-500 text-sm mb-2">
-        GLOBAL SEARCH
+      <div class="text-sm font-bold text-slate-500 mb-2">
+        SEARCH
       </div>
 
       <input
-        type="text"
         id="searchInput"
+        type="text"
         placeholder="ค้นหาได้ทุกคอลัมน์..."
-        class="w-full px-5 py-4 rounded-2xl bg-slate-100 outline-none focus:ring-4 focus:ring-indigo-300 text-lg"
+        class="w-full px-4 py-4 rounded-2xl bg-slate-100 outline-none focus:ring-2 focus:ring-indigo-300"
       />
 
     </div>
 
-    <div class="glass rounded-3xl p-5 shadow-xl">
+    <!-- POSITION -->
+    <div class="glass rounded-3xl p-5">
 
-      <div class="font-bold text-slate-500 text-sm mb-2">
-        FILTER COLUMN
+      <div class="text-sm font-bold text-slate-500 mb-2">
+        POSITION
       </div>
 
       <select
-        id="columnSelect"
+        id="positionFilter"
         class="w-full px-4 py-4 rounded-2xl bg-slate-100 outline-none"
       >
-        <option value="">ทุกคอลัมน์</option>
+        <option value="">ALL</option>
       </select>
 
     </div>
 
-    <div class="glass rounded-3xl p-5 shadow-xl">
+    <!-- INCENTIVE -->
+    <div class="glass rounded-3xl p-5">
 
-      <div class="font-bold text-slate-500 text-sm mb-2">
-        TOTAL RESULT
+      <div class="text-sm font-bold text-slate-500 mb-2">
+        INCENTIVE
       </div>
 
-      <div id="resultCount" class="text-4xl font-black text-indigo-700">
-        0
-      </div>
+      <select
+        id="incentiveFilter"
+        class="w-full px-4 py-4 rounded-2xl bg-slate-100 outline-none"
+      >
+        <option value="">ALL</option>
+      </select>
 
     </div>
 
   </div>
 
   <!-- TABLE -->
-  <div class="glass rounded-3xl shadow-2xl overflow-hidden">
+  <div class="glass rounded-3xl overflow-hidden shadow-sm">
 
-    <div class="overflow-auto max-h-[75vh]">
+    <div class="overflow-auto max-h-[78vh]">
 
       <table class="min-w-full text-sm">
 
-        <thead class="bg-slate-100 sticky top-0 z-20">
-          <tr id="tableHead"></tr>
+        <thead
+          id="tableHead"
+          class="bg-slate-100 sticky top-0 z-10">
         </thead>
 
         <tbody id="tableBody"></tbody>
@@ -150,112 +147,208 @@
 <script>
 
   /*
-    ============================================================
-    เปลี่ยนชื่อไฟล์ตรงนี้
-    ============================================================
+    ============================================
+    CONFIG
+    ============================================
   */
 
   const CSV_FILE = "TRC_Incentive.csv";
 
+  /*
+    ============================================
+    STATE
+    ============================================
+  */
+
   let rawData = [];
   let filteredData = [];
 
-  let currentSort = {
-    column: null,
-    direction: "asc"
-  };
-
-  const searchInput = document.getElementById("searchInput");
-  const columnSelect = document.getElementById("columnSelect");
-
-  const tableHead = document.getElementById("tableHead");
-  const tableBody = document.getElementById("tableBody");
-
   /*
-    ============================================================
-    LOAD CSV
-    ============================================================
+    ============================================
+    ELEMENTS
+    ============================================
   */
 
-  async function loadCSV() {
+  const searchInput = document.getElementById("searchInput");
+
+  const positionFilter =
+    document.getElementById("positionFilter");
+
+  const incentiveFilter =
+    document.getElementById("incentiveFilter");
+
+  const tableHead =
+    document.getElementById("tableHead");
+
+  const tableBody =
+    document.getElementById("tableBody");
+
+  /*
+    ============================================
+    LOAD CSV
+    ============================================
+  */
+
+  async function loadCSV(){
 
     const response = await fetch(CSV_FILE);
 
-    const csvText = await response.text();
+    const text = await response.text();
 
-    Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
+    Papa.parse(text, {
 
-      complete: function(results){
+      header:true,
+      skipEmptyLines:true,
+
+      complete:(results)=>{
 
         rawData = results.data;
         filteredData = [...rawData];
 
-        buildColumnFilter();
+        buildFilters();
+        buildTableHeader();
         renderTable();
         updateCount();
 
       }
+
     });
 
   }
 
   /*
-    ============================================================
-    BUILD FILTER
-    ============================================================
+    ============================================
+    BUILD FILTERS
+    ============================================
   */
 
-  function buildColumnFilter(){
+  function buildFilters(){
+
+    const positions =
+      [...new Set(
+        rawData
+          .map(x => x.position_code)
+          .filter(Boolean)
+      )].sort();
+
+    const incentives =
+      [...new Set(
+        rawData
+          .map(x => x.trc_incentive_name)
+          .filter(Boolean)
+      )].sort();
+
+    positions.forEach(value=>{
+
+      positionFilter.innerHTML += `
+        <option value="${value}">
+          ${value}
+        </option>
+      `;
+
+    });
+
+    incentives.forEach(value=>{
+
+      incentiveFilter.innerHTML += `
+        <option value="${value}">
+          ${value}
+        </option>
+      `;
+
+    });
+
+  }
+
+  /*
+    ============================================
+    TABLE HEADER
+    ============================================
+  */
+
+  function buildTableHeader(){
 
     if(!rawData.length) return;
 
     const columns = Object.keys(rawData[0]);
 
-    columns.forEach(col => {
+    let html = "<tr>";
 
-      const option = document.createElement("option");
+    columns.forEach(col=>{
 
-      option.value = col;
-      option.textContent = col;
-
-      columnSelect.appendChild(option);
+      html += `
+        <th class="
+          px-5 py-4
+          text-left
+          whitespace-nowrap
+          font-black
+          text-slate-700
+        ">
+          ${col}
+        </th>
+      `;
 
     });
+
+    html += "</tr>";
+
+    tableHead.innerHTML = html;
 
   }
 
   /*
-    ============================================================
-    SEARCH
-    ============================================================
+    ============================================
+    FILTER
+    ============================================
   */
 
-  function applySearch(){
+  function applyFilters(){
 
-    const keyword = searchInput.value.toLowerCase().trim();
+    const keyword =
+      searchInput.value
+        .toLowerCase()
+        .trim();
 
-    const selectedColumn = columnSelect.value;
+    const position =
+      positionFilter.value;
 
-    filteredData = rawData.filter(row => {
+    const incentive =
+      incentiveFilter.value;
 
-      if(selectedColumn){
+    filteredData = rawData.filter(row=>{
 
-        const value = (row[selectedColumn] || "")
-          .toString()
-          .toLowerCase();
+      /*
+        SEARCH
+      */
 
-        return value.includes(keyword);
-
-      }else{
-
-        return Object.values(row)
+      const matchSearch =
+        !keyword ||
+        Object.values(row)
           .join(" ")
           .toLowerCase()
           .includes(keyword);
 
-      }
+      /*
+        POSITION
+      */
+
+      const matchPosition =
+        !position ||
+        row.position_code === position;
+
+      /*
+        INCENTIVE
+      */
+
+      const matchIncentive =
+        !incentive ||
+        row.trc_incentive_name === incentive;
+
+      return (
+        matchSearch &&
+        matchPosition &&
+        matchIncentive
+      );
 
     });
 
@@ -265,214 +358,145 @@
   }
 
   /*
-    ============================================================
-    SORT
-    ============================================================
-  */
-
-  function sortTable(column){
-
-    if(currentSort.column === column){
-
-      currentSort.direction =
-        currentSort.direction === "asc"
-        ? "desc"
-        : "asc";
-
-    }else{
-
-      currentSort.column = column;
-      currentSort.direction = "asc";
-
-    }
-
-    filteredData.sort((a,b)=>{
-
-      const valA = (a[column] || "").toString();
-      const valB = (b[column] || "").toString();
-
-      const numA = parseFloat(valA);
-      const numB = parseFloat(valB);
-
-      let compare;
-
-      if(!isNaN(numA) && !isNaN(numB)){
-
-        compare = numA - numB;
-
-      }else{
-
-        compare = valA.localeCompare(valB,"th");
-
-      }
-
-      return currentSort.direction === "asc"
-        ? compare
-        : -compare;
-
-    });
-
-    renderTable();
-
-  }
-
-  /*
-    ============================================================
-    TABLE
-    ============================================================
+    ============================================
+    FAST TABLE RENDER
+    ============================================
   */
 
   function renderTable(){
 
-    if(!rawData.length) return;
+    if(!filteredData.length){
 
-    const columns = Object.keys(rawData[0]);
-
-    tableHead.innerHTML = "";
-
-    columns.forEach(col=>{
-
-      const th = document.createElement("th");
-
-      th.className =
-        "px-5 py-4 text-left font-black text-slate-700 whitespace-nowrap cursor-pointer";
-
-      th.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span>${col}</span>
-          <span class="text-indigo-500">↕</span>
-        </div>
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="999"
+            class="text-center py-10 text-slate-400">
+            ไม่พบข้อมูล
+          </td>
+        </tr>
       `;
 
-      th.onclick = ()=> sortTable(col);
+      return;
 
-      tableHead.appendChild(th);
+    }
 
-    });
+    const columns =
+      Object.keys(filteredData[0]);
 
-    tableBody.innerHTML = "";
+    /*
+      จำกัด render
+      เร็วขึ้นเยอะ
+    */
 
-    filteredData.forEach((row,index)=>{
+    const LIMIT = 500;
 
-      const tr = document.createElement("tr");
+    const rows =
+      filteredData.slice(0, LIMIT);
 
-      tr.className =
-        "border-b border-slate-100 table-row";
+    let html = "";
 
-      columns.forEach(col=>{
+    for(const row of rows){
 
-        const td = document.createElement("td");
+      html += `
+        <tr class="
+          border-b border-slate-100
+          row-hover
+        ">
+      `;
 
-        td.className =
-          "px-5 py-4 whitespace-nowrap";
+      for(const col of columns){
 
         let value = row[col];
 
-        if(value === "" || value == null){
-
+        if(
+          value === "" ||
+          value == null
+        ){
           value = "-";
-
         }
 
-        /*
-          ไฮไลท์เลข
-        */
+        html += `
+          <td class="
+            px-5 py-4
+            whitespace-nowrap
+          ">
+            ${value}
+          </td>
+        `;
 
-        if(!isNaN(parseFloat(value))){
+      }
 
-          td.innerHTML = `
-            <span class="font-bold text-emerald-700">
-              ${value}
-            </span>
-          `;
+      html += "</tr>";
 
-        }else{
+    }
 
-          td.textContent = value;
-
-        }
-
-        tr.appendChild(td);
-
-      });
-
-      tableBody.appendChild(tr);
-
-    });
+    tableBody.innerHTML = html;
 
   }
 
   /*
-    ============================================================
+    ============================================
     RESULT COUNT
-    ============================================================
+    ============================================
   */
 
   function updateCount(){
 
     document.getElementById("resultCount")
-      .textContent = filteredData.length;
+      .textContent =
+      filteredData.length.toLocaleString();
 
   }
 
   /*
-    ============================================================
-    EXPORT CSV
-    ============================================================
+    ============================================
+    DEBOUNCE
+    ============================================
   */
 
-  document.getElementById("exportBtn")
-    .addEventListener("click",()=>{
+  function debounce(func, delay){
 
-      const csv = Papa.unparse(filteredData);
+    let timer;
 
-      const blob = new Blob([csv],{
-        type:"text/csv;charset=utf-8;"
-      });
+    return (...args)=>{
 
-      const link = document.createElement("a");
+      clearTimeout(timer);
 
-      link.href = URL.createObjectURL(blob);
+      timer = setTimeout(()=>{
 
-      link.download = "filtered.csv";
+        func(...args);
 
-      link.click();
+      },delay);
 
-    });
+    };
 
-  /*
-    ============================================================
-    CLEAR
-    ============================================================
-  */
-
-  document.getElementById("clearBtn")
-    .addEventListener("click",()=>{
-
-      searchInput.value = "";
-      columnSelect.value = "";
-
-      filteredData = [...rawData];
-
-      renderTable();
-      updateCount();
-
-    });
+  }
 
   /*
-    ============================================================
+    ============================================
     EVENTS
-    ============================================================
+    ============================================
   */
 
-  searchInput.addEventListener("input", applySearch);
+  searchInput.addEventListener(
+    "input",
+    debounce(applyFilters, 200)
+  );
 
-  columnSelect.addEventListener("change", applySearch);
+  positionFilter.addEventListener(
+    "change",
+    applyFilters
+  );
+
+  incentiveFilter.addEventListener(
+    "change",
+    applyFilters
+  );
 
   /*
-    ============================================================
+    ============================================
     START
-    ============================================================
+    ============================================
   */
 
   loadCSV();
