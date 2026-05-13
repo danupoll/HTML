@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CSV Smart Search</title>
+
+  <title>TRC Incentive Search</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -14,7 +15,7 @@
     }
 
     .glass{
-      background:rgba(255,255,255,0.85);
+      background:rgba(255,255,255,0.9);
       border:1px solid #e2e8f0;
       backdrop-filter:blur(10px);
     }
@@ -39,17 +40,18 @@
 
 <div class="max-w-[1800px] mx-auto px-4 py-6">
 
+  <!-- HEADER -->
   <div class="glass rounded-3xl shadow-xl p-6 mb-6">
 
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
       <div>
         <h1 class="text-4xl font-black text-indigo-700">
-          🔎 CSV Smart Search
+          🔎 TRC Incentive Search
         </h1>
 
         <p class="text-slate-500 mt-2">
-          Dynamic Filter • Fast Search
+          Fast CSV Filter • GitHub Pages Ready
         </p>
       </div>
 
@@ -75,11 +77,13 @@
 
   </div>
 
+  <!-- FILTER -->
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 mb-6">
 
+    <!-- RESULT -->
     <div class="glass rounded-3xl p-5 shadow-lg">
 
-      <div class="text-sm font-bold text-slate-500 mb-3">
+      <div class="text-xs font-bold text-slate-500 mb-2">
         TOTAL RESULT
       </div>
 
@@ -90,6 +94,7 @@
 
     </div>
 
+    <!-- DYNAMIC FILTER -->
     <div
       id="dynamicFilters"
       class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3"
@@ -97,6 +102,7 @@
 
   </div>
 
+  <!-- TABLE -->
   <div class="glass rounded-3xl overflow-hidden shadow-xl">
 
     <div class="overflow-auto max-h-[75vh]">
@@ -119,271 +125,448 @@
 
 <script>
 
-const CSV_FILE = "TRC_Incentive.csv";
+  /*
+    ============================================
+    CSV FILE NAME
+    ============================================
+  */
 
-let rawData = [];
-let filteredData = [];
+  const CSV_FILE = "TRC_Incentive.csv";
 
-const tableHead = document.getElementById("tableHead");
-const tableBody = document.getElementById("tableBody");
-const dynamicFilters = document.getElementById("dynamicFilters");
+  /*
+    ============================================
+    STATE
+    ============================================
+  */
 
-async function loadCSV(){
+  let rawData = [];
+  let filteredData = [];
 
-  try{
+  /*
+    ============================================
+    ELEMENT
+    ============================================
+  */
 
-    const response = await fetch(CSV_FILE);
+  const tableHead =
+    document.getElementById("tableHead");
 
-    if(!response.ok){
-      throw new Error("โหลด CSV ไม่สำเร็จ");
-    }
+  const tableBody =
+    document.getElementById("tableBody");
 
-    const csvText = await response.text();
+  const dynamicFilters =
+    document.getElementById("dynamicFilters");
 
-    if(!csvText.trim()){
-      throw new Error("CSV ว่าง");
-    }
+  /*
+    ============================================
+    LOAD CSV
+    ============================================
+  */
 
-    Papa.parse(csvText, {
-    header:true,
-    skipEmptyLines:true,
+  async function loadCSV(){
 
-    complete:function(results){
+    try{
 
-      rawData = results.data;
-      filteredData = [...rawData];
+      const response =
+        await fetch(CSV_FILE);
 
-      buildFilters();
-      buildTable();
-      renderTable();
-      updateCount();
+      if(!response.ok){
+
+        throw new Error(
+          "โหลด CSV ไม่สำเร็จ"
+        );
 
       }
-    });
 
-  }catch(err){
+      const csvText =
+        await response.text();
 
-    console.error(err);
+      Papa.parse(csvText, {
 
-    dynamicFilters.innerHTML = `
-      <div class="glass rounded-3xl p-5 text-red-500 font-bold lg:col-span-3">
-        โหลดไฟล์ CSV ไม่ได้ ❌<br>
-        ตรวจสอบชื่อไฟล์ว่าเป็น TRC_Incentive.csv
-      </div>
-    `;
+        header:true,
+        skipEmptyLines:true,
 
-  }
+        complete:function(results){
 
-}
+          rawData = results.data;
+          filteredData = [...rawData];
 
-function buildFilters(){
+          buildFilters();
+          buildTableHeader();
 
-  dynamicFilters.innerHTML = "";
+          renderTable();
+          updateCount();
 
-  if(!rawData.length) return;
-
-  const columns = Object.keys(rawData[0]);
-
-  columns.forEach(col => {
-
-    const div = document.createElement("div");
-
-    div.className = "glass rounded-3xl p-5 shadow-lg";
-
-    div.innerHTML = `
-      <div class="text-xs font-bold text-slate-500 mb-2">
-        ${col}
-      </div>
-
-      <input
-        type="text"
-        data-column="${col}"
-        placeholder="ค้นหา ${col}"
-        class="column-filter w-full px-3 py-2 rounded-xl bg-slate-100 outline-none text-sm"
-      />
-    `;
-
-    dynamicFilters.appendChild(div);
-
-  });
-
-  let timer;
-
-  document.querySelectorAll(".column-filter")
-    .forEach(input => {
-
-      input.addEventListener("input", () => {
-
-        clearTimeout(timer);
-
-        timer = setTimeout(() => {
-          applyFilters();
-        }, 120);
+        }
 
       });
 
-    });
+    }catch(err){
 
-}
+      console.error(err);
 
-function applyFilters(){
+      dynamicFilters.innerHTML = `
+        <div class="
+          glass
+          rounded-3xl
+          p-5
+          text-red-500
+          font-bold
+          lg:col-span-5
+        ">
+          โหลดไฟล์ CSV ไม่ได้ ❌
+          <br><br>
 
-  const filters = document.querySelectorAll(".column-filter");
-
-  filteredData = rawData.filter(row => {
-
-    for(const input of filters){
-
-      const column = input.dataset.column;
-
-      const keyword = input.value
-        .toLowerCase()
-        .trim();
-
-      if(!keyword) continue;
-
-      const value = (row[column] || "")
-        .toString()
-        .toLowerCase();
-
-      if(!value.includes(keyword)){
-        return false;
-      }
+          ตรวจสอบว่า:
+          <br>
+          - ชื่อไฟล์ = TRC_Incentive.csv
+          <br>
+          - อยู่โฟลเดอร์เดียวกับ index.html
+          <br>
+          - Push ขึ้น GitHub แล้ว
+        </div>
+      `;
 
     }
 
-    return true;
-
-  });
-
-  renderTable();
-  updateCount();
-
-}
-
-function buildTable(){
-
-  if(!rawData.length) return;
-
-  const columns = Object.keys(rawData[0]);
-
-  tableHead.innerHTML = "";
-
-  columns.forEach(col => {
-
-    const th = document.createElement("th");
-
-    th.className = "px-5 py-4 text-left font-black text-slate-700 whitespace-nowrap";
-
-    th.textContent = col;
-
-    tableHead.appendChild(th);
-
-  });
-
-}
-
-function renderTable(){
-
-  tableBody.innerHTML = "";
-
-  if(!filteredData.length){
-
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="999"
-          class="text-center py-10 text-slate-400">
-          ไม่พบข้อมูล
-        </td>
-      </tr>
-    `;
-
-    return;
-
   }
 
-  const columns = Object.keys(filteredData[0]);
+  /*
+    ============================================
+    BUILD FILTER
+    ============================================
+  */
 
-  filteredData.slice(0,500).forEach(row => {
+  function buildFilters(){
 
-    const tr = document.createElement("tr");
+    dynamicFilters.innerHTML = "";
 
-    tr.className = "border-b border-slate-100 table-row";
+    if(!rawData.length) return;
+
+    const columns =
+      Object.keys(rawData[0]);
 
     columns.forEach(col => {
 
-      const td = document.createElement("td");
+      const div =
+        document.createElement("div");
 
-      td.className = "px-5 py-4 whitespace-nowrap";
+      div.className =
+        "glass rounded-3xl p-4 shadow-lg";
 
-      let value = row[col];
+      div.innerHTML = `
+        <div class="
+          text-xs
+          font-bold
+          text-slate-500
+          mb-2
+        ">
+          ${col}
+        </div>
 
-      if(value === "" || value == null){
-        value = "-";
-      }
+        <input
+          type="text"
+          data-column="${col}"
+          placeholder="ค้นหา"
+          class="
+            column-filter
+            w-full
+            px-3
+            py-2
+            rounded-xl
+            bg-slate-100
+            outline-none
+            text-sm
+          "
+        />
+      `;
 
-      td.textContent = value;
-
-      tr.appendChild(td);
+      dynamicFilters.appendChild(div);
 
     });
 
-    tableBody.appendChild(tr);
+    let timer;
 
-  });
-
-}
-
-function updateCount(){
-
-  document.getElementById("resultCount")
-    .textContent = filteredData.length;
-
-}
-
-document.getElementById("clearBtn")
-  .addEventListener("click", () => {
-
-    document.querySelectorAll(".column-filter")
+    document
+      .querySelectorAll(".column-filter")
       .forEach(input => {
-        input.value = "";
+
+        input.addEventListener(
+          "input",
+          () => {
+
+            clearTimeout(timer);
+
+            timer = setTimeout(() => {
+
+              applyFilters();
+
+            },120);
+
+          }
+        );
+
       });
 
-    filteredData = [...rawData];
+  }
+
+  /*
+    ============================================
+    FILTER
+    ============================================
+  */
+
+  function applyFilters(){
+
+    const filters =
+      document.querySelectorAll(
+        ".column-filter"
+      );
+
+    filteredData =
+      rawData.filter(row => {
+
+        for(const input of filters){
+
+          const column =
+            input.dataset.column;
+
+          const keyword =
+            input.value
+              .toLowerCase()
+              .trim();
+
+          if(!keyword) continue;
+
+          const value =
+            (row[column] || "")
+              .toString()
+              .toLowerCase();
+
+          if(!value.includes(keyword)){
+
+            return false;
+
+          }
+
+        }
+
+        return true;
+
+      });
 
     renderTable();
     updateCount();
 
-  });
+  }
 
-document.getElementById("exportBtn")
-  .addEventListener("click", () => {
+  /*
+    ============================================
+    TABLE HEADER
+    ============================================
+  */
 
-    const worksheet = filteredData.map(row => Object.values(row).join('	')).join('
-');
+  function buildTableHeader(){
 
-    const headers = Object.keys(filteredData[0] || {}).join('	');
+    tableHead.innerHTML = "";
 
-    const content = headers + '
-' + worksheet;
+    const columns =
+      Object.keys(rawData[0]);
 
-    const blob = new Blob([
-      '﻿' + content
-    ], {
-      type:'application/vnd.ms-excel;charset=utf-8;'
+    columns.forEach(col => {
+
+      const th =
+        document.createElement("th");
+
+      th.className =
+        "px-5 py-4 text-left font-black text-slate-700 whitespace-nowrap";
+
+      th.textContent = col;
+
+      tableHead.appendChild(th);
+
     });
 
-    const link = document.createElement("a");
+  }
 
-    link.href = URL.createObjectURL(blob);
+  /*
+    ============================================
+    TABLE
+    ============================================
+  */
 
-    link.download = "filtered.xls";
+  function renderTable(){
 
-    link.click();
+    tableBody.innerHTML = "";
 
-  });
+    if(!filteredData.length){
 
-loadCSV();
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="999"
+            class="
+              text-center
+              py-10
+              text-slate-400
+            ">
+            ไม่พบข้อมูล
+          </td>
+        </tr>
+      `;
+
+      return;
+
+    }
+
+    const columns =
+      Object.keys(filteredData[0]);
+
+    /*
+      จำกัด render
+      เพื่อความเร็ว
+    */
+
+    filteredData
+      .slice(0,500)
+      .forEach(row => {
+
+        const tr =
+          document.createElement("tr");
+
+        tr.className =
+          "border-b border-slate-100 table-row";
+
+        columns.forEach(col => {
+
+          const td =
+            document.createElement("td");
+
+          td.className =
+            "px-5 py-4 whitespace-nowrap";
+
+          let value = row[col];
+
+          if(
+            value === "" ||
+            value == null
+          ){
+            value = "-";
+          }
+
+          td.textContent = value;
+
+          tr.appendChild(td);
+
+        });
+
+        tableBody.appendChild(tr);
+
+      });
+
+  }
+
+  /*
+    ============================================
+    RESULT COUNT
+    ============================================
+  */
+
+  function updateCount(){
+
+    document.getElementById(
+      "resultCount"
+    ).textContent =
+      filteredData.length;
+
+  }
+
+  /*
+    ============================================
+    CLEAR
+    ============================================
+  */
+
+  document
+    .getElementById("clearBtn")
+    .addEventListener(
+      "click",
+      () => {
+
+        document
+          .querySelectorAll(".column-filter")
+          .forEach(input => {
+
+            input.value = "";
+
+          });
+
+        filteredData = [...rawData];
+
+        renderTable();
+        updateCount();
+
+      }
+    );
+
+  /*
+    ============================================
+    EXPORT EXCEL
+    ============================================
+  */
+
+  document
+    .getElementById("exportBtn")
+    .addEventListener(
+      "click",
+      () => {
+
+        const headers =
+          Object.keys(
+            filteredData[0] || {}
+          ).join("\\t");
+
+        const rows =
+          filteredData.map(row => {
+
+            return Object.values(row)
+              .join("\\t");
+
+          }).join("\\n");
+
+        const content =
+          headers + "\\n" + rows;
+
+        const blob = new Blob(
+          [
+            "\\uFEFF" + content
+          ],
+          {
+            type:
+            "application/vnd.ms-excel;charset=utf-8;"
+          }
+        );
+
+        const link =
+          document.createElement("a");
+
+        link.href =
+          URL.createObjectURL(blob);
+
+        link.download =
+          "filtered.xls";
+
+        link.click();
+
+      }
+    );
+
+  /*
+    ============================================
+    START
+    ============================================
+  */
+
+  loadCSV();
 
 </script>
 
