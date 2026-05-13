@@ -1,155 +1,441 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>Time Record + Holiday</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<title>Time Record Tool</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <style>
+
 :root{
---bg:#f1f5f9;
---card:#ffffff;
---primary:#2563eb;
---green:#16a34a;
---text:#0f172a;
---muted:#64748b;
---border:#e2e8f0;
+--bg:#050816;
+--card:rgba(255,255,255,.06);
+--stroke:rgba(255,255,255,.08);
+--text:#f8fafc;
+--muted:#94a3b8;
+--primary:#3b82f6;
+--primary2:#8b5cf6;
+--success:#22c55e;
+--shadow:0 25px 60px rgba(0,0,0,.45);
 }
 
-*{box-sizing:border-box}
+*{
+margin:0;
+padding:0;
+}
+*{
+box-sizing:border-box;
+}
 
 body{
-margin:0;
-padding:60px 20px;
-background:var(--bg);
+font-family:
+-apple-system,
+BlinkMacSystemFont,
+"SF Pro Text",
+sans-serif;
+
+background:
+radial-gradient(circle at top left,#172554 0%,transparent 30%),
+radial-gradient(circle at bottom right,#581c87 0%,transparent 30%),
+linear-gradient(135deg,#030712,#0f172a);
+
+min-height:100vh;
 color:var(--text);
-font-family:system-ui,monospace;
+overflow-x:hidden;
+padding:0px 12px 12px;
 }
 
-.wrapper{max-width:920px;margin:auto}
-
-.header{margin-bottom:26px}
-
-.header h1{margin:0;font-size:26px}
-
-.header p{margin:6px 0 0;color:var(--muted)}
-
-.card{
-background:var(--card);
-border-radius:18px;
-padding:26px;
-box-shadow:0 10px 30px rgba(0,0,0,.06);
-border:1px solid var(--border);
+body::before{
+content:"";
+position:fixed;
+inset:0;
+backdrop-filter:blur(100px);
+pointer-events:none;
 }
 
-.section{margin-bottom:28px}
-
-.section-title{
-font-weight:700;
-margin-bottom:12px;
+.wrapper{
+max-width:1450px;
+margin:auto;
 }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:-120px;
+margin-bottom:24px;
+flex-wrap:wrap;
 gap:16px;
 }
 
-.field label{
-display:block;
-font-size:13px;
+.logo{
+font-size:34px;
+font-weight:900;
+
+background:
+linear-gradient(90deg,#60a5fa,#c084fc);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.subtitle{
 color:var(--muted);
-margin-bottom:6px;
+margin-top:6px;
 }
 
-.field input,.field select{
-width:100%;
-padding:11px 12px;
-border-radius:10px;
-border:1px solid var(--border);
-background:#fff;
-font-family:monospace;
-}
-
-.weekdays{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-}
-
-.day-btn{
-padding:8px 14px;
+.status{
+padding:10px 16px;
 border-radius:999px;
-border:1px solid var(--border);
-background:#fff;
-cursor:pointer;
-font-weight:600;
-}
 
-.day-btn.active{
-background:#fee2e2;
-border-color:#fecaca;
-color:#b91c1c;
-}
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.08);
 
-.actions{
-display:flex;
-gap:12px;
-margin-top:10px;
-}
-
-button{
-padding:12px 20px;
-border-radius:10px;
-border:none;
+font-size:13px;
 font-weight:700;
-cursor:pointer;
 }
 
-.primary{background:var(--primary);color:#fff}
-.secondary{background:var(--green);color:#fff}
+.card{
+background:var(--card);
+border:1px solid var(--stroke);
+
+border-radius:34px;
+
+padding:30px;
+
+backdrop-filter:blur(30px);
+
+box-shadow:var(--shadow);
+}
 
 .tabs{
 display:flex;
-gap:10px;
-margin-bottom:20px;
+gap:14px;
+margin-bottom:30px;
 }
 
 .tab{
 flex:1;
-text-align:center;
-padding:12px;
-border-radius:10px;
-border:1px solid var(--border);
+
+padding:16px;
+
+border-radius:18px;
+
 cursor:pointer;
-font-weight:700;
-background:#fff;
+
+font-weight:800;
+text-align:center;
+
+background:rgba(255,255,255,.04);
+
+border:1px solid rgba(255,255,255,.06);
+
+transition:.22s;
+}
+
+.tab:hover{
+transform:translateY(-2px);
 }
 
 .tab.active{
-background:var(--primary);
-color:#fff;
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#8b5cf6
+);
+
+border-color:transparent;
+
+box-shadow:
+0 12px 30px rgba(59,130,246,.35);
 }
 
-textarea{
-width:100%;
-height:420px;
-margin-top:16px;
-padding:16px;
-border-radius:12px;
-border:1px solid var(--border);
-background:#f8fafc;
-font-family:monospace;
+.section{
+margin-bottom:28px;
+}
+
+.section-title{
+font-size:18px;
+font-weight:800;
+margin-bottom:14px;
+
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(240px,1fr));
+
+gap:18px;
+}
+
+.field label{
+display:block;
+
 font-size:13px;
-resize:vertical;
+font-weight:700;
+
+color:#cbd5e1;
+
+margin-bottom:8px;
+}
+
+.field input,
+.field select{
+
+width:100%;
+
+padding:14px 16px;
+
+border:none;
+outline:none;
+
+border-radius:18px;
+
+background:rgba(255,255,255,.05);
+
+color:white;
+
+font-size:14px;
+
+transition:.22s;
+
+box-shadow:
+inset 0 0 0 1px rgba(255,255,255,.05);
+}
+
+.field input:focus,
+.field select:focus{
+
+background:rgba(255,255,255,.08);
+
+box-shadow:
+0 0 0 3px rgba(59,130,246,.25),
+0 10px 30px rgba(59,130,246,.12);
+}
+
+.weekdays{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.day-btn{
+padding:12px 18px;
+
+border-radius:999px;
+
+border:none;
+
+background:rgba(255,255,255,.05);
+
+color:white;
+
+cursor:pointer;
+
+font-weight:700;
+
+transition:.2s;
+}
+
+.day-btn:hover{
+transform:translateY(-2px);
+}
+
+.day-btn.active{
+background:
+linear-gradient(
+135deg,
+#ef4444,
+#dc2626
+);
+
+box-shadow:
+0 10px 25px rgba(239,68,68,.3);
+}
+
+details{
+background:rgba(255,255,255,.03);
+
+border:1px solid rgba(255,255,255,.05);
+
+border-radius:22px;
+
+padding:18px;
 }
 
 summary{
 cursor:pointer;
-font-weight:700;
+font-weight:800;
+font-size:15px;
+}
+
+.actions{
+
+position:sticky;
+bottom:20px;
+z-index:10;
+
+display:flex;
+gap:14px;
+
+margin-top:26px;
+
+padding:16px;
+
+border-radius:24px;
+
+background:rgba(2,6,23,.7);
+
+backdrop-filter:blur(20px);
+
+border:1px solid rgba(255,255,255,.08);
+}
+
+button{
+border:none;
+cursor:pointer;
+
+padding:15px 24px;
+
+border-radius:18px;
+
+font-size:14px;
+font-weight:800;
+
+transition:.22s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+.primary{
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#8b5cf6
+);
+
+color:white;
+
+box-shadow:
+0 12px 30px rgba(59,130,246,.35);
+}
+
+.secondary{
+background:
+linear-gradient(
+135deg,
+#16a34a,
+#22c55e
+);
+
+color:white;
+
+box-shadow:
+0 12px 30px rgba(34,197,94,.25);
+}
+
+textarea{
+width:100%;
+height:520px;
+
+margin-top:24px;
+
+padding:26px;
+
+border:none;
+outline:none;
+
+resize:vertical;
+
+border-radius:28px;
+
+background:#020617;
+
+color:#e2e8f0;
+
+font-size:13px;
+line-height:1.9;
+
+font-family:
+"SFMono-Regular",
+Menlo,
+Consolas,
+monospace;
+
+border:1px solid rgba(255,255,255,.06);
+
+box-shadow:
+inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.stats{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(180px,1fr));
+
+gap:16px;
+
 margin-bottom:12px;
+}
+
+.stat{
+padding:22px;
+
+border-radius:24px;
+
+background:rgba(255,255,255,.04);
+
+border:1px solid rgba(255,255,255,.06);
+}
+
+.stat-label{
+font-size:12px;
+color:#cbd5e1;
+margin-bottom:10px;
+}
+
+.stat-value{
+font-size:32px;
+font-weight:900;
+}
+
+.footer{
+margin-top:24px;
+text-align:center;
+font-size:12px;
+color:#64748b;
+}
+
+@media(max-width:900px){
+
+body{
+padding:16px;
+}
+
+.actions{
+flex-wrap:wrap;
+}
+
+.tabs{
+flex-direction:column;
+}
+
+.logo{
+font-size:28px;
+}
+
 }
 
 </style>
@@ -159,22 +445,61 @@ margin-bottom:12px;
 
 <div class="wrapper">
 
-<div class="header">
-<h1>Time Record & Holiday Tool</h1>
-<p>รวม 2 ระบบในหน้าเดียว</p>
+<div class="topbar">
+
+<div>
+<div class="logo">⚡ Time Record Tool</div>
+<div class="subtitle">
+Generate SQL Faster • Modern UI
+</div>
+</div>
+
+<div class="status">
+🟢 System Ready
+</div>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-label">Mode</div>
+<div class="stat-value" id="modeText">TIME</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">SQL Lines</div>
+<div class="stat-value" id="lineCount">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Status</div>
+<div class="stat-value">OK</div>
+</div>
+
 </div>
 
 <div class="card">
 
 <div class="tabs">
-<div id="tabTime" class="tab active" onclick="showPage('time')">Time Record</div>
-<div id="tabHoliday" class="tab" onclick="showPage('holiday')">Add Holiday</div>
+<div id="tabTime" class="tab active" onclick="showPage('time')">
+⏰ Time Record
 </div>
+
+<div id="tabHoliday" class="tab" onclick="showPage('holiday')">
+🎉 Add Holiday
+</div>
+</div>
+
+<!-- TIME PAGE -->
 
 <div id="timePage">
 
 <div class="section">
-<div class="section-title">📅 วันที่ & เวลา</div>
+
+<div class="section-title">
+📅 วันที่ & เวลา
+</div>
 
 <div class="grid">
 
@@ -194,12 +519,17 @@ margin-bottom:12px;
 </div>
 
 </div>
+
 </div>
 
 <div class="section">
-<div class="section-title">🚫 ยกเว้นวัน</div>
+
+<div class="section-title">
+🚫 ยกเว้นวัน
+</div>
 
 <div class="weekdays">
+
 <button class="day-btn" data-day="1">จันทร์</button>
 <button class="day-btn" data-day="2">อังคาร</button>
 <button class="day-btn" data-day="3">พุธ</button>
@@ -207,13 +537,16 @@ margin-bottom:12px;
 <button class="day-btn" data-day="5">ศุกร์</button>
 <button class="day-btn active" data-day="6">เสาร์</button>
 <button class="day-btn active" data-day="0">อาทิตย์</button>
+
 </div>
 
 </div>
 
 <div class="section">
 
-<div class="section-title">👤 พนักงาน</div>
+<div class="section-title">
+👤 พนักงาน
+</div>
 
 <div class="grid">
 
@@ -228,13 +561,18 @@ margin-bottom:12px;
 </div>
 
 </div>
+
 </div>
 
 <div class="section">
 
 <details>
 
-<summary>System Config</summary>
+<summary>
+⚙️ System Config
+</summary>
+
+<br>
 
 <div class="grid">
 
@@ -303,39 +641,69 @@ margin-bottom:12px;
 </div>
 
 <div class="actions">
-<button class="primary" onclick="generateSQL()">Generate SQL</button>
-<button class="secondary" onclick="copySQL()">Copy</button>
+
+<button class="primary" onclick="generateSQL()">
+⚡ Generate SQL
+</button>
+
+<button class="secondary" onclick="copySQL()">
+📋 Copy
+</button>
+
 </div>
 
 <textarea id="output" readonly></textarea>
 
 </div>
 
+<!-- HOLIDAY -->
+
 <div id="holidayPage" style="display:none">
 
 <div class="section">
-<div class="section-title">📅 วันที่</div>
+
+<div class="section-title">
+📅 วันที่
+</div>
+
 <div class="grid">
+
 <div class="field">
 <label>ช่วงวันที่</label>
 <input id="holidayRange">
 </div>
+
 </div>
+
 </div>
 
 <div class="section">
-<div class="section-title">👤 พนักงาน</div>
+
+<div class="section-title">
+👤 พนักงาน
+</div>
+
 <div class="grid">
+
 <div class="field">
 <label>Employee ID</label>
 <input id="holidayEmp">
 </div>
+
 </div>
+
 </div>
 
 <div class="actions">
-<button class="primary" onclick="genHoliday()">Generate SQL</button>
-<button class="secondary" onclick="copyHoliday()">Copy</button>
+
+<button class="primary" onclick="genHoliday()">
+⚡ Generate SQL
+</button>
+
+<button class="secondary" onclick="copyHoliday()">
+📋 Copy
+</button>
+
 </div>
 
 <textarea id="holidayOutput" readonly></textarea>
@@ -343,36 +711,84 @@ margin-bottom:12px;
 </div>
 
 </div>
+
+<div class="footer">
+Built for enterprise workflow ⚡
+</div>
+
 </div>
 
 <script>
 
 function showPage(p){
-timePage.style.display = p==='time'?'block':'none'
-holidayPage.style.display = p==='holiday'?'block':'none'
-tabTime.classList.toggle('active',p==='time')
-tabHoliday.classList.toggle('active',p==='holiday')
+
+timePage.style.display =
+p==='time'
+?'block'
+:'none'
+
+holidayPage.style.display =
+p==='holiday'
+?'block'
+:'none'
+
+tabTime.classList.toggle(
+'active',
+p==='time'
+)
+
+tabHoliday.classList.toggle(
+'active',
+p==='holiday'
+)
+
+document.getElementById('modeText')
+.innerText=
+p==='time'
+?'TIME'
+:'HOLIDAY'
+
 }
 
-flatpickr('#dateRange',{mode:'range',dateFormat:'Y-m-d'})
-flatpickr('#holidayRange',{mode:'range',dateFormat:'Y-m-d'})
+flatpickr('#dateRange',{
+mode:'range',
+dateFormat:'Y-m-d'
+})
+
+flatpickr('#holidayRange',{
+mode:'range',
+dateFormat:'Y-m-d'
+})
 
 const skipWeekdays=new Set([0,6])
 
-document.querySelectorAll('.day-btn').forEach(btn=>{
+document.querySelectorAll('.day-btn')
+.forEach(btn=>{
+
 btn.onclick=()=>{
+
 btn.classList.toggle('active')
+
 const d=Number(btn.dataset.day)
+
 btn.classList.contains('active')
 ? skipWeekdays.add(d)
 : skipWeekdays.delete(d)
+
 }
+
 })
 
 function formatDate(date){
-return date.getFullYear() + '-' +
-String(date.getMonth()+1).padStart(2,'0') + '-' +
-String(date.getDate()).padStart(2,'0')
+
+return date.getFullYear()
++ '-'
++ String(date.getMonth()+1)
+.padStart(2,'0')
++ '-'
++ String(date.getDate())
+.padStart(2,'0')
+
 }
 
 function generateSQL(){
@@ -380,24 +796,40 @@ function generateSQL(){
 if(!dateRange.value||!x2.value||!x3.value)
 return alert('ข้อมูลไม่ครบ')
 
-const schemaVal = schema.value || 'time'
+const schemaVal =
+schema.value || 'time'
+
 const split = splitFlag.value
 
-let recordIn = split==='yes' ? 'in' : ''
-let recordOut = split==='yes' ? 'out' : ''
+let recordIn =
+split==='yes'
+? 'in'
+: ''
 
-const [s,e]=dateRange.value.split(' to ')
+let recordOut =
+split==='yes'
+? 'out'
+: ''
 
-let d=new Date(s+"T00:00:00")
-const end=new Date((e||s)+"T00:00:00")
+const [s,e]=
+dateRange.value.split(' to ')
+
+let d=
+new Date(s+"T00:00:00")
+
+const end=
+new Date((e||s)+"T00:00:00")
 
 let out=''
 
 while(d<=end){
 
 if(skipWeekdays.has(d.getDay())){
+
 d.setDate(d.getDate()+1)
+
 continue
+
 }
 
 const day=formatDate(d)
@@ -427,42 +859,160 @@ d.setDate(d.getDate()+1)
 
 output.value=out.trim()
 
+updateLines(output.value)
+
+saveForm()
+
 }
 
 function copySQL(){
+
 output.select()
+
 document.execCommand('copy')
+
 }
 
 function genHoliday(){
 
 const emp=holidayEmp.value
-const [s,e]=holidayRange.value.split(' to ')
 
-if(!emp||!s)return alert('ข้อมูลไม่ครบ')
+const [s,e]=
+holidayRange.value.split(' to ')
+
+if(!emp||!s)
+return alert('ข้อมูลไม่ครบ')
 
 holidayOutput.value=`
 UPDATE "time".timesheet
 SET public_holiday_detail = jsonb_build_object(
-  'endDate', to_char(shift_date, 'YYYY-MM-DD'),
-  'beginDate', to_char(shift_date, 'YYYY-MM-DD'),
-  'holidayClass', 'FULL',
-  'holidayCalendarDetailCode', 'TH_BuddhistLent',
-  'holidayCalendarDetailName', jsonb_build_object(
-    'en', 'Buddhist Lent Day',
-    'local', 'วันเข้าพรรษา'
-  )
+'endDate', to_char(shift_date, 'YYYY-MM-DD'),
+'beginDate', to_char(shift_date, 'YYYY-MM-DD'),
+'holidayClass', 'FULL',
+'holidayCalendarDetailCode', 'TH_BuddhistLent',
+'holidayCalendarDetailName', jsonb_build_object(
+'en', 'Buddhist Lent Day',
+'local', 'วันเข้าพรรษา'
+)
 )
 WHERE employee_id = '${emp}'
 AND shift_date BETWEEN DATE '${s}' AND DATE '${e||s}';
 `.trim()
 
+updateLines(holidayOutput.value)
+
+saveForm()
+
 }
 
 function copyHoliday(){
+
 holidayOutput.select()
+
 document.execCommand('copy')
+
 }
+
+function updateLines(text){
+
+document.getElementById('lineCount')
+.innerText=
+text
+.split('\n')
+.length
+
+}
+
+function saveForm(){
+
+const ids=[
+'dateRange',
+'timeIn',
+'timeOut',
+'x2',
+'x3',
+'schema',
+'source',
+'location_id',
+'status',
+'machine_ip',
+'machine_name_in',
+'machine_name_out',
+'location_name',
+'set_id',
+'source_type',
+'holidayRange',
+'holidayEmp'
+]
+
+let data={}
+
+ids.forEach(id=>{
+
+const el=document.getElementById(id)
+
+if(el)
+data[id]=el.value
+
+})
+
+localStorage.setItem(
+'timeTool',
+JSON.stringify(data)
+)
+
+}
+
+function loadForm(){
+
+const raw=
+localStorage.getItem('timeTool')
+
+if(!raw) return
+
+const data=JSON.parse(raw)
+
+Object.keys(data).forEach(id=>{
+
+const el=document.getElementById(id)
+
+if(el)
+el.value=data[id]
+
+})
+
+}
+
+document
+.querySelectorAll('input,select')
+.forEach(el=>{
+
+el.addEventListener(
+'change',
+saveForm
+)
+
+})
+
+document.addEventListener(
+'keydown',
+e=>{
+
+if(e.ctrlKey && e.key==='Enter'){
+
+if(
+timePage.style.display!=='none'
+){
+generateSQL()
+}else{
+genHoliday()
+}
+
+}
+
+})
+
+loadForm()
 
 </script>
 
