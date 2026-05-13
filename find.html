@@ -49,7 +49,7 @@
         </h1>
 
         <p class="text-slate-500 mt-2">
-          Dynamic Filter • Fast Search • GitHub CSV
+          Dynamic Filter • Fast Search
         </p>
       </div>
 
@@ -66,7 +66,7 @@
           id="exportBtn"
           class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-2xl font-bold"
         >
-          Export CSV
+          Export Excel
         </button>
 
       </div>
@@ -92,7 +92,7 @@
 
     <div
       id="dynamicFilters"
-      class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+      class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3"
     ></div>
 
   </div>
@@ -191,7 +191,7 @@ function buildFilters(){
     div.className = "glass rounded-3xl p-5 shadow-lg";
 
     div.innerHTML = `
-      <div class="text-sm font-bold text-slate-500 mb-2">
+      <div class="text-xs font-bold text-slate-500 mb-2">
         ${col}
       </div>
 
@@ -199,7 +199,7 @@ function buildFilters(){
         type="text"
         data-column="${col}"
         placeholder="ค้นหา ${col}"
-        class="column-filter w-full px-4 py-4 rounded-2xl bg-slate-100 outline-none"
+        class="column-filter w-full px-3 py-2 rounded-xl bg-slate-100 outline-none text-sm"
       />
     `;
 
@@ -359,17 +359,25 @@ document.getElementById("clearBtn")
 document.getElementById("exportBtn")
   .addEventListener("click", () => {
 
-    const csv = Papa.unparse(filteredData);
+    const worksheet = filteredData.map(row => Object.values(row).join('	')).join('
+');
 
-    const blob = new Blob([csv], {
-      type:"text/csv;charset=utf-8;"
+    const headers = Object.keys(filteredData[0] || {}).join('	');
+
+    const content = headers + '
+' + worksheet;
+
+    const blob = new Blob([
+      '﻿' + content
+    ], {
+      type:'application/vnd.ms-excel;charset=utf-8;'
     });
 
     const link = document.createElement("a");
 
     link.href = URL.createObjectURL(blob);
 
-    link.download = "filtered.csv";
+    link.download = "filtered.xls";
 
     link.click();
 
