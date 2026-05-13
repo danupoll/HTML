@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>My Tools</title>
 
 <link rel="icon" href="data:image/svg+xml,
@@ -11,114 +14,354 @@
 
 <style>
 
+:root{
+--bg1:#0f172a;
+--bg2:#020617;
+--glass:rgba(15,23,42,.72);
+--border:rgba(255,255,255,.08);
+--text:#f8fafc;
+--muted:#94a3b8;
+--blue:#3b82f6;
+--blue2:#60a5fa;
+--hover:rgba(255,255,255,.08);
+}
+
+*{
+box-sizing:border-box;
+}
+
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial;
-background:#f1f5f9;
-}
+font-family:
+-apple-system,
+BlinkMacSystemFont,
+"SF Pro Text",
+"Helvetica Neue",
+Arial;
 
-.topbar .trcBtn{
-background:#f9a8d4;
-color:#831843;
-}
+background:
+radial-gradient(circle at top left,#1e293b 0%,#0f172a 45%,#020617 100%);
 
-.topbar .trcBtn:hover{
-background:#f472b6;
+overflow:hidden;
 }
 
 /* ===== TOPBAR ===== */
 
 .topbar{
-background:#1e293b;
-height:56px;
+
+height:74px;
+
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 16px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+
+padding:0 18px;
+
+background:rgba(15,23,42,.65);
+
+backdrop-filter:blur(14px);
+
+border-bottom:1px solid var(--border);
+
+position:relative;
+z-index:100;
+
+box-shadow:
+0 10px 35px rgba(0,0,0,.28);
+
 }
 
-.leftMenu{
+/* ===== LOGO ===== */
+
+.logoWrap{
 display:flex;
-gap:8px;
 align-items:center;
+gap:12px;
 }
 
-.rightMenu{
+.logoIcon{
+
+width:42px;
+height:42px;
+
+border-radius:14px;
+
 display:flex;
-gap:8px;
+align-items:center;
+justify-content:center;
+
+font-size:20px;
+
+background:
+linear-gradient(135deg,#2563eb,#60a5fa);
+
+box-shadow:
+0 8px 20px rgba(37,99,235,.35);
+
+}
+
+.logoText{
+color:white;
+font-size:18px;
+font-weight:700;
+letter-spacing:.3px;
 }
 
 /* ===== BUTTON ===== */
 
 .topbar button{
-background:#334155;
+
 border:none;
-color:white;
-padding:7px 14px;
-border-radius:8px;
+outline:none;
+
 cursor:pointer;
+
+padding:11px 18px;
+
+border-radius:16px;
+
 font-size:14px;
-transition:all .15s ease;
+font-weight:600;
+
+color:white;
+
+background:rgba(255,255,255,.06);
+
+border:1px solid rgba(255,255,255,.08);
+
+transition:
+all .16s ease;
+
 }
 
 .topbar button:hover{
-background:#475569;
+
+transform:translateY(-2px);
+
+background:rgba(255,255,255,.12);
+
 }
 
-.topbar button.active{
-background:#2563eb;
+/* ===== MENU BTN ===== */
+
+.menuBtn{
+
+background:
+linear-gradient(135deg,#3b82f6,#2563eb) !important;
+
+box-shadow:
+0 10px 22px rgba(37,99,235,.35);
+
+}
+
+/* ===== RIGHT ===== */
+
+.rightMenu{
+display:flex;
+gap:10px;
+}
+
+.trcBtn{
+
+background:
+linear-gradient(135deg,#f9a8d4,#f472b6) !important;
+
+color:#831843 !important;
+
+font-weight:700;
+
+}
+
+/* ===== POPUP ===== */
+
+.popupMenu{
+
+position:absolute;
+
+top:88px;
+left:18px;
+
+width:760px;
+max-width:calc(100vw - 36px);
+
+padding:18px;
+
+display:none;
+
+grid-template-columns:
+repeat(3,1fr);
+
+gap:14px;
+
+background:rgba(15,23,42,.82);
+
+backdrop-filter:blur(12px);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:28px;
+
+box-shadow:
+0 25px 60px rgba(0,0,0,.30);
+
+animation:popup .18s ease;
+
+z-index:999;
+}
+
+.popupMenu.show{
+display:grid;
+}
+
+@keyframes popup{
+
+from{
+opacity:0;
+transform:
+translateY(-10px)
+scale(.98);
+}
+
+to{
+opacity:1;
+transform:
+translateY(0)
+scale(1);
+}
+
+}
+
+/* ===== CARD ===== */
+
+.menuCard{
+
+border:none;
+outline:none;
+
+cursor:pointer;
+
+min-height:92px;
+
+padding:16px;
+
+border-radius:22px;
+
+background:rgba(255,255,255,.05);
+
+border:1px solid rgba(255,255,255,.05);
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:flex-start;
+
+gap:8px;
+
+transition:
+all .16s ease;
+
+color:white;
+}
+
+.menuCard:hover{
+
+transform:
+translateY(-3px);
+
+background:rgba(255,255,255,.10);
+
+border-color:
+rgba(255,255,255,.10);
+
+}
+
+.menuCard.active{
+
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#60a5fa
+);
+
+box-shadow:
+0 14px 30px rgba(37,99,235,.30);
+
+}
+
+.menuIcon{
+font-size:24px;
+}
+
+.menuTitle{
+font-size:14px;
+font-weight:700;
+}
+
+.menuDesc{
+font-size:12px;
+color:#cbd5e1;
+line-height:1.4;
 }
 
 /* ===== VIEWER ===== */
 
 .viewer{
+
 width:100%;
-height:calc(100vh - 56px);
+height:calc(100vh - 74px);
+
 border:none;
+
 display:none;
+
+background:white;
+
 }
 
 .viewer.active{
 display:block;
+animation:fade .2s ease;
 }
 
-/* ===== DROPDOWN ===== */
+@keyframes fade{
 
-.dropdown{
-position:relative;
+from{
+opacity:0;
+transform:translateY(6px);
 }
 
-.dropdown-content{
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+/* ===== MOBILE ===== */
+
+@media(max-width:900px){
+
+.popupMenu{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:640px){
+
+.logoText{
 display:none;
-position:absolute;
-top:38px;
-left:0;
-background:white;
-min-width:180px;
-border-radius:8px;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
-overflow:hidden;
-z-index:999;
 }
 
-.dropdown-content button{
-width:100%;
-background:white;
-border:none;
-padding:10px 12px;
-text-align:left;
-cursor:pointer;
-font-size:14px;
-color:#0f172a;
+.popupMenu{
+grid-template-columns:1fr;
 }
 
-.dropdown-content button:hover{
-background:#f1f5f9;
+.topbar{
+padding:0 12px;
 }
 
-.dropdown.show .dropdown-content{
-display:block;
 }
 
 </style>
@@ -127,29 +370,115 @@ display:block;
 
 <body>
 
+<!-- ===== TOPBAR ===== -->
+
 <div class="topbar">
 
-<div class="leftMenu">
+<div class="logoWrap">
 
-<button onclick="showPage('page1',this)">Query Format</button>
-<button onclick="showPage('page2',this)">Insert Time Record</button>
-<button onclick="showPage('page3',this)">EC Payroll</button>
-<button onclick="showPage('page4',this)">QR Code</button>
-<button onclick="showPage('page7',this)">Cut</button>
-<button onclick="showPage('page8',this)">วันพระ-Holiday</button>
-<button onclick="showPage('page5',this)">Error</button>
-<button onclick="showPage('page6',this)">API-Template</button>
-<button onclick="openAI()">⭐️ ถาม AI</button>
+<div class="logoIcon">
+🧩
+</div>
+
+<div class="logoText">
+My Tools
+</div>
+
+<button class="menuBtn" onclick="toggleMenu()">
+☰ Tools
+</button>
 
 </div>
 
 <div class="rightMenu">
 
-<button class="trcBtn" onclick="downloadTRC()">TRC Incentive</button>
+<button class="trcBtn" onclick="downloadTRC()">
+📥 TRC Incentive
+</button>
 
 </div>
 
 </div>
+
+<!-- ===== POPUP MENU ===== -->
+
+<div class="popupMenu" id="popupMenu">
+
+<button class="menuCard" onclick="showPage('page1',this)">
+<div class="menuIcon">📝</div>
+<div class="menuTitle">Query Format</div>
+<div class="menuDesc">
+จัด format query ให้พร้อมใช้งาน
+</div>
+</button>
+
+<button class="menuCard" onclick="showPage('page2',this)">
+<div class="menuIcon">⏱️</div>
+<div class="menuTitle">Insert Time Record</div>
+<div class="menuDesc">
+สร้าง time record ได้เร็วขึ้น
+</div>
+</button>
+
+<button class="menuCard" onclick="showPage('page3',this)">
+<div class="menuIcon">💰</div>
+<div class="menuTitle">EC Payroll</div>
+<div class="menuDesc">
+จัดการ payroll และ calculation
+</div>
+</button>
+
+<button class="menuCard" onclick="showPage('page4',this)">
+<div class="menuIcon">🔳</div>
+<div class="menuTitle">QR Code</div>
+<div class="menuDesc">
+สร้าง QR Code ทันที
+</div>
+</button>
+
+<button class="menuCard" onclick="showPage('page7',this)">
+<div class="menuIcon">✂️</div>
+<div class="menuTitle">Cut</div>
+<div class="menuDesc">
+ตัดข้อความและ format ข้อมูล
+</div>
+</button>
+
+<button class="menuCard" onclick="showPage('page8',this)">
+<div class="menuIcon">🪷</div>
+<div class="menuTitle">วันพระ-Holiday</div>
+<div class="menuDesc">
+ดูวันหยุดและวันพระ
+</div>
+</button>
+
+<button class="menuCard" onclick="showPage('page5',this)">
+<div class="menuIcon">⚠️</div>
+<div class="menuTitle">Error</div>
+<div class="menuDesc">
+ช่วยตรวจสอบ error ต่างๆ
+</div>
+</button>
+
+<button class="menuCard" onclick="showPage('page6',this)">
+<div class="menuIcon">🔌</div>
+<div class="menuTitle">API Template</div>
+<div class="menuDesc">
+Template สำหรับ API
+</div>
+</button>
+
+<button class="menuCard" onclick="openAI()">
+<div class="menuIcon">⭐️</div>
+<div class="menuTitle">ถาม AI</div>
+<div class="menuDesc">
+เปิด NotebookLM
+</div>
+</button>
+
+</div>
+
+<!-- ===== IFRAME ===== -->
 
 <iframe id="page1" class="viewer" src="Query Format 2.html"></iframe>
 <iframe id="page2" class="viewer" src="insert time record 1.html"></iframe>
@@ -162,77 +491,135 @@ display:block;
 
 <script>
 
+/* ===== DOWNLOAD ===== */
+
 function downloadTRC(){
-const link = document.createElement("a")
-link.href = "TRC_Incentive.csv"
-link.download = "TRC_Incentive.csv"
+
+const link=document.createElement("a")
+
+link.href="TRC_Incentive.csv"
+link.download="TRC_Incentive.csv"
+
 link.click()
+
 }
 
+/* ===== AI ===== */
+
 function openAI(){
+
 window.open(
 "https://notebooklm.google.com/notebook/8f036a18-928c-4f9b-89b1-c24710e1e3d7?authuser=1",
 "_blank"
-);
+)
+
 }
+
+/* ===== TOGGLE MENU ===== */
+
+function toggleMenu(){
+
+document
+.getElementById("popupMenu")
+.classList.toggle("show")
+
+}
+
+/* ===== SHOW PAGE ===== */
 
 function showPage(pageId,btn){
 
 localStorage.setItem("lastPage",pageId)
 
-document.querySelectorAll(".viewer").forEach(v=>{
+/* iframe */
+
+document
+.querySelectorAll(".viewer")
+.forEach(v=>{
+
 v.classList.remove("active")
+
 })
 
-document.getElementById(pageId).classList.add("active")
+document
+.getElementById(pageId)
+.classList.add("active")
 
-document.querySelectorAll(".leftMenu button").forEach(b=>{
-b.classList.remove("active")
+/* active menu */
+
+document
+.querySelectorAll(".menuCard")
+.forEach(card=>{
+
+card.classList.remove("active")
+
 })
 
 btn.classList.add("active")
 
+/* close popup */
+
+document
+.getElementById("popupMenu")
+.classList.remove("show")
+
 }
 
-/* ===== โหลด tab ล่าสุด ===== */
+/* ===== LOAD LAST ===== */
 
 window.onload=function(){
 
-const last=localStorage.getItem("lastPage")
+const last=
+localStorage.getItem("lastPage")
 
 if(last){
 
-document.getElementById(last).classList.add("active")
+document
+.getElementById(last)
+.classList.add("active")
 
-const buttons=document.querySelectorAll(".leftMenu button")
+document
+.querySelectorAll(".menuCard")
+.forEach(card=>{
 
-buttons.forEach(b=>{
-if(b.getAttribute("onclick").includes(last)){
-b.classList.add("active")
+if(
+card.getAttribute("onclick") &&
+card.getAttribute("onclick").includes(last)
+){
+
+card.classList.add("active")
+
 }
+
 })
 
 }else{
 
-document.getElementById("page1").classList.add("active")
-document.querySelector(".leftMenu button").classList.add("active")
+document
+.getElementById("page1")
+.classList.add("active")
+
+document
+.querySelector(".menuCard")
+.classList.add("active")
 
 }
 
 }
 
-/* ===== DROPDOWN ===== */
-
-function toggleDropdown(){
-document.querySelector(".dropdown").classList.toggle("show")
-}
+/* ===== CLICK OUTSIDE ===== */
 
 window.addEventListener("click",function(e){
 
-if(!e.target.closest(".dropdown")){
-document.querySelectorAll(".dropdown").forEach(d=>{
-d.classList.remove("show")
-})
+if(
+!e.target.closest(".popupMenu") &&
+!e.target.closest(".menuBtn")
+){
+
+document
+.getElementById("popupMenu")
+.classList.remove("show")
+
 }
 
 })
