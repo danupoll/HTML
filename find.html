@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <title>TRC Incentive Search</title>
+  <title>CSV Smart Search</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
     body{
@@ -15,7 +15,7 @@
     }
 
     .glass{
-      background:rgba(255,255,255,0.9);
+      background:rgba(255,255,255,0.85);
       border:1px solid #e2e8f0;
       backdrop-filter:blur(10px);
     }
@@ -40,18 +40,17 @@
 
 <div class="max-w-[1800px] mx-auto px-4 py-6">
 
-  <!-- HEADER -->
   <div class="glass rounded-3xl shadow-xl p-6 mb-6">
 
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
       <div>
         <h1 class="text-4xl font-black text-indigo-700">
-          🔎 TRC Incentive Search
+          🔎 CSV Smart Search
         </h1>
 
         <p class="text-slate-500 mt-2">
-          Fast CSV Filter • GitHub Pages Ready
+          Dynamic Filter • Fast Search
         </p>
       </div>
 
@@ -77,13 +76,11 @@
 
   </div>
 
-  <!-- FILTER -->
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 mb-6">
 
-    <!-- RESULT -->
     <div class="glass rounded-3xl p-5 shadow-lg">
 
-      <div class="text-xs font-bold text-slate-500 mb-2">
+      <div class="text-sm font-bold text-slate-500 mb-3">
         TOTAL RESULT
       </div>
 
@@ -94,7 +91,6 @@
 
     </div>
 
-    <!-- DYNAMIC FILTER -->
     <div
       id="dynamicFilters"
       class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3"
@@ -102,7 +98,6 @@
 
   </div>
 
-  <!-- TABLE -->
   <div class="glass rounded-3xl overflow-hidden shadow-xl">
 
     <div class="overflow-auto max-h-[75vh]">
@@ -125,448 +120,269 @@
 
 <script>
 
-  /*
-    ============================================
-    CSV FILE NAME
-    ============================================
-  */
+const CSV_FILE = "./TRC_Incentive.csv";
 
-  const CSV_FILE = "TRC_Incentive.csv";
+let rawData = [];
+let filteredData = [];
 
-  /*
-    ============================================
-    STATE
-    ============================================
-  */
+const tableHead = document.getElementById("tableHead");
+const tableBody = document.getElementById("tableBody");
+const dynamicFilters = document.getElementById("dynamicFilters");
 
-  let rawData = [];
-  let filteredData = [];
+async function loadCSV(){
 
-  /*
-    ============================================
-    ELEMENT
-    ============================================
-  */
+  try{
 
-  const tableHead =
-    document.getElementById("tableHead");
+    const response = await fetch(CSV_FILE);
 
-  const tableBody =
-    document.getElementById("tableBody");
+    if(!response.ok){
+      throw new Error("โหลด CSV ไม่สำเร็จ");
+    }
 
-  const dynamicFilters =
-    document.getElementById("dynamicFilters");
+    const csvText = await response.text();
 
-  /*
-    ============================================
-    LOAD CSV
-    ============================================
-  */
+    if(!csvText.trim()){
+      throw new Error("CSV ว่าง");
+    }
 
-  async function loadCSV(){
+    Papa.parse(csvText, {
+    header:true,
+    skipEmptyLines:true,
 
-    try{
+    complete:function(results){
 
-      const response =
-        await fetch(CSV_FILE);
+      rawData = results.data;
+      filteredData = [...rawData];
 
-      if(!response.ok){
-
-        throw new Error(
-          "โหลด CSV ไม่สำเร็จ"
-        );
+      buildFilters();
+      buildTable();
+      renderTable();
+      updateCount();
 
       }
+    });
 
-      const csvText =
-        await response.text();
+  }catch(err){
 
-      Papa.parse(csvText, {
+    console.error(err);
 
-        header:true,
-        skipEmptyLines:true,
-
-        complete:function(results){
-
-          rawData = results.data;
-          filteredData = [...rawData];
-
-          buildFilters();
-          buildTableHeader();
-
-          renderTable();
-          updateCount();
-
-        }
-
-      });
-
-    }catch(err){
-
-      console.error(err);
-
-      dynamicFilters.innerHTML = `
-        <div class="
-          glass
-          rounded-3xl
-          p-5
-          text-red-500
-          font-bold
-          lg:col-span-5
-        ">
-          โหลดไฟล์ CSV ไม่ได้ ❌
-          <br><br>
-
-          ตรวจสอบว่า:
-          <br>
-          - ชื่อไฟล์ = TRC_Incentive.csv
-          <br>
-          - อยู่โฟลเดอร์เดียวกับ index.html
-          <br>
-          - Push ขึ้น GitHub แล้ว
-        </div>
-      `;
-
-    }
+    dynamicFilters.innerHTML = `
+      <div class="glass rounded-3xl p-5 text-red-500 font-bold lg:col-span-3">
+        โหลดไฟล์ CSV ไม่ได้ ❌<br>
+        ตรวจสอบชื่อไฟล์ว่าเป็น TRC_Incentive.csv
+      </div>
+    `;
 
   }
 
-  /*
-    ============================================
-    BUILD FILTER
-    ============================================
-  */
+}
 
-  function buildFilters(){
+function buildFilters(){
 
-    dynamicFilters.innerHTML = "";
+  dynamicFilters.innerHTML = "";
 
-    if(!rawData.length) return;
+  if(!rawData.length) return;
 
-    const columns =
-      Object.keys(rawData[0]);
+  const columns = Object.keys(rawData[0]);
 
-    columns.forEach(col => {
+  columns.forEach(col => {
 
-      const div =
-        document.createElement("div");
+    const div = document.createElement("div");
 
-      div.className =
-        "glass rounded-3xl p-4 shadow-lg";
+    div.className = "glass rounded-3xl p-5 shadow-lg";
 
-      div.innerHTML = `
-        <div class="
-          text-xs
-          font-bold
-          text-slate-500
-          mb-2
-        ">
-          ${col}
-        </div>
+    div.innerHTML = `
+      <div class="text-xs font-bold text-slate-500 mb-2">
+        ${col}
+      </div>
 
-        <input
-          type="text"
-          data-column="${col}"
-          placeholder="ค้นหา"
-          class="
-            column-filter
-            w-full
-            px-3
-            py-2
-            rounded-xl
-            bg-slate-100
-            outline-none
-            text-sm
-          "
-        />
-      `;
+      <input
+        type="text"
+        data-column="${col}"
+        placeholder="ค้นหา ${col}"
+        class="column-filter w-full px-3 py-2 rounded-xl bg-slate-100 outline-none text-sm"
+      />
+    `;
 
-      dynamicFilters.appendChild(div);
+    dynamicFilters.appendChild(div);
+
+  });
+
+  let timer;
+
+  document.querySelectorAll(".column-filter")
+    .forEach(input => {
+
+      input.addEventListener("input", () => {
+
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+          applyFilters();
+        }, 120);
+
+      });
 
     });
 
-    let timer;
+}
 
-    document
-      .querySelectorAll(".column-filter")
-      .forEach(input => {
+function applyFilters(){
 
-        input.addEventListener(
-          "input",
-          () => {
+  const filters = document.querySelectorAll(".column-filter");
 
-            clearTimeout(timer);
+  filteredData = rawData.filter(row => {
 
-            timer = setTimeout(() => {
+    for(const input of filters){
 
-              applyFilters();
+      const column = input.dataset.column;
 
-            },120);
+      const keyword = input.value
+        .toLowerCase()
+        .trim();
 
-          }
-        );
+      if(!keyword) continue;
 
-      });
+      const value = (row[column] || "")
+        .toString()
+        .toLowerCase();
+
+      if(!value.includes(keyword)){
+        return false;
+      }
+
+    }
+
+    return true;
+
+  });
+
+  renderTable();
+  updateCount();
+
+}
+
+function buildTable(){
+
+  if(!rawData.length) return;
+
+  const columns = Object.keys(rawData[0]);
+
+  tableHead.innerHTML = "";
+
+  columns.forEach(col => {
+
+    const th = document.createElement("th");
+
+    th.className = "px-5 py-4 text-left font-black text-slate-700 whitespace-nowrap";
+
+    th.textContent = col;
+
+    tableHead.appendChild(th);
+
+  });
+
+}
+
+function renderTable(){
+
+  tableBody.innerHTML = "";
+
+  if(!filteredData.length){
+
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="999"
+          class="text-center py-10 text-slate-400">
+          ไม่พบข้อมูล
+        </td>
+      </tr>
+    `;
+
+    return;
 
   }
 
-  /*
-    ============================================
-    FILTER
-    ============================================
-  */
+  const columns = Object.keys(filteredData[0]);
 
-  function applyFilters(){
+  filteredData.slice(0,500).forEach(row => {
 
-    const filters =
-      document.querySelectorAll(
-        ".column-filter"
-      );
+    const tr = document.createElement("tr");
 
-    filteredData =
-      rawData.filter(row => {
+    tr.className = "border-b border-slate-100 table-row";
 
-        for(const input of filters){
+    columns.forEach(col => {
 
-          const column =
-            input.dataset.column;
+      const td = document.createElement("td");
 
-          const keyword =
-            input.value
-              .toLowerCase()
-              .trim();
+      td.className = "px-5 py-4 whitespace-nowrap";
 
-          if(!keyword) continue;
+      let value = row[col];
 
-          const value =
-            (row[column] || "")
-              .toString()
-              .toLowerCase();
+      if(value === "" || value == null){
+        value = "-";
+      }
 
-          if(!value.includes(keyword)){
+      td.textContent = value;
 
-            return false;
+      tr.appendChild(td);
 
-          }
+    });
 
-        }
+    tableBody.appendChild(tr);
 
-        return true;
+  });
 
+}
+
+function updateCount(){
+
+  document.getElementById("resultCount")
+    .textContent = filteredData.length;
+
+}
+
+document.getElementById("clearBtn")
+  .addEventListener("click", () => {
+
+    document.querySelectorAll(".column-filter")
+      .forEach(input => {
+        input.value = "";
       });
+
+    filteredData = [...rawData];
 
     renderTable();
     updateCount();
 
-  }
+  });
 
-  /*
-    ============================================
-    TABLE HEADER
-    ============================================
-  */
+document.getElementById("exportBtn")
+  .addEventListener("click", () => {
 
-  function buildTableHeader(){
+    const worksheet = filteredData.map(row => Object.values(row).join('	')).join('
+');
 
-    tableHead.innerHTML = "";
+    const worksheet =
+          XLSX.utils.json_to_sheet(filteredData);
 
-    const columns =
-      Object.keys(rawData[0]);
+        const workbook =
+          XLSX.utils.book_new();
 
-    columns.forEach(col => {
-
-      const th =
-        document.createElement("th");
-
-      th.className =
-        "px-5 py-4 text-left font-black text-slate-700 whitespace-nowrap";
-
-      th.textContent = col;
-
-      tableHead.appendChild(th);
-
-    });
-
-  }
-
-  /*
-    ============================================
-    TABLE
-    ============================================
-  */
-
-  function renderTable(){
-
-    tableBody.innerHTML = "";
-
-    if(!filteredData.length){
-
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="999"
-            class="
-              text-center
-              py-10
-              text-slate-400
-            ">
-            ไม่พบข้อมูล
-          </td>
-        </tr>
-      `;
-
-      return;
-
-    }
-
-    const columns =
-      Object.keys(filteredData[0]);
-
-    /*
-      จำกัด render
-      เพื่อความเร็ว
-    */
-
-    filteredData
-      .slice(0,500)
-      .forEach(row => {
-
-        const tr =
-          document.createElement("tr");
-
-        tr.className =
-          "border-b border-slate-100 table-row";
-
-        columns.forEach(col => {
-
-          const td =
-            document.createElement("td");
-
-          td.className =
-            "px-5 py-4 whitespace-nowrap";
-
-          let value = row[col];
-
-          if(
-            value === "" ||
-            value == null
-          ){
-            value = "-";
-          }
-
-          td.textContent = value;
-
-          tr.appendChild(td);
-
-        });
-
-        tableBody.appendChild(tr);
-
-      });
-
-  }
-
-  /*
-    ============================================
-    RESULT COUNT
-    ============================================
-  */
-
-  function updateCount(){
-
-    document.getElementById(
-      "resultCount"
-    ).textContent =
-      filteredData.length;
-
-  }
-
-  /*
-    ============================================
-    CLEAR
-    ============================================
-  */
-
-  document
-    .getElementById("clearBtn")
-    .addEventListener(
-      "click",
-      () => {
-
-        document
-          .querySelectorAll(".column-filter")
-          .forEach(input => {
-
-            input.value = "";
-
-          });
-
-        filteredData = [...rawData];
-
-        renderTable();
-        updateCount();
-
-      }
-    );
-
-  /*
-    ============================================
-    EXPORT EXCEL
-    ============================================
-  */
-
-  document
-    .getElementById("exportBtn")
-    .addEventListener(
-      "click",
-      () => {
-
-        const headers =
-          Object.keys(
-            filteredData[0] || {}
-          ).join("\\t");
-
-        const rows =
-          filteredData.map(row => {
-
-            return Object.values(row)
-              .join("\\t");
-
-          }).join("\\n");
-
-        const content =
-          headers + "\\n" + rows;
-
-        const blob = new Blob(
-          [
-            "\\uFEFF" + content
-          ],
-          {
-            type:
-            "application/vnd.ms-excel;charset=utf-8;"
-          }
+        XLSX.utils.book_append_sheet(
+          workbook,
+          worksheet,
+          "Data"
         );
 
-        const link =
-          document.createElement("a");
+        XLSX.writeFile(
+          workbook,
+          "filtered.xlsx"
+        );
 
-        link.href =
-          URL.createObjectURL(blob);
+  });
 
-        link.download =
-          "filtered.xls";
-
-        link.click();
-
-      }
-    );
-
-  /*
-    ============================================
-    START
-    ============================================
-  */
-
-  loadCSV();
+loadCSV();
 
 </script>
 
