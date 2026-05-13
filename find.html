@@ -7,7 +7,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  
 
   <style>
     body{
@@ -63,12 +63,13 @@
           ล้าง Filter
         </button>
 
-        <button
-          id="exportBtn"
-          class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-2xl font-bold"
+        <a
+          href="TRC_Incentive.csv"
+          download
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-2xl font-bold inline-flex items-center"
         >
-          Export Excel
-        </button>
+          ดาวน์โหลด CSV
+        </a>
 
       </div>
 
@@ -354,31 +355,6 @@ document.getElementById("clearBtn")
 
     renderTable();
     updateCount();
-
-  });
-
-document.getElementById("exportBtn")
-  .addEventListener("click", () => {
-
-    const worksheet = filteredData.map(row => Object.values(row).join('	')).join('
-');
-
-    const worksheet =
-          XLSX.utils.json_to_sheet(filteredData);
-
-        const workbook =
-          XLSX.utils.book_new();
-
-        XLSX.utils.book_append_sheet(
-          workbook,
-          worksheet,
-          "Data"
-        );
-
-        XLSX.writeFile(
-          workbook,
-          "filtered.xlsx"
-        );
 
   });
 
