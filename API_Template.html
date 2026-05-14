@@ -2,68 +2,306 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>API Tools</title>
 
 <style>
 
+:root{
+
+--bg:#050816;
+--bg2:#0b1120;
+
+--card:rgba(15,23,42,0.72);
+
+--border:rgba(139,92,246,0.16);
+
+--text:#e2e8f0;
+--muted:#94a3b8;
+
+--primary:#8b5cf6;
+--primary2:#6366f1;
+
+}
+
+*{
+box-sizing:border-box;
+}
+
 body{
-    margin:0;
-    font-family:"Segoe UI",sans-serif;
-    background:linear-gradient(135deg,#eef2ff,#e0f2fe);
+
+margin:0;
+
+font-family:
+Inter,
+system-ui,
+sans-serif;
+
+background:
+radial-gradient(circle at top left,
+rgba(139,92,246,0.18),
+transparent 28%),
+
+radial-gradient(circle at bottom right,
+rgba(99,102,241,0.16),
+transparent 30%),
+
+linear-gradient(
+135deg,
+#050816 0%,
+#0b1120 45%,
+#020617 100%
+);
+
+background-attachment:fixed;
+
+color:var(--text);
+
+min-height:100vh;
+
 }
 
-.header{
-    text-align:center;
-    padding:40px;
-    font-size:32px;
-    font-weight:700;
-    color:#1e293b;
-}
+/* ===== TOP ===== */
 
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-}
+.top{
 
-.card{
-    background:white;
-    border-radius:14px;
-    padding:25px;
-    text-decoration:none;
-    color:#1e293b;
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-    transition:all .25s ease;
-}
+padding:34px 20px 18px;
 
-.card:hover{
-    transform:translateY(-6px);
-    box-shadow:0 12px 28px rgba(0,0,0,0.15);
-}
+text-align:center;
 
-.icon{
-    font-size:36px;
-    margin-bottom:12px;
 }
 
 .title{
-    font-size:18px;
-    font-weight:600;
+
+font-size:42px;
+
+font-weight:900;
+
+color:#c4b5fd;
+
+text-shadow:
+0 0 24px rgba(139,92,246,0.35);
+
 }
 
-@media(max-width:900px){
+.subtitle{
+
+margin-top:10px;
+
+font-size:14px;
+
+color:var(--muted);
+
+}
+
+/* ===== CONTAINER ===== */
+
+.container{
+
+max-width:1450px;
+
+margin:auto;
+
+padding:20px;
+
+display:grid;
+
+grid-template-columns:
+repeat(4,1fr);
+
+gap:18px;
+
+}
+
+/* ===== CARD ===== */
+
+.card{
+
+position:relative;
+
+overflow:hidden;
+
+background:var(--card);
+
+border:1px solid var(--border);
+
+backdrop-filter:blur(18px);
+
+border-radius:24px;
+
+padding:24px;
+
+text-decoration:none;
+
+color:var(--text);
+
+transition:0.22s ease;
+
+box-shadow:
+0 10px 35px rgba(0,0,0,0.35),
+inset 0 1px 0 rgba(255,255,255,0.03);
+
+}
+
+.card::before{
+
+content:"";
+
+position:absolute;
+
+top:-40px;
+right:-40px;
+
+width:100px;
+height:100px;
+
+background:
+radial-gradient(
+circle,
+rgba(139,92,246,0.28),
+transparent 70%
+);
+
+transition:0.25s;
+
+}
+
+.card:hover{
+
+transform:
+translateY(-6px);
+
+border-color:
+rgba(139,92,246,0.35);
+
+box-shadow:
+0 16px 40px rgba(0,0,0,0.45),
+0 0 20px rgba(99,102,241,0.15);
+
+}
+
+.card:hover::before{
+
+transform:scale(1.25);
+
+}
+
+/* ===== ICON ===== */
+
+.icon{
+
+font-size:40px;
+
+margin-bottom:16px;
+
+}
+
+/* ===== TEXT ===== */
+
+.card-title{
+
+font-size:17px;
+
+font-weight:700;
+
+line-height:1.5;
+
+color:#f1f5f9;
+
+}
+
+.card-desc{
+
+margin-top:8px;
+
+font-size:12px;
+
+color:#94a3b8;
+
+}
+
+/* ===== BADGE ===== */
+
+.badge{
+
+display:inline-flex;
+
+align-items:center;
+
+gap:6px;
+
+margin-top:16px;
+
+padding:6px 10px;
+
+border-radius:999px;
+
+font-size:11px;
+
+font-weight:700;
+
+background:
+rgba(139,92,246,0.14);
+
+color:#ddd6fe;
+
+border:
+1px solid rgba(139,92,246,0.15);
+
+}
+
+/* ===== SCROLLBAR ===== */
+
+::-webkit-scrollbar{
+width:10px;
+height:10px;
+}
+
+::-webkit-scrollbar-thumb{
+
+background:
+linear-gradient(
+to bottom,
+#8b5cf6,
+#6366f1
+);
+
+border-radius:999px;
+
+}
+
+::-webkit-scrollbar-track{
+
+background:#020617;
+
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media(max-width:1100px){
+
 .container{
 grid-template-columns:repeat(2,1fr);
 }
+
 }
 
-@media(max-width:500px){
+@media(max-width:640px){
+
+.title{
+font-size:32px;
+}
+
 .container{
 grid-template-columns:1fr;
+padding:16px;
 }
+
+.card{
+padding:20px;
+}
+
 }
 
 </style>
@@ -71,60 +309,92 @@ grid-template-columns:1fr;
 
 <body>
 
-<div class="header">
-API Template
+<!-- HEADER -->
+
+<div class="top">
+
+<div class="title">
+⚡ API Template
 </div>
+
+<div class="subtitle">
+Internal API Tools & Excel Template
+</div>
+
+</div>
+
+<!-- GRID -->
 
 <div class="container">
 
 <a class="card" href="API-My Preset.xlsx">
 <div class="icon">📦</div>
-<div class="title">API-My Preset</div>
+<div class="card-title">API-My Preset</div>
+<div class="card-desc">Preset Configuration Template</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-Timesheet.xlsx">
 <div class="icon">⏱️</div>
-<div class="title">API-Timesheet</div>
+<div class="card-title">API-Timesheet</div>
+<div class="card-desc">Timesheet & Attendance API</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-Workgroup.xlsx">
 <div class="icon">👥</div>
-<div class="title">API-Workgroup</div>
+<div class="card-title">API-Workgroup</div>
+<div class="card-desc">Workgroup Structure Template</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-User Management.xlsx">
 <div class="icon">🧑‍💻</div>
-<div class="title">API-User Management</div>
+<div class="card-title">API-User Management</div>
+<div class="card-desc">User Management API Sheet</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-TRC Incentive.xlsx">
 <div class="icon">💰</div>
-<div class="title">API-TRC Incentive</div>
+<div class="card-title">API-TRC Incentive</div>
+<div class="card-desc">TRC Incentive Configuration</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-Preset.xlsx">
 <div class="icon">⚙️</div>
-<div class="title">API-Preset</div>
+<div class="card-title">API-Preset</div>
+<div class="card-desc">Preset Setup & Parameter</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-Permission.xlsx">
 <div class="icon">🔐</div>
-<div class="title">API-Permission</div>
+<div class="card-title">API-Permission</div>
+<div class="card-desc">Permission Mapping Sheet</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-Badge.xlsx">
 <div class="icon">🔢</div>
-<div class="title">API-Badge</div>
+<div class="card-title">API-Badge</div>
+<div class="card-desc">Badge & Employee Code API</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-Diligence Allowance Step.xlsx">
 <div class="icon">📊</div>
-<div class="title">API-Diligence Allowance Step</div>
+<div class="card-title">API-Diligence Allowance Step</div>
+<div class="card-desc">Allowance Step Configuration</div>
+<div class="badge">Excel Template</div>
 </a>
 
 <a class="card" href="API-Work Schedule.xlsx">
 <div class="icon">📅</div>
-<div class="title">API-Work Schedule</div>
+<div class="card-title">API-Work Schedule</div>
+<div class="card-desc">Work Schedule API Template</div>
+<div class="badge">Excel Template</div>
 </a>
 
 </div>
