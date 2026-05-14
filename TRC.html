@@ -13,15 +13,15 @@
 
   :root{
 
-    --bg:#050816;
-    --bg2:#0b1120;
+    --bg:#1e293b;
+    --bg2:#334155;
 
-    --card:rgba(15,23,42,0.72);
+    --card:rgba(51,65,85,0.78);
 
     --border:rgba(139,92,246,0.18);
 
-    --text:#e2e8f0;
-    --muted:#94a3b8;
+    --text:#f1f5f9;
+    --muted:#cbd5e1;
 
     --primary:#8b5cf6;
     --primary2:#6366f1;
@@ -43,14 +43,16 @@
 
       linear-gradient(
         135deg,
-        #050816 0%,
-        #0b1120 45%,
-        #020617 100%
+        #1e293b 0%,
+        #334155 45%,
+        #475569 100%
       );
 
     color:var(--text);
 
     background-attachment:fixed;
+
+    font-size:15px;
 
   }
 
@@ -63,8 +65,8 @@
     backdrop-filter:blur(18px);
 
     box-shadow:
-      0 10px 40px rgba(0,0,0,0.45),
-      inset 0 1px 0 rgba(255,255,255,0.03);
+      0 10px 40px rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.04);
 
   }
 
@@ -79,36 +81,38 @@
     background:
       linear-gradient(
         90deg,
-        rgba(99,102,241,0.10),
-        rgba(139,92,246,0.10)
+        rgba(99,102,241,0.12),
+        rgba(139,92,246,0.12)
       );
 
   }
 
   .column-filter{
 
-    background:#020617 !important;
+    background:#475569 !important;
 
-    border:1px solid rgba(139,92,246,0.15);
+    border:1px solid rgba(139,92,246,0.18);
 
     color:white !important;
 
     transition:0.18s;
 
+    font-size:16px;
+
   }
 
   .column-filter::placeholder{
 
-    color:#64748b;
+    color:#cbd5e1;
 
   }
 
   .column-filter:focus{
 
-    border-color:#8b5cf6;
+    border-color:#a78bfa;
 
     box-shadow:
-      0 0 0 3px rgba(139,92,246,0.15);
+      0 0 0 3px rgba(139,92,246,0.18);
 
     outline:none;
 
@@ -116,27 +120,37 @@
 
   th{
 
-    background:#111827;
+    background:#334155;
 
-    color:#c4b5fd;
+    color:#ffffff !important;
 
-    border-bottom:1px solid rgba(139,92,246,0.15);
+    border-bottom:1px solid rgba(139,92,246,0.18);
+
+    font-size:16px;
+
+  }
+
+  th span{
+
+    color:#ffffff !important;
 
   }
 
   td{
 
-    color:#e2e8f0;
+    color:#f8fafc;
+
+    font-size:15px;
 
   }
 
   .copy-btn{
 
-    background:rgba(139,92,246,0.15);
+    background:rgba(139,92,246,0.18);
 
-    border:1px solid rgba(139,92,246,0.18);
+    border:1px solid rgba(139,92,246,0.20);
 
-    color:#ddd6fe;
+    color:#ffffff;
 
     transition:0.18s;
 
@@ -144,7 +158,7 @@
 
   .copy-btn:hover{
 
-    background:rgba(139,92,246,0.35);
+    background:rgba(139,92,246,0.40);
 
     transform:translateY(-1px);
 
@@ -152,23 +166,27 @@
 
   .toggle-item{
 
-    background:#020617;
+    background:#475569;
 
-    border:1px solid rgba(139,92,246,0.12);
+    border:1px solid rgba(139,92,246,0.15);
 
     transition:0.18s;
+
+    font-size:15px;
 
   }
 
   .toggle-item:hover{
 
-    background:rgba(139,92,246,0.10);
+    background:rgba(139,92,246,0.18);
 
   }
 
   .main-btn{
 
     transition:0.18s;
+
+    font-size:15px;
 
   }
 
@@ -177,7 +195,7 @@
     transform:translateY(-2px);
 
     box-shadow:
-      0 8px 25px rgba(99,102,241,0.35);
+      0 8px 25px rgba(99,102,241,0.28);
 
   }
 
@@ -201,7 +219,7 @@
 
   ::-webkit-scrollbar-track{
 
-    background:#020617;
+    background:#334155;
 
   }
 
@@ -210,22 +228,22 @@
 
 <body class="min-h-screen">
 
-<div class="max-w-[1800px] mx-auto px-4 py-6">
+<div class="max-w-[1800px] mx-auto px-5 py-7">
 
   <!-- HEADER -->
 
-  <div class="glass rounded-3xl p-6 mb-6">
+  <div class="glass rounded-3xl p-7 mb-6">
 
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
 
       <div>
 
-        <h1 class="text-5xl font-black text-violet-300 drop-shadow-[0_0_25px_rgba(139,92,246,0.55)]">
+        <h1 class="text-4xl font-black text-violet-200 drop-shadow-[0_0_20px_rgba(139,92,246,0.45)]">
           🔎 CSV Smart Search
         </h1>
 
-        <p class="text-slate-400 mt-2">
-          Dark Cyber Dashboard
+        <p class="text-slate-200 mt-3 text-base">
+          Smart Search Dashboard
         </p>
 
       </div>
@@ -234,14 +252,14 @@
 
         <button
           id="clearBtn"
-          class="main-btn bg-rose-500 hover:bg-rose-600 px-5 py-3 rounded-2xl font-bold text-white"
+          class="main-btn bg-rose-500 hover:bg-rose-600 px-6 py-3.5 rounded-2xl font-bold text-white"
         >
           ล้าง Filter
         </button>
 
         <button
           id="downloadFilteredBtn"
-          class="main-btn bg-violet-600 hover:bg-violet-700 px-5 py-3 rounded-2xl font-bold text-white"
+          class="main-btn bg-violet-600 hover:bg-violet-700 px-6 py-3.5 rounded-2xl font-bold text-white"
         >
           ดาวน์โหลดข้อมูลที่กรอง
         </button>
@@ -249,7 +267,7 @@
         <a
           href="TRC_Incentive.csv"
           download
-          class="main-btn bg-emerald-600 hover:bg-emerald-700 px-5 py-3 rounded-2xl font-bold text-white inline-flex items-center"
+          class="main-btn bg-emerald-600 hover:bg-emerald-700 px-6 py-3.5 rounded-2xl font-bold text-white inline-flex items-center"
         >
           ดาวน์โหลด CSV
         </a>
@@ -264,22 +282,22 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 mb-6">
 
-    <div class="glass rounded-3xl p-5">
+    <div class="glass rounded-3xl p-6">
 
-      <div class="text-sm font-bold text-slate-400 mb-3">
+      <div class="text-base font-bold text-slate-200 mb-3">
         TOTAL RESULT
       </div>
 
       <div
         id="resultCount"
-        class="text-5xl font-black text-violet-300"
+        class="text-5xl font-black text-violet-200"
       >
         0
       </div>
 
       <div
         id="showingCount"
-        class="text-sm text-slate-500 mt-2"
+        class="text-base text-slate-300 mt-3"
       >
       </div>
 
@@ -287,16 +305,16 @@
 
     <div
       id="dynamicFilters"
-      class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"
     ></div>
 
   </div>
 
   <!-- COLUMN TOGGLE -->
 
-  <div class="glass rounded-3xl p-5 mb-6">
+  <div class="glass rounded-3xl p-6 mb-6">
 
-    <div class="font-black text-violet-300 mb-4 text-lg">
+    <div class="font-black text-violet-200 mb-5 text-xl">
       👁️ ซ่อน / แสดง Column
     </div>
 
@@ -313,7 +331,7 @@
 
     <div class="overflow-auto max-h-[75vh]">
 
-      <table class="min-w-full text-sm">
+      <table class="min-w-full text-[15px]">
 
         <thead class="sticky top-0 z-20">
           <tr id="tableHead"></tr>
@@ -398,7 +416,7 @@ function buildFilters(){
     div.className = "glass rounded-3xl p-5";
 
     div.innerHTML = `
-      <div class="text-xs font-bold text-slate-400 mb-2">
+      <div class="text-sm font-bold text-slate-100 mb-3">
         ${col}
       </div>
 
@@ -406,7 +424,7 @@ function buildFilters(){
         type="text"
         data-column="${col}"
         placeholder="ค้นหา ${col}"
-        class="column-filter w-full px-3 py-2 rounded-xl text-sm"
+        class="column-filter w-full px-4 py-3 rounded-xl text-base"
       />
     `;
 
@@ -446,7 +464,7 @@ function buildColumnToggle(){
     const label = document.createElement("label");
 
     label.className =
-      "toggle-item flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer text-sm";
+      "toggle-item flex items-center gap-2 px-5 py-3 rounded-xl cursor-pointer";
 
     label.innerHTML = `
       <input
@@ -536,16 +554,16 @@ function buildTable(){
     const th = document.createElement("th");
 
     th.className =
-      "px-5 py-4 text-left font-black whitespace-nowrap";
+      "px-6 py-5 text-left font-black whitespace-nowrap";
 
     th.innerHTML = `
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
 
         <span>${col}</span>
 
         <button
           onclick="copyColumn('${col}')"
-          class="copy-btn px-2 py-1 rounded-lg text-xs"
+          class="copy-btn px-3 py-1.5 rounded-lg text-sm"
         >
           📋
         </button>
@@ -593,7 +611,7 @@ function renderTable(){
       <tr>
         <td
           colspan="999"
-          class="text-center py-16 text-slate-500"
+          class="text-center py-20 text-slate-200 text-lg"
         >
           ไม่พบข้อมูล
         </td>
@@ -611,7 +629,7 @@ function renderTable(){
     const tr = document.createElement("tr");
 
     tr.className =
-      "border-b border-slate-800 table-row";
+      "border-b border-slate-700 table-row";
 
     columns.forEach(col => {
 
@@ -620,7 +638,7 @@ function renderTable(){
       const td = document.createElement("td");
 
       td.className =
-        "px-5 py-4 whitespace-nowrap";
+        "px-6 py-5 whitespace-nowrap";
 
       let value = row[col];
 
@@ -669,15 +687,16 @@ document.getElementById("clearBtn")
 document.getElementById("downloadFilteredBtn")
   .addEventListener("click", () => {
 
-const csv = Papa.unparse(filteredData);
-// ⭐ เพิ่ม BOM สำหรับ Excel ภาษาไทย
-const BOM = "\uFEFF";
-const blob = new Blob(
-  [BOM + csv],
-  {
-    type:"text/csv;charset=utf-8;"
-  }
-);
+    const csv = Papa.unparse(filteredData);
+
+    const BOM = "\uFEFF";
+
+    const blob = new Blob(
+      [BOM + csv],
+      {
+        type:"text/csv;charset=utf-8;"
+      }
+    );
 
     const url = URL.createObjectURL(blob);
 
