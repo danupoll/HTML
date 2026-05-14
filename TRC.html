@@ -669,11 +669,15 @@ document.getElementById("clearBtn")
 document.getElementById("downloadFilteredBtn")
   .addEventListener("click", () => {
 
-    const csv = Papa.unparse(filteredData);
-
-    const blob = new Blob([csv], {
-      type:"text/csv;charset=utf-8;"
-    });
+const csv = Papa.unparse(filteredData);
+// ⭐ เพิ่ม BOM สำหรับ Excel ภาษาไทย
+const BOM = "\uFEFF";
+const blob = new Blob(
+  [BOM + csv],
+  {
+    type:"text/csv;charset=utf-8;"
+  }
+);
 
     const url = URL.createObjectURL(blob);
 
