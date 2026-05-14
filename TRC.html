@@ -1,72 +1,255 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CSV Smart Search</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  
+<title>CSV Smart Search</title>
 
-  <style>
-    body{
-      background:#f8fafc;
-    }
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-    .glass{
-      background:rgba(255,255,255,0.85);
-      border:1px solid #e2e8f0;
-      backdrop-filter:blur(10px);
-    }
+<style>
 
-    .table-row:hover{
-      background:#eef2ff;
-    }
+  :root{
 
-    ::-webkit-scrollbar{
-      width:10px;
-      height:10px;
-    }
+    --bg:#050816;
+    --bg2:#0b1120;
 
-    ::-webkit-scrollbar-thumb{
-      background:#cbd5e1;
-      border-radius:999px;
-    }
-  </style>
+    --card:rgba(15,23,42,0.72);
+
+    --border:rgba(139,92,246,0.18);
+
+    --text:#e2e8f0;
+    --muted:#94a3b8;
+
+    --primary:#8b5cf6;
+    --primary2:#6366f1;
+
+  }
+
+  body{
+
+    background:
+      radial-gradient(circle at top left,
+        rgba(139,92,246,0.18),
+        transparent 28%
+      ),
+
+      radial-gradient(circle at bottom right,
+        rgba(99,102,241,0.18),
+        transparent 30%
+      ),
+
+      linear-gradient(
+        135deg,
+        #050816 0%,
+        #0b1120 45%,
+        #020617 100%
+      );
+
+    color:var(--text);
+
+    background-attachment:fixed;
+
+  }
+
+  .glass{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    backdrop-filter:blur(18px);
+
+    box-shadow:
+      0 10px 40px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.03);
+
+  }
+
+  .table-row{
+
+    transition:0.18s ease;
+
+  }
+
+  .table-row:hover{
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(99,102,241,0.10),
+        rgba(139,92,246,0.10)
+      );
+
+  }
+
+  .column-filter{
+
+    background:#020617 !important;
+
+    border:1px solid rgba(139,92,246,0.15);
+
+    color:white !important;
+
+    transition:0.18s;
+
+  }
+
+  .column-filter::placeholder{
+
+    color:#64748b;
+
+  }
+
+  .column-filter:focus{
+
+    border-color:#8b5cf6;
+
+    box-shadow:
+      0 0 0 3px rgba(139,92,246,0.15);
+
+    outline:none;
+
+  }
+
+  th{
+
+    background:#111827;
+
+    color:#c4b5fd;
+
+    border-bottom:1px solid rgba(139,92,246,0.15);
+
+  }
+
+  td{
+
+    color:#e2e8f0;
+
+  }
+
+  .copy-btn{
+
+    background:rgba(139,92,246,0.15);
+
+    border:1px solid rgba(139,92,246,0.18);
+
+    color:#ddd6fe;
+
+    transition:0.18s;
+
+  }
+
+  .copy-btn:hover{
+
+    background:rgba(139,92,246,0.35);
+
+    transform:translateY(-1px);
+
+  }
+
+  .toggle-item{
+
+    background:#020617;
+
+    border:1px solid rgba(139,92,246,0.12);
+
+    transition:0.18s;
+
+  }
+
+  .toggle-item:hover{
+
+    background:rgba(139,92,246,0.10);
+
+  }
+
+  .main-btn{
+
+    transition:0.18s;
+
+  }
+
+  .main-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+      0 8px 25px rgba(99,102,241,0.35);
+
+  }
+
+  ::-webkit-scrollbar{
+    width:10px;
+    height:10px;
+  }
+
+  ::-webkit-scrollbar-thumb{
+
+    background:
+      linear-gradient(
+        to bottom,
+        #8b5cf6,
+        #6366f1
+      );
+
+    border-radius:999px;
+
+  }
+
+  ::-webkit-scrollbar-track{
+
+    background:#020617;
+
+  }
+
+</style>
 </head>
 
-<body class="text-slate-800 min-h-screen">
+<body class="min-h-screen">
 
 <div class="max-w-[1800px] mx-auto px-4 py-6">
 
-  <div class="glass rounded-3xl shadow-xl p-6 mb-6">
+  <!-- HEADER -->
+
+  <div class="glass rounded-3xl p-6 mb-6">
 
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
       <div>
-        <h1 class="text-4xl font-black text-indigo-700">
+
+        <h1 class="text-5xl font-black text-violet-300 drop-shadow-[0_0_25px_rgba(139,92,246,0.55)]">
           🔎 CSV Smart Search
         </h1>
 
-        <p class="text-slate-500 mt-2">
-          Dynamic Filter • Fast Search
+        <p class="text-slate-400 mt-2">
+          Dark Cyber Dashboard
         </p>
+
       </div>
 
       <div class="flex gap-3 flex-wrap">
 
         <button
           id="clearBtn"
-          class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-3 rounded-2xl font-bold"
+          class="main-btn bg-rose-500 hover:bg-rose-600 px-5 py-3 rounded-2xl font-bold text-white"
         >
           ล้าง Filter
+        </button>
+
+        <button
+          id="downloadFilteredBtn"
+          class="main-btn bg-violet-600 hover:bg-violet-700 px-5 py-3 rounded-2xl font-bold text-white"
+        >
+          ดาวน์โหลดข้อมูลที่กรอง
         </button>
 
         <a
           href="TRC_Incentive.csv"
           download
-          class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-2xl font-bold inline-flex items-center"
+          class="main-btn bg-emerald-600 hover:bg-emerald-700 px-5 py-3 rounded-2xl font-bold text-white inline-flex items-center"
         >
           ดาวน์โหลด CSV
         </a>
@@ -77,17 +260,27 @@
 
   </div>
 
+  <!-- STATS -->
+
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 mb-6">
 
-    <div class="glass rounded-3xl p-5 shadow-lg">
+    <div class="glass rounded-3xl p-5">
 
-      <div class="text-sm font-bold text-slate-500 mb-3">
+      <div class="text-sm font-bold text-slate-400 mb-3">
         TOTAL RESULT
       </div>
 
-      <div id="resultCount"
-        class="text-4xl font-black text-indigo-700">
+      <div
+        id="resultCount"
+        class="text-5xl font-black text-violet-300"
+      >
         0
+      </div>
+
+      <div
+        id="showingCount"
+        class="text-sm text-slate-500 mt-2"
+      >
       </div>
 
     </div>
@@ -99,13 +292,30 @@
 
   </div>
 
-  <div class="glass rounded-3xl overflow-hidden shadow-xl">
+  <!-- COLUMN TOGGLE -->
+
+  <div class="glass rounded-3xl p-5 mb-6">
+
+    <div class="font-black text-violet-300 mb-4 text-lg">
+      👁️ ซ่อน / แสดง Column
+    </div>
+
+    <div
+      id="columnToggle"
+      class="flex flex-wrap gap-3"
+    ></div>
+
+  </div>
+
+  <!-- TABLE -->
+
+  <div class="glass rounded-3xl overflow-hidden">
 
     <div class="overflow-auto max-h-[75vh]">
 
       <table class="min-w-full text-sm">
 
-        <thead class="bg-slate-100 sticky top-0 z-20">
+        <thead class="sticky top-0 z-20">
           <tr id="tableHead"></tr>
         </thead>
 
@@ -125,6 +335,7 @@ const CSV_FILE = "TRC_Incentive.csv";
 
 let rawData = [];
 let filteredData = [];
+let hiddenColumns = [];
 
 const tableHead = document.getElementById("tableHead");
 const tableBody = document.getElementById("tableBody");
@@ -142,37 +353,31 @@ async function loadCSV(){
 
     const csvText = await response.text();
 
-    if(!csvText.trim()){
-      throw new Error("CSV ว่าง");
-    }
-
     Papa.parse(csvText, {
-    header:true,
-    skipEmptyLines:true,
 
-    complete:function(results){
+      header:true,
+      skipEmptyLines:true,
 
-      rawData = results.data;
-      filteredData = [...rawData];
+      complete:function(results){
 
-      buildFilters();
-      buildTable();
-      renderTable();
-      updateCount();
+        rawData = results.data;
+        filteredData = [...rawData];
+
+        buildFilters();
+        buildColumnToggle();
+        buildTable();
+        renderTable();
+        updateCount();
 
       }
+
     });
 
   }catch(err){
 
     console.error(err);
 
-    dynamicFilters.innerHTML = `
-      <div class="glass rounded-3xl p-5 text-red-500 font-bold lg:col-span-3">
-        โหลดไฟล์ CSV ไม่ได้ ❌<br>
-        ตรวจสอบชื่อไฟล์ว่าเป็น TRC_Incentive.csv
-      </div>
-    `;
+    alert("โหลด CSV ไม่สำเร็จ");
 
   }
 
@@ -190,10 +395,10 @@ function buildFilters(){
 
     const div = document.createElement("div");
 
-    div.className = "glass rounded-3xl p-5 shadow-lg";
+    div.className = "glass rounded-3xl p-5";
 
     div.innerHTML = `
-      <div class="text-xs font-bold text-slate-500 mb-2">
+      <div class="text-xs font-bold text-slate-400 mb-2">
         ${col}
       </div>
 
@@ -201,7 +406,7 @@ function buildFilters(){
         type="text"
         data-column="${col}"
         placeholder="ค้นหา ${col}"
-        class="column-filter w-full px-3 py-2 rounded-xl bg-slate-100 outline-none text-sm"
+        class="column-filter w-full px-3 py-2 rounded-xl text-sm"
       />
     `;
 
@@ -221,6 +426,61 @@ function buildFilters(){
         timer = setTimeout(() => {
           applyFilters();
         }, 120);
+
+      });
+
+    });
+
+}
+
+function buildColumnToggle(){
+
+  const wrap = document.getElementById("columnToggle");
+
+  wrap.innerHTML = "";
+
+  const columns = Object.keys(rawData[0]);
+
+  columns.forEach(col => {
+
+    const label = document.createElement("label");
+
+    label.className =
+      "toggle-item flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer text-sm";
+
+    label.innerHTML = `
+      <input
+        type="checkbox"
+        checked
+        value="${col}"
+        class="column-toggle accent-violet-500"
+      />
+
+      <span>${col}</span>
+    `;
+
+    wrap.appendChild(label);
+
+  });
+
+  document.querySelectorAll(".column-toggle")
+    .forEach(input => {
+
+      input.addEventListener("change", () => {
+
+        hiddenColumns = [];
+
+        document.querySelectorAll(".column-toggle")
+          .forEach(cb => {
+
+            if(!cb.checked){
+              hiddenColumns.push(cb.value);
+            }
+
+          });
+
+        buildTable();
+        renderTable();
 
       });
 
@@ -265,23 +525,61 @@ function applyFilters(){
 
 function buildTable(){
 
-  if(!rawData.length) return;
+  tableHead.innerHTML = "";
 
   const columns = Object.keys(rawData[0]);
 
-  tableHead.innerHTML = "";
-
   columns.forEach(col => {
+
+    if(hiddenColumns.includes(col)) return;
 
     const th = document.createElement("th");
 
-    th.className = "px-5 py-4 text-left font-black text-slate-700 whitespace-nowrap";
+    th.className =
+      "px-5 py-4 text-left font-black whitespace-nowrap";
 
-    th.textContent = col;
+    th.innerHTML = `
+      <div class="flex items-center gap-2">
+
+        <span>${col}</span>
+
+        <button
+          onclick="copyColumn('${col}')"
+          class="copy-btn px-2 py-1 rounded-lg text-xs"
+        >
+          📋
+        </button>
+
+      </div>
+    `;
 
     tableHead.appendChild(th);
 
   });
+
+}
+
+async function copyColumn(column){
+
+  const values = filteredData
+    .map(row => row[column])
+    .filter(v => v != null && v !== "");
+
+  const text = values.join("\n");
+
+  try{
+
+    await navigator.clipboard.writeText(text);
+
+    alert(`Copy ${values.length} rows แล้ว`);
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Copy ไม่สำเร็จ");
+
+  }
 
 }
 
@@ -293,8 +591,10 @@ function renderTable(){
 
     tableBody.innerHTML = `
       <tr>
-        <td colspan="999"
-          class="text-center py-10 text-slate-400">
+        <td
+          colspan="999"
+          class="text-center py-16 text-slate-500"
+        >
           ไม่พบข้อมูล
         </td>
       </tr>
@@ -310,13 +610,17 @@ function renderTable(){
 
     const tr = document.createElement("tr");
 
-    tr.className = "border-b border-slate-100 table-row";
+    tr.className =
+      "border-b border-slate-800 table-row";
 
     columns.forEach(col => {
 
+      if(hiddenColumns.includes(col)) return;
+
       const td = document.createElement("td");
 
-      td.className = "px-5 py-4 whitespace-nowrap";
+      td.className =
+        "px-5 py-4 whitespace-nowrap";
 
       let value = row[col];
 
@@ -341,6 +645,10 @@ function updateCount(){
   document.getElementById("resultCount")
     .textContent = filteredData.length;
 
+  document.getElementById("showingCount")
+    .textContent =
+      `Showing ${Math.min(filteredData.length,500)} / ${filteredData.length} rows`;
+
 }
 
 document.getElementById("clearBtn")
@@ -355,6 +663,30 @@ document.getElementById("clearBtn")
 
     renderTable();
     updateCount();
+
+  });
+
+document.getElementById("downloadFilteredBtn")
+  .addEventListener("click", () => {
+
+    const csv = Papa.unparse(filteredData);
+
+    const blob = new Blob([csv], {
+      type:"text/csv;charset=utf-8;"
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "filtered_data.csv";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
 
   });
 
