@@ -3,91 +3,467 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สร้าง QR Code</title>
+
+<title>QR Code Generator</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://davidshimjs.github.io/qrcodejs/qrcode.min.js"></script>
 
 <style>
 
-.logo{
-font-weight:700;
-font-size:18px;
-}
-.logo a{
-color:#fff;
-text-decoration:none;
+:root{
+
+--bg:#050816;
+--bg2:#0b1120;
+
+--card:rgba(15,23,42,0.72);
+
+--border:rgba(139,92,246,0.16);
+
+--text:#e2e8f0;
+--muted:#94a3b8;
+
+--primary:#8b5cf6;
+--primary2:#6366f1;
+
 }
 
-.menu{
-display:flex;
-gap:18px;
+*{
+box-sizing:border-box;
 }
-.menu a{
-color:#e5e7eb;
-text-decoration:none;
-font-size:14px;
-padding:6px 10px;
-border-radius:8px;
-}
-.menu a:hover{
-background:#374151;
-}
-
-/* ===== เดิมของคุณ ===== */
 
 body{
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:flex-start;
-height:100vh;
+
 margin:0;
-padding-top:30px; /* ⭐ กัน topbar ทับ */
-font-family:Arial,sans-serif;
+
+font-family:
+Inter,
+system-ui,
+sans-serif;
+
+background:
+radial-gradient(circle at top left,
+rgba(139,92,246,0.18),
+transparent 28%),
+
+radial-gradient(circle at bottom right,
+rgba(99,102,241,0.16),
+transparent 30%),
+
+linear-gradient(
+135deg,
+#050816 0%,
+#0b1120 45%,
+#020617 100%
+);
+
+background-attachment:fixed;
+
+color:var(--text);
+
+min-height:100vh;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:20px;
+
 }
 
-#qrcode{margin-top:20px}
+/* ===== CARD ===== */
+
+.card{
+
+width:100%;
+max-width:520px;
+
+background:var(--card);
+
+border:1px solid var(--border);
+
+backdrop-filter:blur(18px);
+
+border-radius:28px;
+
+padding:34px;
+
+box-shadow:
+0 10px 40px rgba(0,0,0,0.45),
+inset 0 1px 0 rgba(255,255,255,0.03);
+
+}
+
+/* ===== TITLE ===== */
+
+.title{
+
+font-size:34px;
+
+font-weight:900;
+
+color:#c4b5fd;
+
+text-align:center;
+
+text-shadow:
+0 0 25px rgba(139,92,246,0.35);
+
+margin-bottom:8px;
+
+}
+
+.subtitle{
+
+text-align:center;
+
+font-size:14px;
+
+color:var(--muted);
+
+margin-bottom:28px;
+
+}
+
+/* ===== INPUT ===== */
+
+.input-group{
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+}
+
+input{
+
+width:100%;
+
+padding:14px 16px;
+
+border-radius:16px;
+
+border:1px solid rgba(139,92,246,0.15);
+
+background:#020617;
+
+color:white;
+
+font-size:14px;
+
+outline:none;
+
+transition:0.18s;
+
+}
+
+input:focus{
+
+border-color:#8b5cf6;
+
+box-shadow:
+0 0 0 3px rgba(139,92,246,0.15);
+
+}
+
+input::placeholder{
+
+color:#64748b;
+
+}
+
+/* ===== BUTTON ===== */
+
+.buttons{
+
+display:flex;
+
+gap:12px;
+
+margin-top:6px;
+
+flex-wrap:wrap;
+
+}
+
+.btn{
+
+flex:1;
+
+border:0;
+
+padding:13px 18px;
+
+border-radius:16px;
+
+font-weight:700;
+
+font-size:14px;
+
+cursor:pointer;
+
+transition:0.18s;
+
+color:white;
+
+}
+
+.btn:hover{
+
+transform:translateY(-2px);
+
+}
+
+.btn-generate{
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#6366f1
+);
+
+box-shadow:
+0 8px 24px rgba(99,102,241,0.35);
+
+}
+
+.btn-download{
+
+display:none;
+
+background:
+linear-gradient(
+135deg,
+#059669,
+#10b981
+);
+
+box-shadow:
+0 8px 24px rgba(16,185,129,0.28);
+
+}
+
+/* ===== QR ===== */
+
+.qr-wrap{
+
+margin-top:28px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+min-height:220px;
+
+}
+
+#qrcode{
+
+padding:18px;
+
+border-radius:24px;
+
+background:white;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.35);
+
+animation:fadeIn 0.25s ease;
+
+}
+
+/* ===== INFO ===== */
+
+.info{
+
+margin-top:18px;
+
+text-align:center;
+
+font-size:12px;
+
+color:#94a3b8;
+
+}
+
+/* ===== ANIMATION ===== */
+
+@keyframes fadeIn{
+
+from{
+opacity:0;
+transform:translateY(10px) scale(0.95);
+}
+
+to{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+
+}
+
+/* ===== MOBILE ===== */
+
+@media(max-width:640px){
+
+.card{
+padding:24px;
+}
+
+.title{
+font-size:28px;
+}
+
+.buttons{
+flex-direction:column;
+}
+
+.btn{
+width:100%;
+}
+
+}
 
 </style>
 </head>
 
 <body>
 
-<h1>สร้าง QR Code จากลิงก์</h1>
-<input type="text" id="link" placeholder="ใส่ลิงก์ที่นี่" style="padding:10px;width:300px;">
-<button id="generate" style="margin-top:10px;padding:10px 20px;">สร้าง QR Code</button>
+<div class="card">
+
+<div class="title">
+⚡ QR Generator
+</div>
+
+<div class="subtitle">
+สร้าง QR Code จาก Link ได้ทันที
+</div>
+
+<div class="input-group">
+
+<input
+type="text"
+id="link"
+placeholder="https://example.com"
+>
+
+<div class="buttons">
+
+<button
+id="generate"
+class="btn btn-generate"
+>
+✨ สร้าง QR Code
+</button>
+
+<button
+id="download"
+class="btn btn-download"
+>
+⬇ ดาวน์โหลด
+</button>
+
+</div>
+
+</div>
+
+<div class="qr-wrap">
+
 <div id="qrcode"></div>
-<button id="download" style="margin-top:10px;padding:10px 20px;display:none;">ดาวน์โหลด QR Code</button>
+
+</div>
+
+<div class="info">
+QR Code Size: 192 x 192
+</div>
+
+</div>
 
 <script>
+
 $(document).ready(function(){
 
 $('#generate').click(function(){
-var link=$('#link').val();
+
+var link = $('#link').val().trim();
+
+if(!link){
+
+alert('กรุณาใส่ลิงก์');
+
+return;
+
+}
+
 $('#qrcode').empty();
 
-var qrcode=new QRCode(document.getElementById("qrcode"),{
+new QRCode(document.getElementById("qrcode"),{
+
 text:link,
+
 width:192,
+
 height:192,
+
 colorDark:"#000000",
+
 colorLight:"#ffffff",
+
 correctLevel:QRCode.CorrectLevel.H
+
 });
 
-$('#download').show();
+$('#download').css('display','block');
+
 });
 
 $('#download').click(function(){
-var canvas=document.querySelector('#qrcode canvas');
-var link=document.createElement('a');
-link.href=canvas.toDataURL('image/png');
-link.download='qrcode.png';
+
+var canvas =
+document.querySelector('#qrcode canvas');
+
+if(!canvas){
+
+alert("ยังไม่มี QR Code");
+
+return;
+
+}
+
+var link =
+document.createElement('a');
+
+link.href =
+canvas.toDataURL('image/png');
+
+link.download =
+'qrcode.png';
+
 link.click();
+
+});
+
+/* ENTER KEY */
+
+$('#link').keypress(function(e){
+
+if(e.which == 13){
+
+$('#generate').click();
+
+}
+
 });
 
 });
+
 </script>
 
 </body>
