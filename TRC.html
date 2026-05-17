@@ -219,7 +219,7 @@ linear-gradient(
 
   ::-webkit-scrollbar-track{
 
-    background:#334155;
+    background:#ead7c3;
 
   }
 
@@ -452,57 +452,31 @@ function buildFilters(){
 }
 
 function buildColumnToggle(){
-
-  const wrap = document.getElementById("columnToggle");
-
+const wrap = document.getElementById("columnToggle");
   wrap.innerHTML = "";
-
   const columns = Object.keys(rawData[0]);
-
   columns.forEach(col => {
-
-    const label = document.createElement("label");
-
-    label.className =
-      "toggle-item flex items-center gap-2 px-5 py-3 rounded-xl cursor-pointer";
-
-    label.innerHTML = `
-      <input
-        type="checkbox"
-        checked
-        value="${col}"
-        class="column-toggle accent-violet-500"
-      />
-
-      <span>${col}</span>
-    `;
-
-    wrap.appendChild(label);
-
-  });
-
-  document.querySelectorAll(".column-toggle")
-    .forEach(input => {
-
-      input.addEventListener("change", () => {
-
-        hiddenColumns = [];
-
-        document.querySelectorAll(".column-toggle")
-          .forEach(cb => {
-
-            if(!cb.checked){
-              hiddenColumns.push(cb.value);
-            }
-
-          });
-
-        buildTable();
-        renderTable();
-
-      });
-
+    const button = document.createElement("button");
+    button.innerText = col;
+    button.className =
+      "px-5 py-3 rounded-xl bg-violet-500 text-white font-medium";
+    button.addEventListener("click", () => {
+      if(hiddenColumns.includes(col)){
+        hiddenColumns =
+          hiddenColumns.filter(c => c !== col);
+        button.className =
+          "px-5 py-3 rounded-xl bg-violet-500 text-white font-medium";
+      }else{
+        hiddenColumns.push(col);
+        button.className =
+          "px-5 py-3 rounded-xl bg-white text-stone-700 border border-stone-300 font-medium";
+      }
+      buildTable();
+      renderTable();
     });
+
+    wrap.appendChild(button);
+  });
 
 }
 
@@ -611,7 +585,7 @@ function renderTable(){
       <tr>
         <td
           colspan="999"
-          class="text-center py-20 text-slate-200 text-lg"
+          class="text-center py-20 text-stone-700 text-lg"
         >
           ไม่พบข้อมูล
         </td>
@@ -629,7 +603,7 @@ function renderTable(){
     const tr = document.createElement("tr");
 
     tr.className =
-      "border-b border-slate-700 table-row";
+      "border-b border-stone-300 table-row";
 
     columns.forEach(col => {
 
