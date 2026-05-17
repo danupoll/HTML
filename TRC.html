@@ -571,7 +571,7 @@ async function copyColumn(column){
     .map(row => row[column])
     .filter(v => v != null && v !== "");
 
-  const text = values.join("\n");
+  const text = values.join("\n\n");
 
   try{
 
