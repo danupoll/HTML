@@ -568,8 +568,8 @@ function buildTable(){
 async function copyColumn(column){
 
   const values = filteredData
-    .map(row => row[column])
-    .filter(v => v != null && v !== "");
+    .map(row => (row[column] || "").toString().trim())
+    .filter(v => v !== "");
 
   const text = values.join("\n\n");
 
