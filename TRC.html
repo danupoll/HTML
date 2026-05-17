@@ -353,7 +353,10 @@ const CSV_FILE = "TRC_Incentive.csv?v=1705x2";
 
 let rawData = [];
 let filteredData = [];
-let hiddenColumns = [];
+let hiddenColumns = [
+  "workgroup_shift",
+  "monthly_limit"
+];
 
 const tableHead = document.getElementById("tableHead");
 const tableBody = document.getElementById("tableBody");
