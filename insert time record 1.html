@@ -66,7 +66,7 @@ margin:auto;
 display:flex;
 justify-content:space-between;
 align-items:center;
-margin-top:-120px;
+margin-top:-20px;
 margin-bottom:24px;
 flex-wrap:wrap;
 gap:16px;
@@ -489,6 +489,9 @@ Generate SQL Faster • Modern UI
 <div id="tabHoliday" class="tab" onclick="showPage('holiday')">
 🎉 Add Holiday
 </div>
+<div id="tabLeave" class="tab" onclick="showPage('leave')">
+📝 Leave SQL
+</div>
 </div>
 
 <!-- TIME PAGE -->
@@ -707,11 +710,78 @@ Generate SQL Faster • Modern UI
 </div>
 
 <textarea id="holidayOutput" readonly></textarea>
+</div>
+
+<!-- LEAVE -->
+
+<div id="leavePage" style="display:none">
+
+<div class="section">
+
+<div class="section-title">
+📅 วันที่ลา
+</div>
+
+<div class="grid">
+
+<div class="field">
+<label>ช่วงวันที่ลา</label>
+<input id="leaveRange">
+</div>
+
+<div class="field">
+<label>ประเภทลา</label>
+
+<select id="leaveType">
+
+<option value="TH_VAC_WP">
+ลาจ่าย
+</option>
+
+<option value="TH_PER_UP">
+ลาไม่จ่าย
+</option>
+
+</select>
 
 </div>
 
 </div>
 
+</div>
+
+<div class="section">
+
+<div class="section-title">
+👤 พนักงาน
+</div>
+
+<div class="grid">
+
+<div class="field">
+<label>Employee ID</label>
+<input id="leaveEmp">
+</div>
+
+</div>
+
+</div>
+
+<div class="actions">
+
+<button class="primary" onclick="genLeave()">
+⚡ Generate SQL
+</button>
+
+<button class="secondary" onclick="copyLeave()">
+📋 Copy
+</button>
+
+</div>
+
+<textarea id="leaveOutput" readonly></textarea>
+
+</div>
 <div class="footer">
 Built for enterprise workflow ⚡
 </div>
@@ -732,6 +802,11 @@ p==='holiday'
 ?'block'
 :'none'
 
+leavePage.style.display =
+p==='leave'
+?'block'
+:'none'
+
 tabTime.classList.toggle(
 'active',
 p==='time'
@@ -742,20 +817,26 @@ tabHoliday.classList.toggle(
 p==='holiday'
 )
 
+tabLeave.classList.toggle(
+'active',
+p==='leave'
+)
+
 document.getElementById('modeText')
 .innerText=
-p==='time'
-?'TIME'
-:'HOLIDAY'
+p.toUpperCase()
 
 }
-
 flatpickr('#dateRange',{
 mode:'range',
 dateFormat:'Y-m-d'
 })
 
 flatpickr('#holidayRange',{
+mode:'range',
+dateFormat:'Y-m-d'
+})
+flatpickr('#leaveRange',{
 mode:'range',
 dateFormat:'Y-m-d'
 })
@@ -865,14 +946,15 @@ saveForm()
 
 }
 
-function copySQL(){
+async function copySQL(){
 
-output.select()
+await navigator.clipboard.writeText(
+output.value
+)
 
-document.execCommand('copy')
+alert('Copied!')
 
 }
-
 function genHoliday(){
 
 const emp=holidayEmp.value
@@ -905,11 +987,166 @@ saveForm()
 
 }
 
-function copyHoliday(){
+async function copyHoliday(){
 
-holidayOutput.select()
+await navigator.clipboard.writeText(
+holidayOutput.value
+)
 
-document.execCommand('copy')
+alert('Copied!')
+
+}
+function randomCode(){
+
+return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+.replace(/[xy]/g,function(c){
+
+const r = Math.random() * 16 | 0
+
+const v =
+c === 'x'
+? r
+: (r & 0x3 | 0x8)
+
+return v.toString(16)
+
+})
+
+}
+
+function genLeave(){
+
+const employeeId =
+leaveEmp.value
+
+const leaveType =
+document.getElementById('leaveType').value
+
+const leaveRangeValue =
+leaveRange.value
+
+if(!employeeId || !leaveRangeValue)
+return alert('ข้อมูลไม่ครบ')
+
+const now =
+new Date().toISOString()
+
+const isPaid =
+leaveType === 'TH_VAC_WP'
+
+const [s,e] =
+leaveRangeValue.split(' to ')
+
+let current =
+new Date(s+"T00:00:00")
+
+const end =
+new Date((e||s)+"T00:00:00")
+
+let sql=''
+
+while(current <= end){
+
+const day =
+formatDate(current)
+
+const jsonData = [
+
+{
+
+"date": day,
+
+"dayList": [
+
+{
+
+"day": day,
+
+"paid": isPaid,
+
+"type": "D"
+
+}
+
+],
+
+"endDate": day,
+
+"remarks": "",
+
+"createdAt": now,
+
+"deletedAt": null,
+
+"leaveCode": leaveType,
+
+"leaveHour": "8",
+
+"leaveType": leaveType,
+
+"startDate": day,
+
+"updatedAt": now,
+
+"employeeId": employeeId,
+
+"approveDate": now,
+
+"approveName": "axons-sqs-time-off-request",
+
+"notArchived": 1,
+
+"externalCode": randomCode(),
+
+"approveStatus": "Approved",
+
+"afterBreakTime": true,
+
+"eventUpdatedAt": now,
+
+"beforeBreakTime": true,
+
+"calculationMethod": "working_days"
+
+}
+
+]
+
+const jsonString =
+JSON.stringify(jsonData, null, 2)
+.replace(/'/g, "''")
+
+sql += `
+
+UPDATE "time".timesheet
+SET employee_absence_detail = '${jsonString}'
+WHERE employee_id = '${employeeId}'
+AND shift_date = '${day}';
+
+`
+
+current.setDate(
+current.getDate()+1
+)
+
+}
+
+leaveOutput.value =
+sql.trim()
+
+updateLines(leaveOutput.value)
+
+saveForm()
+
+}
+
+async function copyLeave(){
+
+await navigator.clipboard.writeText(
+leaveOutput.value
+)
+
+alert('Copied!')
 
 }
 
@@ -942,7 +1179,10 @@ const ids=[
 'set_id',
 'source_type',
 'holidayRange',
-'holidayEmp'
+'holidayEmp',
+'leaveRange',
+'leaveEmp',
+'leaveType'
 ]
 
 let data={}
@@ -1003,9 +1243,19 @@ if(e.ctrlKey && e.key==='Enter'){
 if(
 timePage.style.display!=='none'
 ){
+
 generateSQL()
-}else{
+
+}else if(
+holidayPage.style.display!=='none'
+){
+
 genHoliday()
+
+}else{
+
+genLeave()
+
 }
 
 }
