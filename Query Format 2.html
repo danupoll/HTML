@@ -459,6 +459,7 @@ align-items:flex-start;
 <div class="glow one"></div>
 <div class="glow two"></div>
 
+
 <div class="wrapper">
 
 <div class="sidebar">
@@ -478,6 +479,10 @@ align-items:flex-start;
 <div class="option-card" data-format="double">
 <div class="option-name">"100","200"</div>
 <div class="option-desc">Double Quote</div>
+</div>
+<div class="option-card" data-format="newline">
+<div class="option-name">100↵200↵300</div>
+<div class="option-desc">New Line</div>
 </div>
 
 <div style="height:18px"></div>
@@ -668,29 +673,25 @@ if(filter==="duplicate") working=duplicates
 if(filter==="onlyonce") working=onlyonce
 
 let formatted=working.map(v=>{
-
 if(format==="single") return `'${v}',`
-
 if(format==="double") return `"${v}",`
-
+if(format==="newline") return `${v}`
 return `${v},`
-
 })
 
+let result=""
+if(format==="newline"){
+result=formatted.join("\n")
+}else{
 let maxLen=Math.max(...formatted.map(x=>x.length),1)+6
-
 let pad=str=>
 str+" ".repeat(maxLen-str.length)
-
-let result=""
-
 for(let i=0;i<formatted.length;i+=5){
-
 result+=formatted
 .slice(i,i+5)
 .map(pad)
 .join("")+"\n"
-
+}
 }
 
 document.getElementById("output")
