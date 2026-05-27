@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Shift Generator</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --bg:#050816;
+    --card:#111827;
+    --border:#1f2937;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --primary:#8b5cf6;
+    --primary2:#6366f1;
+    --success:#22c55e;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:
+        radial-gradient(circle at top left,#312e81 0%,transparent 30%),
+        radial-gradient(circle at bottom right,#4c1d95 0%,transparent 30%),
+        var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:40px 20px;
+}
+
+.container{
+    max-width:1500px;
+    margin:auto;
+}
+
+.header{
+    margin-bottom:30px;
+}
+
+.title{
+    font-size:42px;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:var(--muted);
+    font-size:15px;
+}
+
+.card{
+    background:rgba(17,24,39,.82);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:26px;
+    padding:30px;
+    box-shadow:
+        0 10px 40px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+textarea{
+    width:100%;
+    min-height:180px;
+    resize:vertical;
+    border:none;
+    outline:none;
+    border-radius:18px;
+    padding:22px;
+    background:#0f172a;
+    color:white;
+    font-size:15px;
+    line-height:1.8;
+    border:1px solid rgba(255,255,255,.06);
+}
+
+textarea:focus{
+    border-color:#8b5cf6;
+    box-shadow:0 0 0 4px rgba(139,92,246,.15);
+}
+
+.actions{
+    display:flex;
+    gap:14px;
+    margin-top:22px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:none;
+    cursor:pointer;
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:700;
+    font-size:15px;
+    transition:.2s;
+}
+
+.generate-btn{
+    background:linear-gradient(135deg,var(--primary),var(--primary2));
+    color:white;
+}
+
+.generate-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(99,102,241,.35);
+}
+
+.copy-btn{
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+    color:white;
+}
+
+.copy-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(34,197,94,.35);
+}
+
+.result-wrapper{
+    margin-top:30px;
+}
+
+.result-box{
+    background:#020617;
+    border-radius:22px;
+    overflow:auto;
+    border:1px solid rgba(255,255,255,.08);
+    padding:20px;
+}
+
+table{
+    border-collapse:separate;
+    border-spacing:0 14px;
+    width:max-content;
+    min-width:100%;
+}
+
+th{
+    text-align:left;
+    padding:0 20px 10px;
+    color:#cbd5e1;
+    font-size:13px;
+    white-space:nowrap;
+}
+
+td{
+    background:#0f172a;
+    padding:18px;
+    font-size:14px;
+    line-height:1.8;
+    white-space:nowrap;
+    border-top:1px solid rgba(255,255,255,.05);
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+td:first-child{
+    border-left:1px solid rgba(255,255,255,.05);
+    border-radius:14px 0 0 14px;
+}
+
+td:last-child{
+    border-right:1px solid rgba(255,255,255,.05);
+    border-radius:0 14px 14px 0;
+    min-width:800px;
+}
+
+.tag{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(139,92,246,.12);
+    color:#c4b5fd;
+    border:1px solid rgba(139,92,246,.25);
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:16px;
+}
+
+.footer{
+    margin-top:18px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+::-webkit-scrollbar{
+    width:10px;
+    height:10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#374151;
+    border-radius:999px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="title">⚡ Shift Generator</div>
+        <div class="subtitle">
+            Generate Shift Format สำหรับ Excel / Google Sheet
+        </div>
+    </div>
+
+    <div class="card">
+
+        <textarea id="input" placeholder="ตัวอย่าง:
+0800-1700 อาทิตย์
+0800-1700 เสาร์ อาทิตย์
+0800-1700 อาทิตย์ จันทร์"></textarea>
+
+        <div class="actions">
+            <button class="generate-btn" onclick="generate()">
+                Generate
+            </button>
+
+            <button class="copy-btn" onclick="copyTable()">
+                Copy Table
+            </button>
+        </div>
+
+        <div class="result-wrapper">
+
+            <div class="tag">📋 Output Result</div>
+
+            <div class="result-box">
+
+                <table id="resultTable">
+
+                    <thead>
+                        <tr>
+                            <th>Format 1</th>
+                            <th>Format 2</th>
+                            <th>Format 3</th>
+                            <th>Format 4</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="resultBody"></tbody>
+
+                </table>
+
+            </div>
+
+            <div class="footer">
+                💡 Copy แล้ว Paste ลง Excel ได้ทันทีแบบแยกคอลัมน์
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const dayMap = {
+    "จันทร์": {
+        short:"MON",
+        thai:"จ",
+        index:1
+    },
+    "อังคาร": {
+        short:"TUE",
+        thai:"อ",
+        index:2
+    },
+    "พุธ": {
+        short:"WED",
+        thai:"พ",
+        index:3
+    },
+    "พฤหัส": {
+        short:"THU",
+        thai:"พฤ",
+        index:4
+    },
+    "ศุกร์": {
+        short:"FRI",
+        thai:"ศ",
+        index:5
+    },
+    "เสาร์": {
+        short:"SAT",
+        thai:"ส",
+        index:6
+    },
+    "อาทิตย์": {
+        short:"SUN",
+        thai:"อา",
+        index:7
+    }
+};
+
+function generate(){
+
+    const input = document.getElementById("input").value.trim();
+
+    const lines = input.split("\n");
+
+    const tbody = document.getElementById("resultBody");
+
+    tbody.innerHTML = "";
+
+    lines.forEach(line=>{
+
+        if(!line.trim()) return;
+
+        const parts = line.trim().split(/\s+/);
+
+        const shift = parts[0];
+
+        const dayWords = parts.slice(1);
+
+        let shortList = [];
+        let thaiList = [];
+        let offIndexes = [];
+
+        dayWords.forEach(day=>{
+
+            if(dayMap[day]){
+
+                shortList.push(dayMap[day].short);
+
+                thaiList.push(dayMap[day].thai);
+
+                offIndexes.push(dayMap[day].index);
+
+            }
+
+        });
+
+        const format1 = `${shift}_${shortList.join("")}`;
+
+        const format2 = `${shift} หยุด ${thaiList.join("-")}`;
+
+        const format3 = `${shift} Off-${shortList.map(v=>{
+            return v.charAt(0) + v.slice(1).toLowerCase();
+        }).join("")}`;
+
+        let weekly = [];
+
+        for(let i=1;i<=7;i++){
+
+            if(offIndexes.includes(i)){
+                weekly.push(`OFF${shift}`);
+            }else{
+                weekly.push(`SH${shift}`);
+            }
+
+        }
+
+        const format4 = weekly.join(",");
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${format1}</td>
+                <td>${format2}</td>
+                <td>${format3}</td>
+                <td>${format4}</td>
+            </tr>
+        `;
+
+    });
+
+}
+
+function copyTable(){
+
+    const rows = document.querySelectorAll("#resultTable tr");
+
+    let text = "";
+
+    rows.forEach((row,index)=>{
+
+        const cols = row.querySelectorAll("th,td");
+
+        let rowText = [];
+
+        cols.forEach(col=>{
+            rowText.push(col.innerText);
+        });
+
+        text += rowText.join("\t");
+
+        if(index !== rows.length - 1){
+            text += "\n";
+        }
+
+    });
+
+    navigator.clipboard.writeText(text);
+
+    alert("Copy Table แล้ว ✅");
+
+}
+
+</script>
+
+</body>
+</html>
