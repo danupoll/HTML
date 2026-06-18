@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Time Attendance Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --bg:#f6f8fc;
+    --card:#ffffff;
+    --text:#172033;
+    --sub:#6b7280;
+    --border:#edf0f7;
+    --shadow:0 15px 50px rgba(35,52,103,.08);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Prompt',sans-serif;
+}
+
+body{
+    background:
+    radial-gradient(circle at top left,#dbeafe 0%,transparent 35%),
+    radial-gradient(circle at top right,#fae8ff 0%,transparent 35%),
+    radial-gradient(circle at bottom left,#dcfce7 0%,transparent 35%),
+    #f8fafc;
+
+    min-height:100vh;
+    color:var(--text);
+}
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    padding:50px 30px;
+}
+
+.hero{
+    text-align:center;
+    margin-bottom:45px;
+}
+
+.hero h1{
+    font-size:56px;
+    font-weight:700;
+    letter-spacing:-2px;
+    color:#111827;
+}
+
+.hero p{
+    color:#64748b;
+    font-size:18px;
+    margin-top:8px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:28px;
+}
+
+.card{
+    position:relative;
+    overflow:hidden;
+    background:rgba(255,255,255,.9);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.8);
+    border-radius:30px;
+    padding:30px;
+    text-decoration:none;
+    color:inherit;
+    min-height:220px;
+    transition:.35s ease;
+    box-shadow:var(--shadow);
+}
+
+.card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 25px 70px rgba(37,99,235,.12);
+}
+
+.icon{
+    width:70px;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:20px;
+    margin-bottom:22px;
+}
+
+.icon img{
+    width:42px;
+    height:42px;
+    object-fit:contain;
+}
+
+.blue .icon{
+    background:#eff6ff;
+}
+
+.purple .icon{
+    background:#faf5ff;
+}
+
+.green .icon{
+    background:#f0fdf4;
+}
+
+.orange .icon{
+    background:#fff7ed;
+}
+
+.title{
+    font-size:24px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.desc{
+    color:#64748b;
+    line-height:1.7;
+    font-size:15px;
+}
+
+.badge{
+    position:absolute;
+    top:24px;
+    right:24px;
+    padding:8px 14px;
+    border-radius:50px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.prd{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.uat{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.tool{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.doc{
+    background:#ede9fe;
+    color:#6d28d9;
+}
+
+@media(max-width:1200px){
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:768px){
+
+    .hero h1{
+        font-size:40px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .container{
+        padding:20px;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="grid">
+
+        <!-- Worklife PRD -->
+        <a href="https://cpf-worklife-core.axonstech.com/cpf/app" target="_blank" class="card blue">
+            <div class="icon">
+                <img src="https://axonstech.com/src/assets/img/logo.png" alt="Web">
+            </div>
+            <div class="title">Worklife Time (PRD)</div>
+            <div class="desc">Production Environment</div>
+        </a>
+
+        <!-- Worklife UAT -->
+        <a href="https://core-uat.smarthrworklife.com/uat_cpf/app" target="_blank" class="card orange">
+            <div class="icon">
+                <img src="https://axonstech.com/src/assets/img/logo.png" alt="Web">
+            </div>
+            <div class="title">Worklife Time (UAT)</div>
+            <div class="desc">Testing Environment</div>
+        </a>
+
+        <!-- Helpdesk -->
+        <a href="https://helpdesk.axonstech.com/admin/tickets" target="_blank" class="card orange">
+            <div class="icon">
+                <img src="https://helpdesk-api.axonstech.com/api/external/staff/doc/vb/dGhlbWV8Mnxsb2dvfGVuY29kZQ==" alt="Web">
+            </div>
+            <div class="title">Axons HelpDesk</div>
+            <div class="desc">Issue & Ticket Management</div>
+        </a>
+
+        <!-- SuccessFactors -->
+        <a href="https://hcm44.sapsf.com/sf/home?bplte_company=CPF&_s.crb=C9oyTq9OZMX1dv0HASZeDGQHKe0SKU04k2ou87G7O3I%253d#Shell-home" target="_blank" class="card purple">
+            <div class="icon">
+                <img src="https://media.trustradius.com/vendor-logos/vX/2j/H2M0E9VQJ4T1.PNG" alt="Web">
+            </div>
+            <div class="title">SuccessFactors</div>
+            <div class="desc">Employee Management Portal</div>
+        </a>
+                <!-- QAS -->
+        <a href="https://hcm44.sapsf.com/sf/home?bplte_company=CPFQAS" target="_blank" class="card orange">
+            <div class="icon">
+                <img src="https://media.trustradius.com/vendor-logos/vX/2j/H2M0E9VQJ4T1.PNG" alt="Web">
+            </div>
+            <div class="title">QAS</div>
+            <div class="desc">Quality Assurance Environment</div>
+        </a>
+
+        <!-- Timesheet Daily -->
+        <a href="https://dev.azure.com/DM-HR/" target="_blank" class="card blue">
+            <div class="icon">
+                <img src="https://cdn.vsassets.io/ext/ms.vss-tfs-web/platform-content/ADO.C1K4lP.svg" alt="Web">
+            </div>
+            <div class="title">Azure Timesheet</div>
+            <div class="desc">Azure DevOps Workspace</div>
+        </a>
+
+        <!-- Mamori -->
+        <a href="https://cdac.cpf.co.th/#/" target="_blank" class="card green">
+            <div class="icon">
+                <img src="https://play-lh.googleusercontent.com/scXxsCCTjR15R-7MyKiy6DyNY6eM-MNOf3_2vDHvuEmnVexH_frAGZaOfh_3ThsFSA" alt="Web">
+            </div>
+            <div class="title">Mamori</div>
+            <div class="desc">Security & Access Control</div>
+        </a>
+
+        <!-- Sprint 2 -->
+        <a href="https://cpfito365.sharepoint.com/:x:/r/sites/IMP4_AT/_layouts/15/Doc.aspx?action=edit&sourcedoc=%7B4b41f6ef-cdca-4ff6-8b29-0350794d4b14%7D&wdExp=TEAMS-TREATMENT&web=1&TeamsCID=7c0cb4ac-484c-4f66-96ae-def13c7d34d4" target="_blank" class="card purple">
+            <div class="icon">
+                <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel">
+            </div>
+            <div class="title">Sprint 2</div>
+            <div class="desc">Project Tracking Dashboard</div>
+        </a>
+
+        <!-- Issue Log -->
+        <a href="https://cpfito365.sharepoint.com/:x:/r/sites/IMP4_AT/_layouts/15/Doc.aspx?sourcedoc=%7B9F60C973-B8FF-4C61-8933-1E8E5E5AEC98%7D&file=Time Attendance Tracking Issue Log.xlsx&action=default&mobileredirect=true" target="_blank" class="card purple">
+            <div class="icon">
+                <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel">
+            </div>
+            <div class="title">Issue Log</div>
+            <div class="desc">Time Attendance Tracking Sheet</div>
+        </a>
+
+
+
+    </div>
+
+</div>
+
+</body>
+</html>
