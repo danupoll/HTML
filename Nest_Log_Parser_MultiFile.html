@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nest Log Parser</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<style>
+body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#eef4ff,#f8fbff);margin:0}
+.container{max-width:1700px;margin:24px auto;background:#fff;padding:36px;border-radius:22px;box-shadow:0 20px 45px rgba(30,64,175,.12)}
+h1{margin:0;color:#1e40af;font-size:36px}
+.sub{color:#64748b;margin:6px 0 20px}
+.row{display:flex;gap:16px;flex-wrap:wrap}
+button{background:#2563eb;color:#fff;border:none;padding:12px 22px;border-radius:12px;cursor:pointer;font-weight:600;transition:.2s}
+button:disabled{background:#aaa}
+input[type=file]{padding:14px;border:2px dashed #cbd5e1;border-radius:12px;background:#fff;min-width:340px}
+.card{background:#f8fafc;padding:20px;border-radius:16px;border:1px solid #e2e8f0;margin:15px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border:1px solid #ddd;padding:12px}
+th{background:#2563eb;color:#fff;position:sticky;top:0}
+.stats{display:flex;gap:15px;flex-wrap:wrap}
+.stat{background:#fff;padding:18px;border-radius:14px;border:1px solid #dbeafe;flex:1;min-width:180px}
+#preview{max-height:650px;overflow:auto}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📄 Nest Log Parser</h1>
+<div class="sub">Convert NestJS Logs to Excel</div>
+
+<div class="row">
+<input type="file" id="file" accept=".xlsx,.xls" multiple>
+<button id="gen">⚡ Generate</button>
+<button id="download" disabled>📥 Download Excel</button>
+</div>
+
+<div class="card">
+<div id="status">Status : Waiting...</div>
+<div class="stats">
+<div class="stat">Rows : <span id="rows">0</span></div>
+<div class="stat">Success : <span id="success">0</span></div>
+<div class="stat">Failed : <span id="failed">0</span></div>
+</div>
+</div>
+
+<div id="preview"></div>
+
+</div>
+
+<script>
+let outData=[],originalName="Result";
+const regex=/(\d{2}\/\d{2}\/\d{4},\s\d{1,2}:\d{2}:\d{2}\s(?:AM|PM)).*?\[([^\]]+)\]\s\[(.*?)\]\]\[(.*?)\]\sAssign shift\s([a-f0-9-]+)\son\s(\d{4}-\d{2}-\d{2})\sto\s(.+)/i;
+
+document.getElementById("gen").onclick=()=>{
+ const files=[...document.getElementById("file").files];
+ if(!files.length){alert("Select file");return;}
+ originalName="Merged_Log";
+ outData=[];
+ let ok=0,bad=0,totalRows=0,first=true;
+ const process=(idx)=>{
+ if(idx>=files.length){
+ document.getElementById("rows").textContent=totalRows;
+ document.getElementById("success").textContent=ok;
+ document.getElementById("failed").textContent=bad;
+ document.getElementById("status").textContent="Completed ("+files.length+" files)";
+ document.getElementById("download").disabled=false;
+ let html="<table><tr>";
+ outData[0].forEach(h=>html+="<th>"+h+"</th>");
+ html+="</tr>";
+ for(let i=1;i<Math.min(outData.length,21);i++){html+="<tr>";outData[i].forEach(c=>html+="<td>"+(c??"")+"</td>");html+="</tr>";}
+ html+="</table><p>Showing first 20 rows</p>";
+ document.getElementById("preview").innerHTML=html;
+ return;}
+ const f=files[idx];
+ const r=new FileReader();
+ r.onload=e=>{
+ const wb=XLSX.read(e.target.result,{type:"array"});
+ const ws=wb.Sheets[wb.SheetNames[0]];
+ const arr=XLSX.utils.sheet_to_json(ws,{header:1});
+ for(let i=0;i<arr.length;i++){
+ if(i===0){
+ if(first){outData.push([arr[0][0]??"A","Date Time","Service","Action","Request ID","Event","Shift ID","Shift Date","Employee"]); first=false;}
+ continue;
+ }
+ totalRows++;
+
+      if(i===0){
+         outData.push(["A","Date Time","Service","Action","Request ID","Event","Shift ID","Shift Date","Employee"]);
+         continue;
+      }
+      const A=arr[i][0]??"";
+      const B=(arr[i][1]??"").toString();
+      const m=B.match(regex);
+      if(m){
+         ok++;
+         outData.push([A,m[1],m[2],m[3],m[4],"Assign shift",m[5],m[6],m[7]]);
+      }else{
+         bad++;
+         outData.push([A,"","","","","","","",""]);
+      }
+   }
+ process(idx+1);
+ };
+ r.readAsArrayBuffer(f);
+ };
+ process(0);
+};
+
+document.getElementById("download").onclick=()=>{
+ const ws=XLSX.utils.aoa_to_sheet(outData);
+ const wb=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb,ws,"Result");
+ XLSX.writeFile(wb,originalName+"_Complete.xlsx");
+};
+</script>
+</body>
+</html>
