@@ -220,19 +220,19 @@ select{min-width:100%;width:100%}
 </span>
 </label>
 
-<label class="radio-option" id="uniqueBothOption">
-<input type="radio" name="resultType" value="uniqueBoth">
-<span>
-🔍 แสดงค่าที่ไม่ซ้ำกันทั้ง 2 ฝั่ง
-<div class="radio-help">แสดงเฉพาะค่าที่อยู่เพียงฝั่งเดียว ไม่อยู่ทั้งสองฝั่ง</div>
-</span>
-</label>
-
 <label class="radio-option" id="removeOption">
 <input type="radio" name="resultType" value="removeLeft">
 <span>
 ✂️ หากข้อมูลฝั่งซ้ายตรงกับฝั่งขวาให้ตัดออกจากผลลัพธ์
 <div class="radio-help">เอาข้อมูลฝั่งขวาที่ไม่มีอยู่ในฝั่งซ้าย</div>
+</span>
+</label>
+
+<label class="radio-option" id="uniqueBothOption">
+<input type="radio" name="resultType" value="uniqueBoth">
+<span>
+🔍 แสดงค่าที่ไม่ซ้ำกันทั้ง 2 ฝั่ง
+<div class="radio-help">แสดงเฉพาะค่าที่อยู่เพียงฝั่งเดียว ไม่อยู่ทั้งสองฝั่ง</div>
 </span>
 </label>
 
@@ -292,18 +292,35 @@ let hasCalculated = false;
 
 function parseInput(text){
     /*
-      รองรับ:
+      รองรับข้อมูลที่วางมาจากหลายแหล่ง เช่น:
       - comma
       - newline
       - tab
       - semicolon
+      - Markdown table ที่มี |
       - ค่าแบบ '1111' หรือ "1111"
+      - เส้นคั่น เช่น | -------------- |
+
+      ตัวอย่าง:
+      | 010H6576       |
+      | -------------- |
+      | 010Q1796       |
+
+      จะอ่านเฉพาะ:
+      010H6576
+      010Q1796
     */
+
     return text
         .replace(/\r/g, "")
+        .replace(/\|/g, "\n")
         .split(/[,\n\t;]+/)
         .map(x => x.trim())
         .map(x => x.replace(/^['"]+|['"]+$/g, "").trim())
+        // ตัดเส้นคั่น Markdown / เส้นประ / เส้นขีดที่ไม่ใช่ข้อมูล
+        .filter(x => x !== "" && !/^[\-_:]+$/.test(x))
+        // ตัด whitespace รอบข้อมูลอีกครั้ง
+        .map(x => x.trim())
         .filter(x => x !== "");
 }
 
