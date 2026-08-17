@@ -154,6 +154,60 @@ textarea{height:260px}
 .option-label{padding-top:0}
 select{min-width:100%;width:100%}
 }
+
+
+/* ===== Medium UI / Easy Read ===== */
+body{padding:30px 26px}
+.container{max-width:1500px}
+.topbar{margin-bottom:26px}
+.title-wrap h1{font-size:42px;letter-spacing:-1px;margin-bottom:10px}
+.title-wrap p{font-size:16px;line-height:1.5}
+.badge{padding:11px 17px;font-size:14px}
+.grid{gap:24px}
+.card{padding:26px}
+.card-title{font-size:21px}
+.card-sub{font-size:15px;margin-top:5px}
+.count-panel{gap:9px;margin-bottom:13px}
+.count-chip{padding:8px 12px;border-radius:11px;font-size:13px}
+.count-chip strong{font-size:14px}
+textarea{height:360px;padding:20px;border-radius:18px;font-size:16px;line-height:1.75}
+textarea::placeholder{font-size:15px}
+.options-card{margin-top:25px;padding:24px 26px}
+.option-row{gap:16px}
+.option-label{font-size:16px;min-width:120px;padding-top:13px}
+.radio-group{gap:10px}
+.radio-option{gap:9px;padding:13px 17px;border-radius:14px;font-size:15px;line-height:1.5}
+.radio-help{font-size:12px;line-height:1.45;margin-top:4px}
+.divider{margin:21px 0}
+.select-wrap{gap:16px}
+select{min-width:340px;padding:13px 44px 13px 16px;border-radius:14px;font-size:15px}
+.actions{margin-top:27px}
+.calculate{padding:16px 36px;border-radius:17px;font-size:17px}
+.result-wrap{margin-top:34px}
+.result-header{gap:16px;margin-bottom:16px}
+.result-title{font-size:24px}
+.result-info{font-size:15px;line-height:1.5}
+.copy{padding:13px 19px;border-radius:14px;font-size:15px}
+.result-box{padding:24px}
+.result{min-height:135px;padding:20px;border-radius:17px;font-size:16px;line-height:1.8}
+.stats{margin-top:16px;gap:12px}
+.stat{padding:12px 16px;border-radius:14px}
+.stat-label{font-size:13px;margin-bottom:4px}
+.stat-value{font-size:20px}
+.toast{top:22px;padding:14px 22px;border-radius:14px;font-size:15px}
+
+@media(max-width:960px){
+  body{padding:22px 16px}
+  .title-wrap h1{font-size:34px}
+  .title-wrap p{font-size:15px}
+  .card{padding:22px}
+  .card-title{font-size:20px}
+  textarea{height:290px;font-size:16px}
+  .option-label{font-size:16px}
+  .radio-option{font-size:15px}
+  select{min-width:100%;width:100%;font-size:15px}
+}
+
 </style>
 </head>
 
@@ -215,24 +269,24 @@ select{min-width:100%;width:100%}
 <label class="radio-option common active" id="commonOption">
 <input type="radio" name="resultType" value="common" checked>
 <span>
-🔄 แสดงค่าที่ซ้ำกันทั้ง 2 ฝั่ง
+🔄 แสดงค่าที่ซ้ำกันทั้งสองฝั่ง
 <div class="radio-help">เอาเฉพาะค่าที่มีอยู่ทั้งฝั่งซ้ายและฝั่งขวา</div>
 </span>
 </label>
 
-    <label class="radio-option" id="uniqueBothOption">
-<input type="radio" name="resultType" value="uniqueBoth">
-<span>
-🔍 แสดงค่าที่ไม่ซ้ำกันทั้ง 2 ฝั่ง
-<div class="radio-help">แสดงเฉพาะค่าที่อยู่เพียงฝั่งเดียว ไม่อยู่ทั้งสองฝั่ง</div>
-</span>
-</label>
-    
 <label class="radio-option" id="removeOption">
 <input type="radio" name="resultType" value="removeLeft">
 <span>
 ✂️ หากข้อมูลฝั่งซ้ายตรงกับฝั่งขวาให้ตัดออกจากผลลัพธ์
 <div class="radio-help">เอาข้อมูลฝั่งขวาที่ไม่มีอยู่ในฝั่งซ้าย</div>
+</span>
+</label>
+
+<label class="radio-option" id="uniqueBothOption">
+<input type="radio" name="resultType" value="uniqueBoth">
+<span>
+🔍 แสดงค่าที่ไม่ซ้ำกันทั้ง 2 ฝั่ง
+<div class="radio-help">แสดงเฉพาะค่าที่อยู่เพียงฝั่งเดียว ไม่อยู่ทั้งสองฝั่ง</div>
 </span>
 </label>
 
