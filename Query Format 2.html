@@ -451,6 +451,29 @@ align-items:flex-start;
 
 }
 
+
+/* Local history */
+.history-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.07);color:#e5e7eb;border:1px solid rgba(255,255,255,.10);font-size:12px;font-weight:700;cursor:pointer;transition:.2s}
+.history-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.12)}
+.history-badge{min-width:19px;height:19px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,#60a5fa,#8b5cf6);color:#fff;font-size:10px}
+.history-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+.history-overlay.show{display:flex}
+.history-modal{width:min(900px,100%);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;background:rgba(15,23,42,.96);border:1px solid rgba(255,255,255,.10);border-radius:28px;box-shadow:0 30px 100px rgba(0,0,0,.55)}
+.history-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px;border-bottom:1px solid rgba(255,255,255,.08)}
+.history-head h2{font-size:20px;font-weight:800}.history-head p{margin-top:4px;font-size:12px;color:#94a3b8}
+.history-actions{display:flex;gap:8px}.history-clear{padding:9px 13px;border-radius:12px;border:1px solid rgba(239,68,68,.22);background:rgba(239,68,68,.09);color:#fca5a5;font-size:11px;font-weight:700;cursor:pointer}
+.history-close{width:38px;height:38px;padding:0;border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font-size:18px}
+.history-list{padding:16px;overflow:auto}.history-empty{padding:70px 20px;text-align:center;color:#64748b}.history-empty .icon{font-size:36px;margin-bottom:12px}
+.history-item{padding:17px;margin-bottom:10px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.065);transition:.18s}
+.history-item:hover{background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.10)}
+.history-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.history-time{font-size:13px;font-weight:800;color:#f8fafc}.history-meta{margin-top:5px;font-size:11px;color:#94a3b8}
+.history-preview{margin-top:12px;padding:11px 13px;border-radius:12px;background:#020617;border:1px solid rgba(255,255,255,.055);color:#cbd5e1;font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:90px;overflow:hidden}
+.history-item-actions{display:flex;gap:7px;flex-shrink:0}.history-restore,.history-delete{padding:8px 11px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer}
+.history-restore{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff}.history-delete{background:rgba(255,255,255,.055);color:#cbd5e1;border:1px solid rgba(255,255,255,.07)}
+.history-note{margin:0 24px 18px;padding:10px 13px;border-radius:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.13);color:#93c5fd;font-size:11px;line-height:1.5}
+@media(max-width:600px){.history-overlay{padding:10px}.history-modal{border-radius:22px;max-height:94vh}.history-head{padding:18px}.history-item-top{flex-direction:column}.history-item-actions{width:100%}.history-restore,.history-delete{flex:1}}
+
 </style>
 </head>
 
@@ -459,6 +482,17 @@ align-items:flex-start;
 <div class="glow one"></div>
 <div class="glow two"></div>
 
+
+
+<div class="topbar">
+  <div class="logo">Query Format Tool</div>
+  <div style="display:flex;align-items:center;gap:9px;">
+    <button class="history-btn" onclick="openHistory()">
+      🕘 ประวัติ <span class="history-badge" id="historyCount">0</span>
+    </button>
+    <div class="badge">Local History</div>
+  </div>
+</div>
 
 <div class="wrapper">
 
@@ -588,6 +622,27 @@ Built for speed ⚡
 </div>
 </div>
 
+
+<div class="history-overlay" id="historyOverlay" onclick="handleHistoryBackdrop(event)">
+  <div class="history-modal">
+    <div class="history-head">
+      <div>
+        <h2>🕘 ประวัติการใช้งาน</h2>
+        <p>บันทึกข้อมูลเมื่อกด “ประมวลผล” และเก็บไว้ในเครื่องนี้เท่านั้น</p>
+      </div>
+      <div class="history-actions">
+        <button class="history-clear" onclick="clearHistory()">ล้างทั้งหมด</button>
+        <button class="history-close" onclick="closeHistory()">×</button>
+      </div>
+    </div>
+    <div class="history-note">
+      ประวัติใช้ <b>localStorage</b> ของเบราว์เซอร์ ข้อมูลไม่ถูกส่งขึ้นเซิร์ฟเวอร์
+      และอาจหายหากล้างข้อมูลเว็บไซต์ของเบราว์เซอร์
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</div>
+
 <script>
 
 let format="comma"
@@ -709,6 +764,9 @@ document.getElementById("dupCount")
 document.getElementById("copyBtn")
 .innerText=`📋 Copy (${working.length})`
 
+// เก็บประวัติเฉพาะตอนกดประมวลผล
+addHistory();
+
 }
 
 function copyResult(){
@@ -716,32 +774,226 @@ function copyResult(){
 let btn=document
 .getElementById("copyBtn")
 
-let arr=document
-.getElementById("output")
-.innerText
-.split(/\s+/)
-.filter(x=>x)
-.join("")
-.split(",")
+/*
+  ใช้ข้อมูลรายการโดยตรงแทนการอ่านจาก output
+  เพราะ New Line ไม่มี comma คั่น
+  หากอ่าน output แล้ว split ด้วย whitespace
+  หลายบรรทัดจะถูกรวมเป็นข้อมูลก้อนเดียว
+*/
+
+let raw=document
+.getElementById("inputArea")
+.value
+
+let list=raw
+.split(/[\n,\s]+/)
+.map(x=>x.replace(/['"]/g,"").trim())
 .filter(x=>x)
 
-let text=arr.join(",")
+let count={}
+
+list.forEach(v=>{
+count[v]=(count[v]||0)+1
+})
+
+let unique=Object.keys(count)
+let duplicates=unique.filter(v=>count[v]>1)
+let onlyonce=unique.filter(v=>count[v]==1)
+
+let working=[]
+
+if(filter==="unique") working=unique
+if(filter==="duplicate") working=duplicates
+if(filter==="onlyonce") working=onlyonce
+
+let text=""
+
+if(format==="newline"){
+  text=working.join("\n")
+}else if(format==="single"){
+  text=working.map(v=>`'${v}'`).join(",")
+}else if(format==="double"){
+  text=working.map(v=>`"${v}"`).join(",")
+}else{
+  text=working.join(",")
+}
 
 navigator.clipboard.writeText(text)
 
 btn.classList.add("copy-success")
 
-btn.innerText=`✅ Copied (${arr.length})`
+btn.innerText=`✅ Copied (${working.length})`
 
 setTimeout(()=>{
 
 btn.classList.remove("copy-success")
 
-btn.innerText=`📋 Copy (${arr.length})`
+btn.innerText=`📋 Copy (${working.length})`
 
 },1500)
 
 }
+
+
+// ===== Local History =====
+const HISTORY_KEY = "query_format_tool_history_v1";
+const MAX_HISTORY = 50;
+
+function getHistory(){
+  try{
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const data = raw ? JSON.parse(raw) : [];
+    return Array.isArray(data) ? data : [];
+  }catch(e){ return []; }
+}
+
+function saveHistory(history){
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0,MAX_HISTORY)));
+  updateHistoryCount();
+}
+
+function updateHistoryCount(){
+  const el=document.getElementById("historyCount");
+  if(el) el.innerText=getHistory().length;
+}
+
+function formatHistoryDate(iso){
+  return new Intl.DateTimeFormat("th-TH",{
+    dateStyle:"medium",
+    timeStyle:"medium"
+  }).format(new Date(iso));
+}
+
+function historyLabel(item){
+  const f={comma:"Comma",single:"Single Quote",double:"Double Quote",newline:"New Line"};
+  const t={unique:"ตัดค่าซ้ำ",duplicate:"เฉพาะค่าซ้ำ",onlyonce:"ไม่ซ้ำเลย"};
+  return `${f[item.format]||item.format} • ${t[item.filter]||item.filter}`;
+}
+
+function addHistory(){
+  const input=document.getElementById("inputArea").value;
+  if(!input.trim()) return;
+
+  const record={
+    id:Date.now().toString()+"_"+Math.random().toString(36).slice(2,8),
+    createdAt:new Date().toISOString(),
+    input:input,
+    format:format,
+    filter:filter,
+    result:document.getElementById("output").innerText||"",
+    total:document.getElementById("totalCount").innerText||"0",
+    unique:document.getElementById("uniqueCount").innerText||"0",
+    duplicate:document.getElementById("dupCount").innerText||"0"
+  };
+
+  let history=getHistory();
+  const last=history[0];
+
+  if(last && last.input===record.input && last.format===record.format && last.filter===record.filter){
+    history[0]=record;
+  }else{
+    history.unshift(record);
+  }
+
+  saveHistory(history);
+}
+
+function openHistory(){
+  renderHistory();
+  document.getElementById("historyOverlay").classList.add("show");
+  document.body.style.overflow="hidden";
+}
+
+function closeHistory(){
+  document.getElementById("historyOverlay").classList.remove("show");
+  document.body.style.overflow="";
+}
+
+function handleHistoryBackdrop(e){
+  if(e.target.id==="historyOverlay") closeHistory();
+}
+
+function escapeHistoryHtml(v){
+  return String(v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+function renderHistory(){
+  const box=document.getElementById("historyList");
+  const history=getHistory();
+
+  if(!history.length){
+    box.innerHTML=`
+      <div class="history-empty">
+        <div class="icon">🕘</div>
+        <div>ยังไม่มีประวัติ</div>
+        <div style="font-size:11px;margin-top:5px;">กด “ประมวลผล” แล้วรายการจะถูกบันทึกที่นี่</div>
+      </div>`;
+    return;
+  }
+
+  box.innerHTML=history.map((item,index)=>{
+    const preview=escapeHistoryHtml(item.input.length>420 ? item.input.slice(0,420)+"…" : item.input);
+    return `
+      <div class="history-item">
+        <div class="history-item-top">
+          <div>
+            <div class="history-time">#${history.length-index} • ${formatHistoryDate(item.createdAt)}</div>
+            <div class="history-meta">
+              ${escapeHistoryHtml(historyLabel(item))}
+              • ${item.total} รายการ • Unique ${item.unique} • Duplicate ${item.duplicate}
+            </div>
+          </div>
+          <div class="history-item-actions">
+            <button class="history-restore" onclick="restoreHistory('${item.id}')">↩ ใช้งานรายการนี้</button>
+            <button class="history-delete" onclick="deleteHistory('${item.id}')">ลบ</button>
+          </div>
+        </div>
+        <div class="history-preview">${preview}</div>
+      </div>`;
+  }).join("");
+}
+
+function restoreHistory(id){
+  const item=getHistory().find(x=>x.id===id);
+  if(!item) return;
+
+  document.getElementById("inputArea").value=item.input;
+  format=item.format;
+  filter=item.filter;
+
+  document.querySelectorAll("[data-format]").forEach(el=>{
+    el.classList.toggle("active",el.dataset.format===format);
+  });
+  document.querySelectorAll("[data-filter]").forEach(el=>{
+    el.classList.toggle("active",el.dataset.filter===filter);
+  });
+
+  process();
+  closeHistory();
+}
+
+function deleteHistory(id){
+  saveHistory(getHistory().filter(x=>x.id!==id));
+  renderHistory();
+}
+
+function clearHistory(){
+  if(!getHistory().length) return;
+  if(confirm("ต้องการล้างประวัติทั้งหมดใช่หรือไม่?\nข้อมูลที่ลบแล้วจะกู้คืนไม่ได้")){
+    localStorage.removeItem(HISTORY_KEY);
+    updateHistoryCount();
+    renderHistory();
+  }
+}
+
+window.addEventListener("keydown",e=>{
+  if(e.key==="Escape") closeHistory();
+});
+
+updateHistoryCount();
+
 
 function clearAll(){
 
