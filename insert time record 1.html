@@ -212,6 +212,85 @@ box-shadow:
 inset 0 0 0 1px rgba(255,255,255,.05);
 }
 
+
+.break-toggle{
+display:flex;
+align-items:center;
+justify-content:space-between;
+width:100%;
+height:48px;
+padding:0 14px 0 16px;
+border-radius:18px;
+background:rgba(255,255,255,.05);
+box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+cursor:pointer;
+user-select:none;
+white-space:nowrap;
+transition:.2s;
+}
+
+.break-toggle:hover{
+background:rgba(255,255,255,.08);
+}
+
+.break-toggle-text{
+font-size:14px;
+font-weight:700;
+color:#cbd5e1;
+line-height:1;
+}
+
+.break-toggle input{
+position:absolute !important;
+width:1px !important;
+height:1px !important;
+padding:0 !important;
+margin:-1px !important;
+overflow:hidden;
+clip:rect(0,0,0,0);
+white-space:nowrap;
+border:0 !important;
+opacity:0;
+}
+
+.break-switch{
+position:relative;
+flex:0 0 44px;
+width:44px;
+height:24px;
+border-radius:999px;
+background:rgba(148,163,184,.24);
+box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+transition:.2s;
+}
+
+.break-switch::after{
+content:"";
+position:absolute;
+left:3px;
+top:3px;
+width:18px;
+height:18px;
+border-radius:50%;
+background:#e2e8f0;
+box-shadow:0 2px 5px rgba(0,0,0,.25);
+transition:.2s;
+}
+
+.break-toggle input:checked + .break-switch{
+background:linear-gradient(135deg,#2563eb,#8b5cf6);
+box-shadow:0 5px 16px rgba(59,130,246,.28);
+}
+
+.break-toggle input:checked + .break-switch::after{
+transform:translateX(20px);
+background:#fff;
+}
+
+.break-toggle:focus-within .break-switch{
+box-shadow:0 0 0 3px rgba(59,130,246,.18);
+}
+
 .field input:focus,
 .field select:focus{
 
@@ -503,13 +582,25 @@ Generate SQL Faster • Modern UI
 </div>
 
 <div class="field">
+<label>เวลาเบรก</label>
+<select id="breakToggle">
+<option value="no" selected>ไม่ใช้เวลาเบรก</option>
+<option value="yes">เพิ่มเวลาเบรก</option>
+</select>
+</div>
+
+<div id="breakFields" style="display:none; grid-column:1/-1;">
+<div class="grid">
+<div class="field">
 <label>เวลาเริ่มเบรค</label>
-<input type="time" id="breakIn" value="12:00">
+<input type="time" id="breakIn" value="">
 </div>
 
 <div class="field">
 <label>เวลาออกเบรค</label>
-<input type="time" id="breakOut" value="13:00">
+<input type="time" id="breakOut" value="">
+</div>
+</div>
 </div>
 
 </div>
@@ -829,6 +920,19 @@ mode:'range',
 dateFormat:'Y-m-d'
 })
 
+document.getElementById('breakToggle').addEventListener('change', function(){
+const enabled = this.value === 'yes';
+document.getElementById('breakFields').style.display =
+enabled ? 'block' : 'none';
+
+if(!enabled){
+document.getElementById('breakIn').value = '';
+document.getElementById('breakOut').value = '';
+}
+
+saveForm();
+});
+
 const skipWeekdays=new Set([0,6])
 
 document.querySelectorAll('.day-btn')
@@ -871,13 +975,13 @@ const split = splitFlag.value
 
 let recordIn =
 split==='yes'
-? 'in'
-: ''
+? "'in'"
+: 'NULL'
 
 let recordOut =
 split==='yes'
-? 'out'
-: ''
+? "'out'"
+: 'NULL'
 
 const [s,e]=
 dateRange.value.split(' to ')
@@ -909,11 +1013,11 @@ status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, reco
 
 VALUES ('${day} ${timeIn.value}:00.000000+00', '${day} ${timeIn.value}:00.000000+00','${x2.value}','0.00','${source.value}','${location_id.value}',
 '${x2.value}','${statusVal}','${machine_ip.value}','${machine_name_in.value}', '${location_name.value}', '${set_id.value}', '${x3.value}',NULL,NULL,NULL,
-'${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07','${source_type.value}','${recordIn}');
+'${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07', '${day} ${timeIn.value}:00+07','${source_type.value}',${recordIn});
 
 `;
 
-if (breakIn.value) {
+if (breakToggle.value === 'yes' && breakIn.value) {
 
 out += `
 
@@ -927,7 +1031,7 @@ VALUES ('${day} ${breakIn.value}:00.000000+00', '${day} ${breakIn.value}:00.0000
 `;
 }
 
-if (breakOut.value) {
+if (breakToggle.value === 'yes' && breakOut.value) {
 out += `
 INSERT INTO "${schemaVal}".time_record(created_at, updated_at, identification_no, inout_flag, source, location_id, reference_code,
 status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, record_type,
@@ -946,7 +1050,7 @@ status, machine_ip, machine_name, location_name, set_id, empl_id, lat, lng, reco
 
 VALUES ('${day} ${timeOut.value}:00.000000+00', '${day} ${timeOut.value}:00.000000+00','${x2.value}','1.00','${source.value}','${location_id.value}',
 '${x2.value}','${statusVal}','${machine_ip.value}','${machine_name_out.value}', '${location_name.value}', '${set_id.value}', '${x3.value}',NULL,NULL,NULL,
-'${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07','${source_type.value}','${recordOut}');
+'${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07', '${day} ${timeOut.value}:00+07','${source_type.value}',${recordOut});
 
 `;
 
@@ -1170,6 +1274,7 @@ const ids=[
 'dateRange',
 'timeIn',
 'timeOut',
+'breakToggle',
 'breakIn',
 'breakOut',
 'x2',
@@ -1234,6 +1339,13 @@ Object.keys(data).forEach(id => {
     }
 
 });
+
+const breakToggle = document.getElementById('breakToggle');
+const breakFields = document.getElementById('breakFields');
+if(breakToggle && breakFields){
+breakFields.style.display =
+breakToggle.value === 'yes' ? 'block' : 'none';
+}
 
 }
 
