@@ -828,6 +828,15 @@ Generate SQL Faster • Modern UI
 
 </div>
 
+<div class="field">
+<label>ช่วงเวลาการลา</label>
+<select id="leavePeriod">
+<option value="D">เต็มวัน</option>
+<option value="F">ครึ่งวันแรก</option>
+<option value="S">ครึ่งวันหลัง</option>
+</select>
+</div>
+
 </div>
 
 </div>
@@ -1140,6 +1149,9 @@ leaveEmp.value
 const leaveType =
 document.getElementById('leaveType').value
 
+const leavePeriod =
+document.getElementById('leavePeriod').value
+
 const leaveRangeValue =
 leaveRange.value
 
@@ -1151,6 +1163,12 @@ new Date().toISOString()
 
 const isPaid =
 leaveType === 'TH_VAC_WP'
+
+const leavePeriodConfig = {
+  D: { type: 'D', leaveHour: '8', afterBreakTime: true, beforeBreakTime: true },
+  F: { type: 'F', leaveHour: '4', afterBreakTime: false, beforeBreakTime: true },
+  S: { type: 'S', leaveHour: '4', afterBreakTime: true, beforeBreakTime: false }
+}[leavePeriod]
 
 const [s,e] =
 leaveRangeValue.split(' to ')
@@ -1182,7 +1200,7 @@ const jsonData = [
 
 "paid": isPaid,
 
-"type": "D"
+"type": leavePeriodConfig.type
 
 }
 
@@ -1198,7 +1216,7 @@ const jsonData = [
 
 "leaveCode": leaveType,
 
-"leaveHour": "8",
+"leaveHour": leavePeriodConfig.leaveHour,
 
 "leaveType": leaveType,
 
@@ -1218,11 +1236,11 @@ const jsonData = [
 
 "approveStatus": "Approved",
 
-"afterBreakTime": true,
+"afterBreakTime": leavePeriodConfig.afterBreakTime,
 
 "eventUpdatedAt": now,
 
-"beforeBreakTime": true,
+"beforeBreakTime": leavePeriodConfig.beforeBreakTime,
 
 "calculationMethod": "working_days"
 
@@ -1293,7 +1311,8 @@ const ids=[
 'holidayEmp',
 'leaveRange',
 'leaveEmp',
-'leaveType'
+'leaveType',
+'leavePeriod'
 ]
 
 let data={}
